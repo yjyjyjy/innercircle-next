@@ -1,0 +1,301 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model circle {
+  id                           Int                            @id @default(autoincrement())
+  name                         String                         @db.VarChar
+  collection_to_circle_mapping collection_to_circle_mapping[]
+  insider_to_circle_mapping    insider_to_circle_mapping[]
+}
+
+model collection {
+  id                           String                         @id @db.VarChar
+  name                         String                         @db.VarChar
+  safelist_request_status      String?                        @db.VarChar
+  description                  String?                        @db.VarChar
+  image_url                    String?                        @db.VarChar
+  banner_image_url             String?                        @db.VarChar
+  external_url                 String?                        @db.VarChar
+  twitter_username             String?                        @db.VarChar
+  discord_url                  String?                        @db.VarChar
+  telegram_url                 String?                        @db.VarChar
+  instagram_username           String?                        @db.VarChar
+  medium_username              String?                        @db.VarChar
+  wiki_url                     String?                        @db.VarChar
+  payout_address               String?                        @db.VarChar
+  slug                         String?                        @db.VarChar
+  collection_to_circle_mapping collection_to_circle_mapping[]
+  insight                      insight[]
+  insight_trx                  insight_trx[]
+  post                         post?
+}
+
+model collection_to_circle_mapping {
+  collection_id String     @db.VarChar
+  circle_id     Int
+  created_at    DateTime   @db.Date
+  circle        circle     @relation(fields: [circle_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  collection    collection @relation(fields: [collection_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([collection_id, circle_id], map: "collection_to_circle_mapping_unique_idx_collection_circle")
+}
+
+model eth_contracts {
+  address   String    @id @db.VarChar
+  is_erc20  Boolean?
+  is_erc721 Boolean?
+  is_nft    Boolean?
+  timestamp DateTime? @db.Timestamp(6)
+
+  @@index([address], map: "eth_contracts_idx_address")
+  @@index([is_nft], map: "eth_contracts_idx_is_nft")
+  @@index([timestamp], map: "eth_contracts_idx_timestamp")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model eth_token_transfers_2017 {
+  timestamp         DateTime? @db.Timestamp(6)
+  trx_hash          String?   @db.VarChar
+  contract          String?   @db.VarChar
+  from_address      String?   @db.VarChar
+  to_address        String?   @db.VarChar
+  token_id_or_value String?   @db.VarChar
+
+  @@index([contract], map: "eth_token_transfers_2017_idx_contract")
+  @@index([timestamp], map: "eth_token_transfers_2017_idx_timestamp")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model eth_token_transfers_2018 {
+  timestamp         DateTime? @db.Timestamp(6)
+  trx_hash          String?   @db.VarChar
+  contract          String?   @db.VarChar
+  from_address      String?   @db.VarChar
+  to_address        String?   @db.VarChar
+  token_id_or_value String?   @db.VarChar
+
+  @@index([contract], map: "eth_token_transfers_2018_idx_contract")
+  @@index([timestamp], map: "eth_token_transfers_2018_idx_timestamp")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model eth_token_transfers_2019 {
+  timestamp         DateTime? @db.Timestamp(6)
+  trx_hash          String?   @db.VarChar
+  contract          String?   @db.VarChar
+  from_address      String?   @db.VarChar
+  to_address        String?   @db.VarChar
+  token_id_or_value String?   @db.VarChar
+
+  @@index([contract], map: "eth_token_transfers_2019_idx_contract")
+  @@index([timestamp], map: "eth_token_transfers_2019_idx_timestamp")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model eth_token_transfers_2020 {
+  timestamp         DateTime? @db.Timestamp(6)
+  trx_hash          String?   @db.VarChar
+  contract          String?   @db.VarChar
+  from_address      String?   @db.VarChar
+  to_address        String?   @db.VarChar
+  token_id_or_value String?   @db.VarChar
+
+  @@index([contract], map: "eth_token_transfers_2020_idx_contract")
+  @@index([timestamp], map: "eth_token_transfers_2020_idx_timestamp")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model eth_token_transfers_2021 {
+  timestamp         DateTime? @db.Timestamp(6)
+  trx_hash          String?   @db.VarChar
+  contract          String?   @db.VarChar
+  from_address      String?   @db.VarChar
+  to_address        String?   @db.VarChar
+  token_id_or_value String?   @db.VarChar
+
+  @@index([contract], map: "eth_token_transfers_2021_idx_contract")
+  @@index([timestamp], map: "eth_token_transfers_2021_idx_timestamp")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model eth_token_transfers_2022 {
+  timestamp         DateTime? @db.Timestamp(6)
+  trx_hash          String?   @db.VarChar
+  contract          String?   @db.VarChar
+  from_address      String?   @db.VarChar
+  to_address        String?   @db.VarChar
+  token_id_or_value String?   @db.VarChar
+
+  @@index([contract], map: "eth_token_transfers_2022_idx_contract")
+  @@index([timestamp], map: "eth_token_transfers_2022_idx_timestamp")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model eth_transactions {
+  timestamp    DateTime? @db.Timestamp(6)
+  trx_hash     String    @db.VarChar(100)
+  from_address String?   @db.VarChar(100)
+  to_address   String?   @db.VarChar(100)
+  eth_value    Decimal?  @db.Decimal
+
+  @@index([timestamp], map: "eth_transactions_idx_timestamp")
+  @@index([trx_hash], map: "eth_transactions_idx_trx_hash")
+  @@ignore
+}
+
+model insider {
+  id                        String                      @id @db.VarChar
+  insider_to_circle_mapping insider_to_circle_mapping[]
+  insight                   insight[]
+  insight_trx               insight_trx[]
+}
+
+model insider_to_circle_mapping {
+  insider_id String   @db.VarChar
+  owner_rank Int
+  circle_id  Int
+  created_at DateTime @db.Date
+  is_current Boolean
+  circle     circle   @relation(fields: [circle_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  insider    insider  @relation(fields: [insider_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([insider_id, circle_id, created_at], map: "insider_to_circle_mapping_unique_idx_insider_id_circle_id_creat")
+  @@index([is_current], map: "insider_to_circle_mapping_idx_is_current")
+}
+
+model insight {
+  insider_id      String     @db.VarChar
+  collection_id   String     @db.VarChar
+  started_at      DateTime   @db.Timestamp(6)
+  total_eth_spent Decimal    @db.Decimal
+  collection      collection @relation(fields: [collection_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  insider         insider    @relation(fields: [insider_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([insider_id, collection_id], map: "insight_unique_idx_insider_id_collection_id")
+}
+
+model insight_trx {
+  insider_id          String     @db.VarChar
+  collection_id       String     @db.VarChar
+  timestamp           DateTime   @db.Timestamp(6)
+  token_id            String     @db.VarChar
+  action              String     @db.VarChar
+  trx_hash            String     @db.VarChar
+  eth_value_per_token Decimal    @db.Decimal
+  nth_trx             Int
+  created_at          DateTime   @db.Date
+  collection          collection @relation(fields: [collection_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  insider             insider    @relation(fields: [insider_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([insider_id, collection_id, token_id, nth_trx], map: "insight_trx_unique_idx_insider_id_collection_id_nth_trx")
+  @@unique([trx_hash, token_id], map: "insight_trx_unique_idx_trx_hash_token_id")
+}
+
+model new_nft_contracts {
+  address           String   @id @db.VarChar
+  missing_metadata  Boolean?
+  missing_trx_union Boolean?
+}
+
+model nft_contract_abi {
+  address String  @id @db.VarChar
+  abi     String? @db.VarChar
+}
+
+model nft_contract_floor_price {
+  date               DateTime @db.Date
+  contract           String   @db.VarChar
+  floor_price_in_eth Decimal? @db.Decimal
+
+  @@id([date, contract])
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model nft_ownership {
+  contract String? @db.VarChar
+  token_id String? @db.VarChar
+  owner    String? @db.VarChar
+
+  @@index([contract], map: "nft_ownership_idx_contract")
+  @@index([owner], map: "nft_ownership_idx_owner")
+  @@index([token_id], map: "nft_ownership_idx_token_id")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model nft_trades {
+  timestamp    DateTime? @db.Timestamp(6)
+  trx_hash     String?   @db.VarChar(100)
+  eth_value    Decimal?  @db.Decimal
+  nft_contract String?   @db.VarChar(100)
+  token_id     String?   @db.VarChar(100)
+  buyer        String?   @db.VarChar(100)
+  seller       String?   @db.VarChar(100)
+  platform     String?   @db.VarChar(50)
+
+  @@index([nft_contract], map: "nft_trades_idx_nft_contract")
+  @@index([timestamp], map: "nft_trades_idx_timestamp")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model nft_trx_union {
+  timestamp                          DateTime? @db.Timestamp(6)
+  trx_hash                           String?   @db.VarChar
+  contract                           String?   @db.VarChar
+  token_id                           String?   @db.VarChar
+  from_address                       String?   @db.VarChar
+  to_address                         String?   @db.VarChar
+  num_tokens_in_the_same_transaction Int?
+  eth_value_per_token                Decimal?  @db.Decimal
+  action                             String?   @db.VarChar
+  caller_is_receiver                 Boolean?
+
+  @@index([action], map: "nft_trx_union_idx_action")
+  @@index([contract, token_id], map: "nft_trx_union_idx_contract_token_id")
+  @@index([from_address], map: "nft_trx_union_idx_from_address")
+  @@index([timestamp], map: "nft_trx_union_idx_timestamp")
+  @@index([to_address], map: "nft_trx_union_idx_to_address")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model owner_collection_total_worth {
+  owner                String?  @db.VarChar
+  owner_rank           BigInt?
+  contract             String?  @db.VarChar
+  collection_worth     Decimal? @db.Decimal
+  rnk                  BigInt?
+  total_worth          Decimal? @db.Decimal
+  collection_pct_total Decimal? @db.Decimal
+
+  @@ignore
+}
+
+model post {
+  id            Int        @id @default(autoincrement())
+  collection_id String     @unique(map: "post_idx_collection") @db.VarChar
+  created_at    DateTime   @db.Date
+  collection    collection @relation(fields: [collection_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model tmp {
+  collection_id String?   @db.VarChar
+  circle_id     Int?
+  timestamp     DateTime? @db.Timestamp(6)
+
+  @@ignore
+}

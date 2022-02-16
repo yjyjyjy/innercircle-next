@@ -1,57 +1,56 @@
 import React from "react"
-import { GetStaticProps } from "next"
+import { GetServerSideProps, GetStaticProps } from "next"
+import prisma from '../lib/prisma';
+import moment from "moment";
 import Layout from "../components/Layout"
 import Post, { PostProps } from "../components/Post"
 
-export const getStaticProps: GetStaticProps = async () => {
-  const feed = [
-    {
-      id: 1,
-      title: "Prisma is the perfect ORM for Next.js",
-      content: "[Prisma](https://github.com/prisma/prisma) and Next.js go _great_ together!",
-      published: false,
-      author: {
-        name: "Nikolas Burk",
-        email: "burk@prisma.io",
-      },
-    },
-  ]
-  return { props: { feed } }
+// bulid time data fetch
+// export const getStaticProps: GetStaticProps = async () => {
+//   const posts = await prisma.circle.findMany();
+//   return { props: { posts } };
+// };
+
+// server side data fetch
+export async function getServerSideProps() {
+  // Get all foods in the "food" db
+  const posts = await prisma.post.findMany({
+    where: { created_at: { gte: new Date("2021-08-14") } },
+    include: { collection: { include: { insight: true } } },
+    take: 40,
+    orderBy: { created_at: 'desc' }
+  });
+
+  // return { props: { posts: JSON.parse(JSON.stringify(posts)) } };
+  return {
+    props: {
+      posts: JSON.parse(JSON.stringify(posts)).map((post) => {
+        return {
+          ...post,
+          created_at: moment(post.created_at).format("YYYY-MM-DD")
+        }
+      })
+    }
+  };
 }
 
-type Props = {
-  feed: PostProps[]
-}
+// export default ({ posts }) => {
+//   <div>{posts}</div>
+// }
 
-const Blog: React.FC<Props> = (props) => {
+export default ({ posts }) => {
   return (
-    <Layout>
-      <div className="page">
-        <h1>Public Feed</h1>
-        <main>
-          {props.feed.map((post) => (
-            <div key={post.id} className="post">
-              <Post post={post} />
-            </div>
-          ))}
-        </main>
-      </div>
-      <style jsx>{`
-        .post {
-          background: white;
-          transition: box-shadow 0.1s ease-in;
-        }
-
-        .post:hover {
-          box-shadow: 1px 1px 3px #aaa;
-        }
-
-        .post + .post {
-          margin-top: 2rem;
-        }
-      `}</style>
-    </Layout>
+    <div>
+      {posts.map(post => (
+        <div key={post.id}>
+          <div>
+            {post.collection_id}
+          </div>
+          <div>
+            {post.created_at}
+          </div>
+        </div>
+      ))}
+    </div>
   )
 }
-
-export default Blog
