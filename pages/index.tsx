@@ -2,8 +2,10 @@ import React from "react"
 import { GetServerSideProps, GetStaticProps } from "next"
 import prisma from '../lib/prisma';
 import moment from "moment";
-import Layout from "../components/Layout"
-import Post, { PostProps } from "../components/Post"
+import {
+  Container
+} from "@chakra-ui/react";
+import PostItemCard from '../components/PostItemCard'
 
 // bulid time data fetch
 // export const getStaticProps: GetStaticProps = async () => {
@@ -17,7 +19,7 @@ export async function getServerSideProps() {
   const posts = await prisma.post.findMany({
     where: { created_at: { gte: new Date("2021-08-14") } },
     include: { collection: { include: { insight: true } } },
-    take: 40,
+    take: 10,
     orderBy: { created_at: 'desc' }
   });
 
@@ -40,17 +42,24 @@ export async function getServerSideProps() {
 
 export default ({ posts }) => {
   return (
-    <div>
-      {posts.map(post => (
-        <div key={post.id}>
-          <div>
-            {post.collection_id}
-          </div>
-          <div>
-            {post.created_at}
-          </div>
-        </div>
+    <Container maxW="container.lg">
+      {posts.map((post) => (
+        <PostItemCard key={post.id} post={post} />
       ))}
-    </div>
-  )
+    </Container>
+  );
+  // return (
+  //   <div>
+  //     {posts.map(post => (
+  //       <div key={post.id}>
+  //         <div>
+  //           {post.collection_id}
+  //         </div>
+  //         <div>
+  //           {post.created_at}
+  //         </div>
+  //       </div>
+  //     ))}
+  //   </div>
+  // )
 }
