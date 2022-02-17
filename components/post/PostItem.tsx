@@ -3,6 +3,7 @@ import { Box, VStack } from "@chakra-ui/react";
 import { formatDistanceToNow, parse } from "date-fns";
 import PostItemCollectionInfo from "./PostItemCollectionInfo";
 import PostItemInsideScoop from "./PostItemInsideScoop";
+import ReactMarkdown from "react-markdown";
 type Props = {
   post: any;
 };
@@ -14,6 +15,7 @@ const PostItem: React.FC<Props> = ({ post }) => {
         {post.created_at} - {formatDistanceToNow(createdDate)} ago
       </Box>
       <PostItemCollectionInfo post={post} />
+      <ReactMarkdown># Hello, *world*!</ReactMarkdown>
       <PostItemInsideScoop post={post} />
     </VStack >
   );

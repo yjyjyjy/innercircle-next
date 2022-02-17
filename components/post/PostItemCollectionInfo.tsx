@@ -1,5 +1,5 @@
 import React from 'react';
-
+import ReactMarkdown from "react-markdown";
 import { Box, VStack, Image, Button, Heading, Text, Stack, Flex, IconButton, Tooltip } from "@chakra-ui/react";
 import { CgWebsite } from "react-icons/cg";
 import { FaDiscord, FaInstagram, FaTwitter, FaTelegram, FaMedium, FaWikipediaW } from "react-icons/fa";
@@ -67,7 +67,9 @@ const PostItemCollectionInfo: React.FC<Props> = ({ post }) => {
             </Flex>
             {/* Collection description */}
             <Box pt={3} width={'100%'}>
-                <Text noOfLines={show ? 0 : 2}>{post.collection.description}</Text>
+                <Text noOfLines={show ? 0 : 2}>
+                    <ReactMarkdown>{post.collection.description}</ReactMarkdown>
+                </Text>
                 <Button size="sm" onClick={handleToggle} variant={"link"}>
                     Show {show ? "Less" : "More"}
                 </Button>
