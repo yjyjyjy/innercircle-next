@@ -125,12 +125,12 @@ const PostItemCard: React.FC<Props> = ({ post }) => {
         )}
       </Flex>
       {/* Collection description */}
-      <Box pt={3}>
+      <Box pt={3} width={'100%'}>
         <Text noOfLines={show ? 0 : 2}>{post.collection.description}</Text>
         <Button size="sm" onClick={handleToggle} variant={"link"}>
           Show {show ? "Less" : "More"}
         </Button>
-        <Box mt={3}>
+        <Box mt={5}>
           <Stack
             direction="row"
             justifyContent="center"
@@ -152,9 +152,9 @@ const PostItemCard: React.FC<Props> = ({ post }) => {
             <Tbody>
               {orderedInsights
                 .slice(0, showTable ? orderedInsights.length : 3)
-                .map(({ started_at, total_eth_spent, insider }) => (
-                  <Tr key={insider?.id}>
-                    <Td>{insider?.id}</Td>
+                .map(({ started_at, total_eth_spent, insider_id }) => (
+                  <Tr key={insider_id}>
+                    <Td>{insider_id}</Td>
                     <Td>{Math.round(total_eth_spent * 100) / 100}</Td>
                     <Td>{started_at}</Td>
                   </Tr>
