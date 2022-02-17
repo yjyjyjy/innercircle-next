@@ -5,7 +5,7 @@ import moment from "moment";
 import {
   Container
 } from "@chakra-ui/react";
-import PostItemCard from '../components/PostItemCard'
+import PostItem from '../components/post/PostItem'
 
 // bulid time data fetch
 // export const getStaticProps: GetStaticProps = async () => {
@@ -19,7 +19,7 @@ export async function getServerSideProps() {
   const posts = await prisma.post.findMany({
     where: { created_at: { gte: new Date("2021-08-14") } },
     include: { collection: { include: { insight: true } } },
-    take: 10,
+    take: 50,
     orderBy: { created_at: 'desc' }
   });
 
@@ -44,7 +44,7 @@ export default ({ posts }) => {
   return (
     <Container maxW="container.lg">
       {posts.map((post) => (
-        <PostItemCard key={post.id} post={post} />
+        <PostItem key={post.id} post={post} />
       ))}
     </Container>
   );
