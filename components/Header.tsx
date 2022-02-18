@@ -14,13 +14,6 @@ import {
 
 import { GiHamburgerMenu } from "react-icons/gi"
 
-
-// Note: This code could be better,
-// so I'd recommend you to understand how I solved and you could write yours better :)
-// Good luck! 🍀
-
-// Update: Check these awesome headers from Choc UI 👇
-// https://choc-ui.tech/docs/elements/headers
 const Header = (props) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const handleToggle = () => (isOpen ? onClose() : onOpen());
@@ -32,13 +25,15 @@ const Header = (props) => {
       justify="space-between"
       wrap="wrap"
       padding={6}
-      bg="teal.500"
+      bg="cyan.500"
       color="white"
       {...props}
     >
       <Flex align="center" mr={5}>
         <Heading as="h1" size="lg" letterSpacing={"tighter"}>
-          Chakra UI
+          <Link href={'/'}>
+            innerCircle
+          </Link>
         </Heading>
       </Flex>
 
@@ -54,9 +49,9 @@ const Header = (props) => {
         flexGrow={1}
         mt={{ base: 4, md: 0 }}
       >
-        <Text>Docs</Text>
+        {/* <Text>Docs</Text>
         <Text>Examples</Text>
-        <Text>Blog</Text>
+        <Text>Blog</Text> */}
       </Stack>
 
       <Box

@@ -5,6 +5,8 @@ import { format, parse } from "date-fns";
 type Props = {
   post: any;
 };
+import Link from "next/link";
+
 const PostItemInsideScoop: React.FC<Props> = ({ post }) => {
   const [showTable, setShowTable] = React.useState(false);
   const orderedInsights = [...post.collection.insight].sort((a, b) => a.total_eth_spent > b.total_eth_spent ? -1 : 1);
@@ -33,7 +35,7 @@ const PostItemInsideScoop: React.FC<Props> = ({ post }) => {
             .slice(0, showTable ? orderedInsights.length : 3)
             .map(({ started_at, total_eth_spent, insider_id }) => (
               <Tr key={insider_id}>
-                <Td>{`${insider_id.substring(0, 3)}...${insider_id.substring(insider_id.length - 3, insider_id.length)}`}</Td>
+                <Td><Link href={`/profile/${insider_id}`}>{`${insider_id.substring(0, 3)}...${insider_id.substring(insider_id.length - 3, insider_id.length)}`}</Link></Td>
                 <Td>{Math.round(total_eth_spent * 100) / 100}</Td>
                 <Td>{format(parse(started_at.substring(0, 10), "yyyy-MM-dd", new Date()), "MMM-d-yyyy")}</Td>
               </Tr>
