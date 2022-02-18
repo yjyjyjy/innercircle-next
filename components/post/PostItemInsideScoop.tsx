@@ -33,7 +33,7 @@ const PostItemInsideScoop: React.FC<Props> = ({ post }) => {
             .slice(0, showTable ? orderedInsights.length : 3)
             .map(({ started_at, total_eth_spent, insider_id }) => (
               <Tr key={insider_id}>
-                <Td>{insider_id}</Td>
+                <Td>{`${insider_id.substring(0, 3)}...${insider_id.substring(insider_id.length - 3, insider_id.length)}`}</Td>
                 <Td>{Math.round(total_eth_spent * 100) / 100}</Td>
                 <Td>{format(parse(started_at.substring(0, 10), "yyyy-MM-dd", new Date()), "MMM-d-yyyy")}</Td>
               </Tr>

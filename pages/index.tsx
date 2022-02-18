@@ -6,6 +6,7 @@ import {
   Container
 } from "@chakra-ui/react";
 import PostItem from '../components/post/PostItem'
+import Header from "../components/Header";
 
 // bulid time data fetch
 // export const getStaticProps: GetStaticProps = async () => {
@@ -43,6 +44,7 @@ export async function getServerSideProps() {
 export default ({ posts }) => {
   return (
     <Container maxW="container.lg">
+      <Header />
       {posts.map((post) => (
         <PostItem key={post.id} post={post} />
       ))}
