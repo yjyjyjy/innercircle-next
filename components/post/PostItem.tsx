@@ -15,7 +15,6 @@ const PostItem: React.FC<Props> = ({ post }) => {
         {post.created_at} - {formatDistanceToNow(createdDate)} ago
       </Box>
       <PostItemCollectionInfo post={post} />
-      <ReactMarkdown># Hello, *world*!</ReactMarkdown>
       <PostItemInsideScoop post={post} />
     </VStack >
   );
