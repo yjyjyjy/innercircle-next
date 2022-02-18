@@ -13,7 +13,7 @@ export async function getServerSideProps() {
   const posts = await prisma.post.findMany({
     where: { created_at: { gte: new Date("2021-08-14") } },
     include: { collection: { include: { insight: true } } },
-    take: 30,
+    take: 25,
     orderBy: { created_at: 'desc' }
   });
 

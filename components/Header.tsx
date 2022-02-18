@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { Tooltip } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 
 import {
@@ -58,12 +59,16 @@ const Header = (props) => {
         display={{ base: isOpen ? "block" : "none", md: "block" }}
         mt={{ base: 4, md: 0 }}
       >
-        <Button
-          variant="outline"
-          _hover={{ bg: "teal.700", borderColor: "teal.700" }}
-        >
-          Create account
-        </Button>
+        <Tooltip label={'Join Discord for product updates, future NFT mints, and hangout!'}>
+          <a href={"https://discord.gg/CBr32zf4g7"} target={"_blank"} rel="noreferrer">
+            <Button
+              variant="outline"
+              _hover={{ bg: "cyan.700", borderColor: "cyan.700" }}
+            >
+              Join Discord
+            </Button>
+          </a>
+        </Tooltip>
       </Box>
     </Flex>
   );
