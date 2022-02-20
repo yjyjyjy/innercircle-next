@@ -6,14 +6,14 @@ import moment from "moment";
 import { scaleLog } from "d3-scale";
 import { CartesianGrid, Scatter, ScatterChart, XAxis, YAxis } from "recharts";
 import { add, differenceInCalendarDays, format, sub } from "date-fns";
+import { groupBy } from "lodash";
 
 type ShadowTrade = {
   //   entryPrice: number;
-  profitOrLoss: number;
-  entryTimestamp: number;
-  exitPrice?: number;
-  exitTimestamp?: number;
-  collectionName: string;
+  profit_or_loss: number;
+  entry_timestamp: number;
+  exit_timestamp?: number;
+  collection_name: string;
 };
 
 // const getRandomTrade = () => {
@@ -39,23 +39,25 @@ type ShadowTrade = {
 // shadowTrades = shadowTrades.map((_) => getRandomTrade());
 
 // server side data fetch
-export async function getServerSideProps(id) {
+export async function getServerSideProps(context) {
+  const { id } = context.query;
   const insider = await prisma.insider.findUnique({
     where: { id: id as string },
-    include: { shadow_trade: true },
+    include: { shadow_trade_summary: true },
   });
+  console.log("end");
   // return { props: { posts: JSON.parse(JSON.stringify(posts)) } };
   return {
     props: {
-      insider,
+      insider: JSON.parse(JSON.stringify(insider)),
     },
   };
 }
 
 const toDataPoint = (t: ShadowTrade) => {
   return {
-    x: t.entryTimestamp,
-    y: t.profitOrLoss * 100,
+    x: moment(t.entry_timestamp).unix(),
+    y: t.profit_or_loss * 100,
   };
 };
 
@@ -78,7 +80,7 @@ const getTicks = (startDate, endDate, num) => {
 };
 
 const dateFormatter = (timestamp: number) => {
-  return format(new Date(timestamp), "dd/MMM");
+  return format(new Date(timestamp * 1000), "dd/MMM");
 };
 
 // const getYScale = (scale) => {
@@ -99,27 +101,26 @@ const User = ({ insider }) => {
   const router = useRouter();
   const { id } = router.query;
 
-  const { shadowTrades } = insider;
-  const closedTrades = shadowTrades.filter((t: ShadowTrade) => {
-    return !!t.exitTimestamp;
-  });
-  const unrealizedTrades = shadowTrades.filter((t: ShadowTrade) => {
-    return !t.exitTimestamp;
-  });
+  const { shadow_trade_summary: shadowTrades } = insider;
 
-  const closedTradeData = closedTrades.map(toDataPoint);
-  const unrealizedTradeData = unrealizedTrades.map(toDataPoint);
-  console.log(closedTradeData);
-  console.log(unrealizedTradeData);
-  const maxDate = Math.max(...shadowTrades.map((t) => t.entryTimestamp));
-  const minDate = Math.min(...shadowTrades.map((t) => t.entryTimestamp));
+  const shadowTradesData = shadowTrades.map(toDataPoint);
 
-  const ticks = getTicks(new Date(minDate), new Date(maxDate), 10);
+  const maxDate = Math.max(
+    ...shadowTrades.map((t) => moment(t.entry_timestamp).unix())
+  );
+  const minDate = Math.min(
+    ...shadowTrades.map((t) => moment(t.entry_timestamp).unix())
+  );
+
+  const ticks = getTicks(
+    new Date(minDate * 1000),
+    new Date(maxDate * 1000),
+    10
+  );
   console.log(ticks);
 
   return (
     <>
-      <Heading as={"h1"}>🚧🚧🚧 User Page is under construction</Heading>
       <Text py={4}>wallet address: {id}</Text>
       <ScatterChart
         width={730}
@@ -135,13 +136,7 @@ const User = ({ insider }) => {
           tickFormatter={dateFormatter}
         />
         <YAxis dataKey="y" name="% returns" unit="%" />
-        <Scatter name="Realized Trades" data={closedTradeData} fill="#8884d8" />
-        <Scatter
-          name="Unrealized Trades"
-          data={unrealizedTradeData}
-          fill="#FFFFFF"
-          stroke="#000000"
-        />
+        <Scatter name="Trades" data={shadowTradesData} fill="#00b5d8" />
       </ScatterChart>
       <Link href={"/"}>
         <Button>Go Back</Button>

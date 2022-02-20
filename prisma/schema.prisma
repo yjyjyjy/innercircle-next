@@ -35,6 +35,7 @@ model collection {
   insight_trx                  insight_trx[]
   post                         post?
   shadow_trade                 shadow_trade[]
+  shadow_trade_summary         shadow_trade_summary[]
 }
 
 model collection_to_circle_mapping {
@@ -165,6 +166,7 @@ model insider {
   insight                   insight[]
   insight_trx               insight_trx[]
   shadow_trade              shadow_trade[]
+  shadow_trade_summary      shadow_trade_summary[]
 }
 
 model insider_to_circle_mapping {
@@ -430,4 +432,15 @@ model wallet_total_selling {
   total_sell_value Decimal? @db.Decimal
 
   @@ignore
+}
+
+model shadow_trade_summary {
+  insider_id      String     @db.VarChar
+  collection_id   String     @db.VarChar
+  entry_timestamp DateTime?  @db.Timestamp(6)
+  profit_or_loss  Decimal?   @db.Decimal
+  collection      collection @relation(fields: [collection_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  insider         insider    @relation(fields: [insider_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([insider_id, collection_id])
 }
