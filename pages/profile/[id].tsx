@@ -125,7 +125,7 @@ const User = ({ insider }) => {
   console.log(ticks);
 
   useEffect(() => {
-    setGraphWidth(ref?.current?.clientWidth || 1024);
+    setGraphWidth(1024);
   }, []);
 
   return (
