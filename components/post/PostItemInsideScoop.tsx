@@ -36,7 +36,7 @@ const PostItemInsideScoop: React.FC<Props> = ({ post }) => {
             .map(({ started_at, total_eth_spent, insider_id }) => (
               <Tr key={insider_id}>
                 <Td><Link href={`/profile/${insider_id}`}>{`${insider_id.substring(0, 3)}...${insider_id.substring(insider_id.length - 3, insider_id.length)}`}</Link></Td>
-                <Td>{Math.round(total_eth_spent * 100) / 100}</Td>
+                <Td>{Math.round(total_eth_spent * 100) / 100} ETH</Td>
                 <Td>{format(parse(started_at.substring(0, 10), "yyyy-MM-dd", new Date()), "MMM-d-yyyy")}</Td>
               </Tr>
             ))}
