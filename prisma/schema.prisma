@@ -34,6 +34,7 @@ model collection {
   insight                      insight[]
   insight_trx                  insight_trx[]
   post                         post?
+  shadow_trade                 shadow_trade[]
 }
 
 model collection_to_circle_mapping {
@@ -157,9 +158,13 @@ model eth_transactions {
 
 model insider {
   id                        String                      @id @db.VarChar
+  ens                       String?                     @db.VarChar
+  twitter_username          String?                     @db.VarChar
+  instagram_username        String?                     @db.VarChar
   insider_to_circle_mapping insider_to_circle_mapping[]
   insight                   insight[]
   insight_trx               insight_trx[]
+  shadow_trade              shadow_trade[]
 }
 
 model insider_to_circle_mapping {
@@ -293,9 +298,136 @@ model post {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 model tmp {
-  collection_id String?   @db.VarChar
-  circle_id     Int?
-  timestamp     DateTime? @db.Timestamp(6)
+  id String? @db.VarChar
+
+  @@ignore
+}
+
+model shadow_trade {
+  shadow_trade_id   Int        @id @default(autoincrement())
+  insider_id        String     @db.VarChar
+  collection_id     String     @db.VarChar
+  collection_name   String?    @db.VarChar
+  token_id          String     @db.VarChar
+  entry_price       Decimal    @db.Decimal
+  entry_floor_price Decimal?   @db.Decimal
+  entry_timestamp   DateTime   @db.Timestamp(6)
+  exit_price        Decimal?   @db.Decimal
+  exit_timestamp    DateTime?  @db.Timestamp(6)
+  latest_price      Decimal    @db.Decimal
+  profit_or_loss    Decimal    @db.Decimal
+  collection        collection @relation(fields: [collection_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  insider           insider    @relation(fields: [insider_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([insider_id, collection_id, token_id, entry_timestamp], map: "shadow_trade_unique_idx_insider_id_col_id_token_id_entry_ts")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model tmp_collection_latest_floor_price {
+  contract           String?  @db.VarChar
+  floor_price_in_eth Decimal? @db.Decimal
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model tmp_purchase {
+  insider_id        String?   @db.VarChar
+  collection_id     String?   @db.VarChar
+  token_id          String?   @db.VarChar
+  entry_price       Decimal?  @db.Decimal
+  entry_floor_price Decimal?  @db.Decimal
+  entry_timestamp   DateTime? @db.Timestamp(6)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model tmp_sell {
+  insider_id       String?   @db.VarChar
+  collection_id    String?   @db.VarChar
+  token_id         String?   @db.VarChar
+  exit_price       Decimal?  @db.Decimal
+  exit_floor_price Decimal?  @db.Decimal
+  exit_timestamp   DateTime? @db.Timestamp(6)
+  action           String?   @db.VarChar
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model tmp_staging {
+  insider_id        String?   @db.VarChar
+  collection_id     String?   @db.VarChar
+  token_id          String?   @db.VarChar
+  entry_price       Decimal?  @db.Decimal
+  entry_floor_price Decimal?  @db.Decimal
+  entry_timestamp   DateTime? @db.Timestamp(6)
+  exit_price        Decimal?  @db.Decimal
+  exit_timestamp    DateTime? @db.Timestamp(6)
+  latest_price      Decimal?  @db.Decimal
+  profit_or_loss    Decimal?  @db.Decimal
+  action            String?   @db.VarChar
+  rnk               BigInt?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model wallet_realised_unrealised_gain {
+  owner                       String?  @db.VarChar
+  contract                    String?  @db.VarChar
+  wallet_total_contract_value Decimal? @db.Decimal
+  unrealised_gain             Decimal? @db.Decimal
+  realised_gain               Decimal? @db.Decimal
+  total_gain                  Decimal? @db.Decimal
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model wallet_recent_date_floor_price {
+  owner              String?   @db.VarChar
+  contract           String?   @db.VarChar
+  token_id           String?   @db.VarChar
+  date               DateTime? @db.Date
+  floor_price_in_eth Decimal?  @db.Decimal
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model wallet_recent_date_total_value {
+  owner                       String?  @db.VarChar
+  contract                    String?  @db.VarChar
+  wallet_total_contract_value Decimal? @db.Decimal
+  wallet_total_value          Decimal? @db.Decimal
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model wallet_total_buying {
+  address         String?  @db.VarChar
+  total_buy_value Decimal? @db.Decimal
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model wallet_total_profit {
+  address          String?  @db.VarChar
+  total_sell_value Decimal? @db.Decimal
+  total_buy_value  Decimal? @db.Decimal
+  profit           Decimal? @db.Decimal
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model wallet_total_selling {
+  address          String?  @db.VarChar
+  total_sell_value Decimal? @db.Decimal
 
   @@ignore
 }
