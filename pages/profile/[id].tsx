@@ -1,9 +1,8 @@
 import { useRouter } from "next/router";
-import { Heading, Text, Button } from "@chakra-ui/react";
+import { Heading, Text, Button, Stack } from "@chakra-ui/react";
 import Link from "next/link";
 import prisma from "../../lib/prisma";
 import moment from "moment";
-import { scaleLog } from "d3-scale";
 import {
   CartesianGrid,
   ReferenceLine,
@@ -13,7 +12,6 @@ import {
   YAxis,
 } from "recharts";
 import { add, differenceInCalendarDays, format, sub } from "date-fns";
-import { groupBy } from "lodash";
 import { useEffect, useRef, useState } from "react";
 
 type ShadowTrade = {
@@ -131,31 +129,35 @@ const User = ({ insider }) => {
   }, []);
 
   return (
-    <div ref={ref}>
-      <Text py={4}>wallet address: {id}</Text>
-      <ScatterChart
-        width={graphWidth}
-        height={300}
-        margin={{ top: 20, right: 20, bottom: 10, left: 10 }}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <ReferenceLine y="0" stroke="green" label="Break Even" />
-        <XAxis
-          dataKey="x"
-          name="time"
-          scale="time"
-          type="number"
-          ticks={ticks}
-          domain={[() => minDate * 1000, () => maxDate * 1000]}
-          tickFormatter={dateFormatter}
-        />
-        <YAxis dataKey="y" name="% returns" unit="%" />
-        <Scatter name="Trades" data={shadowTradesData} fill="#00b5d8" />
-      </ScatterChart>
-      <Link href={"/"}>
-        <Button>Go Back</Button>
-      </Link>
-    </div>
+    <Stack direction={'column'}>
+      <Text fontSize={20} fontWeight={'bold'} py={10}>
+        Smart Money Wallet recent trading ROI: <br />{id}
+      </Text>
+      <div ref={ref}>
+        <ScatterChart
+          width={graphWidth}
+          height={300}
+          margin={{ top: 20, right: 20, bottom: 10, left: 10 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <ReferenceLine y="0" stroke="green" label="Break Even" />
+          <XAxis
+            dataKey="x"
+            name="time"
+            scale="time"
+            type="number"
+            ticks={ticks}
+            domain={[() => minDate * 1000, () => maxDate * 1000]}
+            tickFormatter={dateFormatter}
+          />
+          <YAxis dataKey="y" name="% returns" unit="%" />
+          <Scatter name="Trades" data={shadowTradesData} fill="#00b5d8" />
+        </ScatterChart>
+        <Link href={"/"}>
+          <Button>Go Back</Button>
+        </Link>
+      </div>
+    </Stack >
   );
 };
 

@@ -6,6 +6,7 @@ import moment from "moment";
 import PostItem from '../components/post/PostItem'
 import Header from "../components/Header";
 import Layout from "../components/Layout";
+import { Heading, Text } from "@chakra-ui/react";
 
 // server side data fetch
 export async function getServerSideProps() {
@@ -33,6 +34,10 @@ export async function getServerSideProps() {
 export default ({ posts }) => {
   return (
     <>
+      <Heading py={5}>
+        Smart Money Feed
+      </Heading>
+      <Text fontSize={20} fontWeight={'bold'} border='2px' p={3} borderRadius={10} borderColor={'cyan.500'} color={'cyan.900'}>The new NFT projects invested by smart money investors using their own ETH. Click on the smart money wallet addresses under "Inside Scoop" to explore more.</Text>
       {posts.map((post) => (
         <PostItem key={post.id} post={post} />
       ))}
