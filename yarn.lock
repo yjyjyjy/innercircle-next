@@ -904,6 +904,13 @@
     dotenv "^8.2.0"
     superagent "3.8.1"
 
+"@mailchimp/mailchimp_transactional@^1.0.47":
+  version "1.0.47"
+  resolved "https://registry.yarnpkg.com/@mailchimp/mailchimp_transactional/-/mailchimp_transactional-1.0.47.tgz#53f4b52485bcf6c3903fc1265187c6b6855af89d"
+  integrity sha512-dZ45jWALktR4+/mMnUprSodWdnVHprrXK0uxPo9mUShihBNHIOeHGYoxahsTyhqPPx6lVu7nNj96VLzomUL1YQ==
+  dependencies:
+    axios "^0.21.1"
+
 "@next/env@12.0.10":
   version "12.0.10"
   resolved "https://registry.npmjs.org/@next/env/-/env-12.0.10.tgz"
@@ -1154,6 +1161,13 @@ asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha1-x57Zf380y48robyXkLzDZkdLS3k=
+
+axios@^0.21.1:
+  version "0.21.4"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.4.tgz#c67b90dc0568e5c1cf2b0b858c43ba28e2eda575"
+  integrity sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==
+  dependencies:
+    follow-redirects "^1.14.0"
 
 babel-plugin-macros@^2.6.1:
   version "2.8.0"
@@ -1506,6 +1520,11 @@ focus-lock@^0.9.1:
   integrity sha512-YtHxjX7a0IC0ZACL5wsX8QdncXofWpGPNoVMuI/nZUrPGp6LmNI6+D5j0pPj+v8Kw5EpweA+T5yImK0rnWf7oQ==
   dependencies:
     tslib "^2.0.3"
+
+follow-redirects@^1.14.0:
+  version "1.14.9"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.9.tgz#dd4ea157de7bfaf9ea9b3fbd85aa16951f78d8d7"
+  integrity sha512-MQDfihBQYMcyy5dhRDJUHcw7lb2Pv/TuE6xP1vyraLukNDHKbDxDNaOE3NbCAdKQApno+GPRyo1YAp89yCjK4w==
 
 form-data@^2.3.1:
   version "2.5.1"
