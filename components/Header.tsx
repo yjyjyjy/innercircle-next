@@ -17,6 +17,7 @@ import {
 const Header = (props) => {
   // const { isOpen, onOpen, onClose } = useDisclosure();
   // const handleToggle = () => (isOpen ? onClose() : onOpen());
+  const toast = useToast()
   const [isSubscriptionFormOpen, setIsSubscriptionFormOpen] = useState(false);
   const toggleSubscriptionFormOpen = () => {
     setIsSubscriptionFormOpen(!isSubscriptionFormOpen)
@@ -33,11 +34,31 @@ const Header = (props) => {
       }
     })
 
+    const data = await response.json()
     if (response.status === 200) {
-      console.log('success')
+      toast({
+        title: 'Success!',
+        description: `${data.email} is subscribed. You are all set!`,
+        status: 'success',
+        position: 'top',
+        variant: 'subtle',
+        duration: 5000,
+        isClosable: true,
+      })
+      setEmail('')
+      setIsSubscriptionFormOpen(false);
     } else {
-      const data = await response.json()
-      console.log(data)
+      const errMessage = data.error
+
+      toast({
+        title: 'Subscription failed.',
+        description: errMessage,
+        status: 'warning',
+        position: 'top',
+        variant: 'subtle',
+        duration: 5000,
+        isClosable: true,
+      })
     }
   }
 
