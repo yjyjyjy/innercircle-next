@@ -8,7 +8,7 @@ export default async function handler(req, res) {
     }
 
     if (!req.body.email) {
-        res.status(400).send({ error: 'request body should contain email field' })
+        res.status(400).send({ error: 'Type in your email please' })
         return
     }
 

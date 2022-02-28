@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
-import { IconButton, Input, Tooltip, useToast } from "@chakra-ui/react";
+import { IconButton, Input, Tooltip, useToast, Spinner } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { SiDiscord } from "react-icons/si";
 
@@ -23,8 +23,10 @@ const Header = (props) => {
     setIsSubscriptionFormOpen(!isSubscriptionFormOpen)
   }
   const [email, setEmail] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleSubscribe = async () => {
+    setIsLoading(true)
     const response = await fetch('/api/subscribe', {
       method: 'POST',
       body: JSON.stringify({ email }),
@@ -59,6 +61,7 @@ const Header = (props) => {
         isClosable: true,
       })
     }
+    setIsLoading(false)
   }
 
   return (
@@ -124,8 +127,8 @@ const Header = (props) => {
           </Tooltip>
 
         </Box>
-
       </Flex>
+      {/* subscription form */}
       <Stack
         direction={'column'}
         bg={'cyan.200'}
@@ -136,8 +139,8 @@ const Header = (props) => {
           direction={'row'}
           justify={'center'}
           w={"100%"}
-
           p={2}
+          alignItems={'center'}
         >
           <Input
             id={'email'}
@@ -151,6 +154,12 @@ const Header = (props) => {
             required
           />
           <Button mx={3} colorScheme={'blue'} onClick={handleSubscribe}>Subscribe</Button>
+          <Spinner
+            display={isLoading ? 'block' : 'none'}
+            position={'absolute'}
+            color='blue.500'
+            emptyColor='gray.300'
+            thickness='3px' />
         </Flex>
         <Flex justify={'center'} w='100%' color={'gray.500'}>We will never sell your data or spam you 🦄</Flex>
       </Stack>
