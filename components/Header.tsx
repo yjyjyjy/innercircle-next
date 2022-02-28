@@ -112,7 +112,7 @@ const Header = (props) => {
               />
             </a>
           </Tooltip>
-          {/* <Tooltip label={'Get an email notification when there is a new project invested by smart money investors'}>
+          <Tooltip label={'Get an email notification when there is a new project invested by smart money investors'}>
             <Button
               colorScheme="cyan.700"
               variant="outline"
@@ -121,7 +121,7 @@ const Header = (props) => {
             >
               Get Newsletter
             </Button>
-          </Tooltip> */}
+          </Tooltip>
 
         </Box>
 
