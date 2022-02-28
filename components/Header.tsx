@@ -25,7 +25,6 @@ const Header = (props) => {
   const [email, setEmail] = useState('')
 
   const handleSubscribe = async () => {
-    console.log(email)
     const response = await fetch('/api/subscribe', {
       method: 'POST',
       body: JSON.stringify({ email }),
