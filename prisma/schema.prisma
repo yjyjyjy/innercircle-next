@@ -444,3 +444,8 @@ model shadow_trade_summary {
 
   @@id([insider_id, collection_id])
 }
+
+model subscriber {
+  id    Int     @id @default(autoincrement())
+  email String? @unique(map: "subscriber_unique_idx_email") @db.VarChar
+}
