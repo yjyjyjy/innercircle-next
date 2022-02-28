@@ -24,17 +24,21 @@ export default async function handler(req, res) {
             data: { email }
         })
         res.status(200).json({ email: response.email })
+        return
+
     } catch (error) {
         console.log("🚨")
         console.log(error)
         if (!!error.code && error.code === 'P2002') {
             // violated unique restriction
             res.status(409).json({ error: 'The email has already been subscribed.' })
+            return
         }
-        // catch all for all other errors
-        res.status(400).json({
-            error: 'Something went wrong.'
-        })
+        else {
+            // catch all for all other errors
+            res.status(400).json({ error: 'Something went wrong.' })
+            return
+        }
     }
 }
 
