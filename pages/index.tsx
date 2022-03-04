@@ -8,9 +8,8 @@ import Header from "../components/Header";
 import Layout from "../components/Layout";
 import { Button, Heading, Text } from "@chakra-ui/react";
 
-// server side data fetch
-export async function getServerSideProps() {
-  // Get all foods in the "food" db
+// using get static props with periodical refresh/recache
+export async function getStaticProps() {
   const posts = await prisma.post.findMany({
     where: { created_at: { gte: new Date("2021-08-14") } },
     include: { collection: { include: { insight: true } } },
@@ -27,7 +26,8 @@ export async function getServerSideProps() {
           created_at: moment(post.created_at).format("YYYY-MM-DD")
         }
       })
-    }
+    },
+    revalidate: 600, // In seconds
   };
 }
 
