@@ -13,7 +13,7 @@ export async function getStaticProps() {
   const posts = await prisma.post.findMany({
     where: { created_at: { gte: new Date("2021-08-14") } },
     include: { collection: { include: { insight: true } } },
-    take: 25,
+    take: 90,
     orderBy: { created_at: 'desc' }
   });
 
