@@ -31,17 +31,16 @@ model collection {
   payout_address               String?                        @db.VarChar
   slug                         String?                        @db.VarChar
   collection_to_circle_mapping collection_to_circle_mapping[]
+  insider_portfolio            insider_portfolio[]
   insight                      insight[]
   insight_trx                  insight_trx[]
   post                         post?
-  shadow_trade                 shadow_trade[]
-  shadow_trade_summary         shadow_trade_summary[]
 }
 
 model collection_to_circle_mapping {
   collection_id String     @db.VarChar
   circle_id     Int
-  created_at    DateTime   @db.Date
+  started_at    DateTime   @db.Date
   circle        circle     @relation(fields: [circle_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   collection    collection @relation(fields: [collection_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
@@ -58,20 +57,6 @@ model eth_contracts {
   @@index([address], map: "eth_contracts_idx_address")
   @@index([is_nft], map: "eth_contracts_idx_is_nft")
   @@index([timestamp], map: "eth_contracts_idx_timestamp")
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
-model eth_token_transfers_2017 {
-  timestamp         DateTime? @db.Timestamp(6)
-  trx_hash          String?   @db.VarChar
-  contract          String?   @db.VarChar
-  from_address      String?   @db.VarChar
-  to_address        String?   @db.VarChar
-  token_id_or_value String?   @db.VarChar
-
-  @@index([contract], map: "eth_token_transfers_2017_idx_contract")
-  @@index([timestamp], map: "eth_token_transfers_2017_idx_timestamp")
-  @@ignore
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
@@ -162,16 +147,15 @@ model insider {
   ens                       String?                     @db.VarChar
   twitter_username          String?                     @db.VarChar
   instagram_username        String?                     @db.VarChar
+  insider_portfolio         insider_portfolio[]
   insider_to_circle_mapping insider_to_circle_mapping[]
   insight                   insight[]
   insight_trx               insight_trx[]
-  shadow_trade              shadow_trade[]
-  shadow_trade_summary      shadow_trade_summary[]
 }
 
 model insider_to_circle_mapping {
   insider_id String   @db.VarChar
-  owner_rank Int
+  owner_rank Int?
   circle_id  Int
   created_at DateTime @db.Date
   is_current Boolean
@@ -183,31 +167,31 @@ model insider_to_circle_mapping {
 }
 
 model insight {
-  insider_id      String     @db.VarChar
-  collection_id   String     @db.VarChar
-  started_at      DateTime   @db.Timestamp(6)
-  total_eth_spent Decimal    @db.Decimal
-  collection      collection @relation(fields: [collection_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  insider         insider    @relation(fields: [insider_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  insider_id       String     @db.VarChar
+  collection_id    String     @db.VarChar
+  action           String     @db.VarChar
+  num_tokens       Int
+  total_eth_amount Decimal    @db.Decimal
+  last_traded_at   DateTime   @db.Timestamp(6)
+  num_tokens_owned Int
+  collection       collection @relation(fields: [collection_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  insider          insider    @relation(fields: [insider_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@unique([insider_id, collection_id], map: "insight_unique_idx_insider_id_collection_id")
+  @@unique([insider_id, collection_id, action], map: "insight_unique_idx_insider_id_collection_id_action")
 }
 
 model insight_trx {
-  insider_id          String     @db.VarChar
-  collection_id       String     @db.VarChar
-  timestamp           DateTime   @db.Timestamp(6)
-  token_id            String     @db.VarChar
-  action              String     @db.VarChar
-  trx_hash            String     @db.VarChar
-  eth_value_per_token Decimal    @db.Decimal
-  nth_trx             Int
-  created_at          DateTime   @db.Date
-  collection          collection @relation(fields: [collection_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  insider             insider    @relation(fields: [insider_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  date               DateTime   @db.Date
+  insider_id         String     @db.VarChar(100)
+  action             String     @db.VarChar(100)
+  collection_id      String     @db.VarChar(100)
+  floor_price_in_eth Decimal?   @db.Decimal
+  num_tokens         Int
+  total_eth_amount   Decimal    @db.Decimal
+  collection         collection @relation(fields: [collection_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  insider            insider    @relation(fields: [insider_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@unique([insider_id, collection_id, token_id, nth_trx], map: "insight_trx_unique_idx_insider_id_collection_id_nth_trx")
-  @@unique([trx_hash, token_id], map: "insight_trx_unique_idx_trx_hash_token_id")
+  @@unique([date, insider_id, action, collection_id], map: "insight_trx_unique_idx")
 }
 
 model new_nft_contracts {
@@ -227,33 +211,36 @@ model nft_contract_floor_price {
   floor_price_in_eth Decimal? @db.Decimal
 
   @@id([date, contract])
+  @@index([contract, date], map: "nft_contract_floor_price_contract_date")
+  @@index([date], map: "nft_contract_floor_price_idx_date")
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 model nft_ownership {
-  contract String? @db.VarChar
-  token_id String? @db.VarChar
-  owner    String? @db.VarChar
+  contract            String    @db.VarChar
+  token_id            String    @db.VarChar
+  address             String?   @db.VarChar
+  last_transferred_at DateTime? @db.Timestamp(6)
 
+  @@id([contract, token_id])
+  @@index([address], map: "nft_ownership_idx_address")
   @@index([contract], map: "nft_ownership_idx_contract")
-  @@index([owner], map: "nft_ownership_idx_owner")
-  @@index([token_id], map: "nft_ownership_idx_token_id")
+  @@index([contract, token_id], map: "nft_ownership_idx_contract_token_id")
+  @@index([address], map: "nft_ownership_idx_owner")
   @@ignore
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 model nft_trades {
-  timestamp    DateTime? @db.Timestamp(6)
-  trx_hash     String?   @db.VarChar(100)
-  eth_value    Decimal?  @db.Decimal
-  nft_contract String?   @db.VarChar(100)
-  token_id     String?   @db.VarChar(100)
-  buyer        String?   @db.VarChar(100)
-  seller       String?   @db.VarChar(100)
-  platform     String?   @db.VarChar(50)
+  timestamp     DateTime? @db.Timestamp(6)
+  trx_hash      String    @id @db.VarChar
+  eth_value     Decimal?  @db.Decimal
+  payment_token String?   @db.VarChar
+  price         Decimal?  @db.Decimal
+  platform      String?   @db.VarChar(50)
 
-  @@index([nft_contract], map: "nft_trades_idx_nft_contract")
   @@index([timestamp], map: "nft_trades_idx_timestamp")
+  @@index([trx_hash], map: "nft_trades_idx_trx_hash")
   @@ignore
 }
 
@@ -265,29 +252,15 @@ model nft_trx_union {
   token_id                           String?   @db.VarChar
   from_address                       String?   @db.VarChar
   to_address                         String?   @db.VarChar
+  trade_platform                     String?   @db.VarChar
+  trade_payment_token                String?   @db.VarChar
   num_tokens_in_the_same_transaction Int?
-  eth_value_per_token                Decimal?  @db.Decimal
+  price_per_token                    Decimal?  @db.Decimal
   action                             String?   @db.VarChar
   caller_is_receiver                 Boolean?
 
-  @@index([action], map: "nft_trx_union_idx_action")
-  @@index([contract, token_id], map: "nft_trx_union_idx_contract_token_id")
-  @@index([from_address], map: "nft_trx_union_idx_from_address")
+  @@index([contract], map: "nft_trx_union_idx_contract")
   @@index([timestamp], map: "nft_trx_union_idx_timestamp")
-  @@index([to_address], map: "nft_trx_union_idx_to_address")
-  @@ignore
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
-model owner_collection_total_worth {
-  owner                String?  @db.VarChar
-  owner_rank           BigInt?
-  contract             String?  @db.VarChar
-  collection_worth     Decimal? @db.Decimal
-  rnk                  BigInt?
-  total_worth          Decimal? @db.Decimal
-  collection_pct_total Decimal? @db.Decimal
-
   @@ignore
 }
 
@@ -300,152 +273,160 @@ model post {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 model tmp {
-  id String? @db.VarChar
+  insider_id                   String?  @db.VarChar
+  address_rank                 BigInt?
+  contract                     String?  @db.VarChar
+  num_tokens                   BigInt?
+  floor_price_in_eth           Decimal? @db.Decimal
+  collection_worth             Decimal? @db.Decimal
+  collection_rank_in_portfolio BigInt?
+  total_worth                  Decimal? @db.Decimal
+  collection_pct_total         Decimal? @db.Decimal
 
   @@ignore
-}
-
-model shadow_trade {
-  shadow_trade_id   Int        @id @default(autoincrement())
-  insider_id        String     @db.VarChar
-  collection_id     String     @db.VarChar
-  collection_name   String?    @db.VarChar
-  token_id          String     @db.VarChar
-  entry_price       Decimal    @db.Decimal
-  entry_floor_price Decimal?   @db.Decimal
-  entry_timestamp   DateTime   @db.Timestamp(6)
-  exit_price        Decimal?   @db.Decimal
-  exit_timestamp    DateTime?  @db.Timestamp(6)
-  latest_price      Decimal    @db.Decimal
-  profit_or_loss    Decimal    @db.Decimal
-  collection        collection @relation(fields: [collection_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  insider           insider    @relation(fields: [insider_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@unique([insider_id, collection_id, token_id, entry_timestamp], map: "shadow_trade_unique_idx_insider_id_col_id_token_id_entry_ts")
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
-model tmp_collection_latest_floor_price {
-  contract           String?  @db.VarChar
-  floor_price_in_eth Decimal? @db.Decimal
-
-  @@ignore
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
-model tmp_purchase {
-  insider_id        String?   @db.VarChar
-  collection_id     String?   @db.VarChar
-  token_id          String?   @db.VarChar
-  entry_price       Decimal?  @db.Decimal
-  entry_floor_price Decimal?  @db.Decimal
-  entry_timestamp   DateTime? @db.Timestamp(6)
-
-  @@ignore
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
-model tmp_sell {
-  insider_id       String?   @db.VarChar
-  collection_id    String?   @db.VarChar
-  token_id         String?   @db.VarChar
-  exit_price       Decimal?  @db.Decimal
-  exit_floor_price Decimal?  @db.Decimal
-  exit_timestamp   DateTime? @db.Timestamp(6)
-  action           String?   @db.VarChar
-
-  @@ignore
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
-model tmp_staging {
-  insider_id        String?   @db.VarChar
-  collection_id     String?   @db.VarChar
-  token_id          String?   @db.VarChar
-  entry_price       Decimal?  @db.Decimal
-  entry_floor_price Decimal?  @db.Decimal
-  entry_timestamp   DateTime? @db.Timestamp(6)
-  exit_price        Decimal?  @db.Decimal
-  exit_timestamp    DateTime? @db.Timestamp(6)
-  latest_price      Decimal?  @db.Decimal
-  profit_or_loss    Decimal?  @db.Decimal
-  action            String?   @db.VarChar
-  rnk               BigInt?
-
-  @@ignore
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
-model wallet_realised_unrealised_gain {
-  owner                       String?  @db.VarChar
-  contract                    String?  @db.VarChar
-  wallet_total_contract_value Decimal? @db.Decimal
-  unrealised_gain             Decimal? @db.Decimal
-  realised_gain               Decimal? @db.Decimal
-  total_gain                  Decimal? @db.Decimal
-
-  @@ignore
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
-model wallet_recent_date_floor_price {
-  owner              String?   @db.VarChar
-  contract           String?   @db.VarChar
-  token_id           String?   @db.VarChar
-  date               DateTime? @db.Date
-  floor_price_in_eth Decimal?  @db.Decimal
-
-  @@ignore
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
-model wallet_recent_date_total_value {
-  owner                       String?  @db.VarChar
-  contract                    String?  @db.VarChar
-  wallet_total_contract_value Decimal? @db.Decimal
-  wallet_total_value          Decimal? @db.Decimal
-
-  @@ignore
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
-model wallet_total_buying {
-  address         String?  @db.VarChar
-  total_buy_value Decimal? @db.Decimal
-
-  @@ignore
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
-model wallet_total_profit {
-  address          String?  @db.VarChar
-  total_sell_value Decimal? @db.Decimal
-  total_buy_value  Decimal? @db.Decimal
-  profit           Decimal? @db.Decimal
-
-  @@ignore
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
-model wallet_total_selling {
-  address          String?  @db.VarChar
-  total_sell_value Decimal? @db.Decimal
-
-  @@ignore
-}
-
-model shadow_trade_summary {
-  insider_id      String     @db.VarChar
-  collection_id   String     @db.VarChar
-  entry_timestamp DateTime?  @db.Timestamp(6)
-  profit_or_loss  Decimal?   @db.Decimal
-  collection      collection @relation(fields: [collection_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  insider         insider    @relation(fields: [insider_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@id([insider_id, collection_id])
 }
 
 model subscriber {
   id    Int     @id @default(autoincrement())
   email String? @unique(map: "subscriber_unique_idx_email") @db.VarChar
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model address_collection_total_worth {
+  address              String?  @db.VarChar
+  address_rank         BigInt?
+  contract             String?  @db.VarChar
+  num_tokens           BigInt?
+  floor_price_in_eth   Decimal? @db.Decimal
+  collection_worth     Decimal? @db.Decimal
+  rnk                  BigInt?
+  total_worth          Decimal? @db.Decimal
+  collection_pct_total Decimal? @db.Decimal
+
+  @@index([address], map: "address_collection_total_worth_idx_address")
+  @@ignore
+}
+
+model address_metadata {
+  id                       String    @id @db.VarChar
+  public_name_tag          String?   @db.VarChar
+  is_contract              Boolean?
+  is_special_address       Boolean?
+  special_address_type     String?   @db.VarChar
+  opensea_user_created_at  DateTime? @db.Timestamp(6)
+  opensea_display_name     String?   @db.VarChar
+  opensea_banner_image_url String?   @db.VarChar
+  opensea_image_url        String?   @db.VarChar
+  opensea_bio              String?   @db.VarChar
+  ens                      String?   @db.VarChar
+  twitter_username         String?   @db.VarChar
+  instagram_username       String?   @db.VarChar
+  medium_username          String?   @db.VarChar
+  email                    String?   @db.VarChar
+  website                  String?   @db.VarChar
+
+  @@index([email], map: "address_metadata_idx_email")
+  @@index([is_contract], map: "address_metadata_idx_is_contract")
+  @@index([is_special_address], map: "address_metadata_idx_is_special_address")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model bkp_collection_to_circle_mapping_mar_18_2022 {
+  collection_id String?   @db.VarChar
+  circle_id     Int?
+  created_at    DateTime? @db.Date
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model bkp_post_2022_03_18 {
+  id            Int?
+  collection_id String?   @db.VarChar
+  created_at    DateTime? @db.Date
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model cet_buy {
+  address                 String?   @db.VarChar
+  date                    DateTime? @db.Date
+  contract                String?   @db.VarChar
+  token_id                String?   @db.VarChar
+  floor_price_in_eth      Decimal?  @db.Decimal
+  price_per_token         Decimal?  @db.Decimal
+  acquisition_floor_price Decimal?  @db.Decimal
+
+  @@index([address, contract, token_id], map: "buy_idx_address_contract_token_id")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model cet_sell {
+  address            String?   @db.VarChar
+  date               DateTime? @db.Date
+  contract           String?   @db.VarChar
+  token_id           String?   @db.VarChar
+  floor_price_in_eth Decimal?  @db.Decimal
+  price_per_token    Decimal?  @db.Decimal
+
+  @@index([address, contract, token_id], map: "sell_idx_address_contract_token_id")
+  @@ignore
+}
+
+model insider_portfolio {
+  insider_id                   String     @db.VarChar
+  address_rank                 Int?
+  collection_id                String     @db.VarChar
+  num_tokens                   Int
+  floor_price_in_eth           Decimal?   @db.Decimal
+  collection_worth             Decimal?   @db.Decimal
+  collection_rank_in_portfolio Int?
+  total_worth                  Decimal?   @db.Decimal
+  collection_pct_total         Decimal?   @db.Decimal
+  collection                   collection @relation(fields: [collection_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  insider                      insider    @relation(fields: [insider_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([insider_id, collection_id, num_tokens], map: "insider_portfolio_idx_unique")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model past_90_days_trading_roi {
+  address    String?  @db.VarChar
+  contract   String?  @db.VarChar
+  gain       Decimal? @db.Decimal
+  rnk        BigInt?
+  total_gain Decimal? @db.Decimal
+
+  @@index([address], map: "past_90_days_trading_roi_idx_address")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model trade_roi_flat {
+  address                 String?   @db.VarChar
+  buy_date                DateTime? @db.Date
+  contract                String?   @db.VarChar
+  token_id                String?   @db.VarChar
+  acquisition_floor_price Decimal?  @db.Decimal
+  sell_floor_price        Decimal?  @db.Decimal
+  current_floor_price     Decimal?  @db.Decimal
+  gain                    Decimal?  @db.Decimal
+
+  @@index([address], map: "trade_roi_flat_idx_address")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model trx_with_floor_price {
+  to_address         String?   @db.VarChar
+  from_address       String?   @db.VarChar
+  date               DateTime? @db.Date
+  contract           String?   @db.VarChar
+  token_id           String?   @db.VarChar
+  price_per_token    Decimal?  @db.Decimal
+  floor_price_in_eth Decimal?  @db.Decimal
+
+  @@ignore
 }
