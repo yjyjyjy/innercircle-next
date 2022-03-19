@@ -9,7 +9,10 @@ import Link from "next/link";
 
 const PostItemInsideScoop: React.FC<Props> = ({ post }) => {
   const [showTable, setShowTable] = React.useState(false);
-  const orderedInsights = [...post.collection.insight].sort((a, b) => a.total_eth_spent > b.total_eth_spent ? -1 : 1);
+  let orderedInsights = [...post.collection.insight].sort(
+    (a, b) => a.feed_importance_score > b.feed_importance_score ? -1 : 1
+  ); // desc rank by feed_importance_score. Bigger feed_importance_score rank higher
+  const action_dict = { "buy": "bought", "sell": "sold" }
   return (
     <Box mt={5}>
       <Stack
@@ -26,18 +29,24 @@ const PostItemInsideScoop: React.FC<Props> = ({ post }) => {
         <Thead>
           <Tr>
             <Th>Address</Th>
-            <Th>Total Eth Spent</Th>
-            <Th>When</Th>
+            <Th>Action</Th>
+            <Th>Num Token</Th>
+            <Th>For Eth Amount</Th>
+            <Th>Last Traded At</Th>
+            <Th>Still Owns</Th>
           </Tr>
         </Thead>
         <Tbody>
           {orderedInsights
             .slice(0, showTable ? orderedInsights.length : 3)
-            .map(({ started_at, total_eth_spent, insider_id }) => (
-              <Tr key={insider_id}>
+            .map(({ insider_id, action, num_tokens, total_eth_amount, last_traded_at, num_tokens_owned }) => (
+              <Tr key={insider_id + ':' + action}>
                 <Td><Link href={`/profile/${insider_id}`}>{`${insider_id.substring(0, 3)}...${insider_id.substring(insider_id.length - 3, insider_id.length)}`}</Link></Td>
-                <Td>{Math.round(total_eth_spent * 100) / 100} ETH</Td>
-                {/* <Td>{format(parse(started_at.substring(0, 10), "yyyy-MM-dd", new Date()), "MMM-d-yyyy")}</Td> */}
+                <Td>{action_dict[action]}</Td>
+                <Td>{num_tokens}</Td>
+                <Td>{Math.round(total_eth_amount * 100) / 100} ETH</Td>
+                <Td>{format(parse(last_traded_at.substring(0, 10), "yyyy-MM-dd", new Date()), "MMM-d-yyyy")}</Td>
+                <Td>{num_tokens_owned}</Td>
               </Tr>
             ))}
         </Tbody>

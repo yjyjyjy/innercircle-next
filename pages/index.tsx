@@ -14,7 +14,7 @@ export async function getStaticProps() {
     where: { created_at: { gte: new Date("2021-08-14") } },
     include: { collection: { include: { insight: true } } },
     take: 90,
-    orderBy: { created_at: 'desc' }
+    orderBy: { feed_importance_score: 'desc' }
   });
 
   // return { props: { posts: JSON.parse(JSON.stringify(posts)) } };
