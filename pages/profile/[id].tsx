@@ -22,37 +22,16 @@ type ShadowTrade = {
   collection_name: string;
 };
 
-// const getRandomTrade = () => {
-//   const entryDateAgo = Math.round(Math.random() * 100);
-//   const entryMoment = sub(new Date(), { days: entryDateAgo });
-//   const entryTimestamp = entryMoment.getTime();
-//   const hasClosed = Math.round(Math.random()) === 0;
-
-//   const trade: ShadowTrade = {
-//     profitOrLoss: (Math.random() - 0.5) * 3,
-//     entryTimestamp,
-//     collectionName: "Bored Ape Yacht Club",
-//   };
-//   if (hasClosed) {
-//     const closedDaysAfter = Math.round(Math.random() * 100);
-//     trade.exitTimestamp = sub(entryMoment, { days: closedDaysAfter }).getTime();
-//   }
-//   console.log(trade);
-//   return trade;
-// };
-
-// let shadowTrades = new Array(100).fill(getRandomTrade());
-// shadowTrades = shadowTrades.map((_) => getRandomTrade());
-
 // server side data fetch
 export async function getServerSideProps(context) {
   const { id } = context.query;
   const insider = await prisma.insider.findUnique({
     where: { id: id as string },
-    include: { shadow_trade_summary: true },
+    include: { insider_past_90_days_trading_roi: true },
   });
-  console.log("end");
-  // return { props: { posts: JSON.parse(JSON.stringify(posts)) } };
+  console.log('🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨')
+  console.log(insider.insider_past_90_days_trading_roi[0].buy_date)
+  console.log(new Date(insider.insider_past_90_days_trading_roi[0].buy_date).getTime())
   return {
     props: {
       insider: JSON.parse(JSON.stringify(insider)),
@@ -88,20 +67,6 @@ const dateFormatter = (timestamp: number) => {
   console.log(dateStr);
   return dateStr;
 };
-
-// const getYScale = (scale) => {
-//   var positive = scaleLog()
-//     .domain([1e-6, 1000])
-//     .range([250 / 2, 0]);
-
-//   var negative = scaleLog()
-//     .domain([-1000, -1e-6])
-//     .range([250, 250 / 2]);
-
-//   if (scale > 1e-6) return positive(scale);
-//   else if (scale < -1e-6) return negative(scale);
-//   else return 250 / 2; // zero value.
-// };
 
 const User = ({ insider }) => {
   const router = useRouter();

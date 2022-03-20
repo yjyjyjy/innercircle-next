@@ -15,26 +15,27 @@ model circle {
 }
 
 model collection {
-  id                           String                         @id @db.VarChar
-  name                         String                         @db.VarChar
-  safelist_request_status      String?                        @db.VarChar
-  description                  String?                        @db.VarChar
-  image_url                    String?                        @db.VarChar
-  banner_image_url             String?                        @db.VarChar
-  external_url                 String?                        @db.VarChar
-  twitter_username             String?                        @db.VarChar
-  discord_url                  String?                        @db.VarChar
-  telegram_url                 String?                        @db.VarChar
-  instagram_username           String?                        @db.VarChar
-  medium_username              String?                        @db.VarChar
-  wiki_url                     String?                        @db.VarChar
-  payout_address               String?                        @db.VarChar
-  slug                         String?                        @db.VarChar
-  collection_to_circle_mapping collection_to_circle_mapping[]
-  insider_portfolio            insider_portfolio[]
-  insight                      insight[]
-  insight_trx                  insight_trx[]
-  post                         post[]
+  id                               String                             @id @db.VarChar
+  name                             String                             @db.VarChar
+  safelist_request_status          String?                            @db.VarChar
+  description                      String?                            @db.VarChar
+  image_url                        String?                            @db.VarChar
+  banner_image_url                 String?                            @db.VarChar
+  external_url                     String?                            @db.VarChar
+  twitter_username                 String?                            @db.VarChar
+  discord_url                      String?                            @db.VarChar
+  telegram_url                     String?                            @db.VarChar
+  instagram_username               String?                            @db.VarChar
+  medium_username                  String?                            @db.VarChar
+  wiki_url                         String?                            @db.VarChar
+  payout_address                   String?                            @db.VarChar
+  slug                             String?                            @db.VarChar
+  collection_to_circle_mapping     collection_to_circle_mapping[]
+  insider_past_90_days_trading_roi insider_past_90_days_trading_roi[]
+  insider_portfolio                insider_portfolio[]
+  insight                          insight[]
+  insight_trx                      insight_trx[]
+  post                             post[]
 }
 
 model collection_to_circle_mapping {
@@ -143,14 +144,15 @@ model eth_transactions {
 }
 
 model insider {
-  id                        String                      @id @db.VarChar
-  ens                       String?                     @db.VarChar
-  twitter_username          String?                     @db.VarChar
-  instagram_username        String?                     @db.VarChar
-  insider_portfolio         insider_portfolio[]
-  insider_to_circle_mapping insider_to_circle_mapping[]
-  insight                   insight[]
-  insight_trx               insight_trx[]
+  id                               String                             @id @db.VarChar
+  ens                              String?                            @db.VarChar
+  twitter_username                 String?                            @db.VarChar
+  instagram_username               String?                            @db.VarChar
+  insider_past_90_days_trading_roi insider_past_90_days_trading_roi[]
+  insider_portfolio                insider_portfolio[]
+  insider_to_circle_mapping        insider_to_circle_mapping[]
+  insight                          insight[]
+  insight_trx                      insight_trx[]
 }
 
 model insider_to_circle_mapping {
@@ -280,15 +282,6 @@ model post {
   collection            collection @relation(fields: [collection_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
-model tmp {
-  id            Int?
-  collection_id String?   @db.VarChar
-  created_at    DateTime? @db.Date
-
-  @@ignore
-}
-
 model subscriber {
   id    Int     @id @default(autoincrement())
   email String? @unique(map: "subscriber_unique_idx_email") @db.VarChar
@@ -396,12 +389,16 @@ model insider_portfolio {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 model past_90_days_trading_roi {
-  address                           String?  @db.VarChar
-  contract                          String?  @db.VarChar
-  gain                              Decimal? @db.Decimal
-  collection_gain_rank_in_portfolio BigInt?
-  total_gain                        Decimal? @db.Decimal
+  address                           String   @db.VarChar(100)
+  contract                          String   @db.VarChar(100)
+  buy_date                          DateTime @db.Date
+  buy_eth_amount                    Decimal  @db.Decimal
+  gain                              Decimal  @db.Decimal
+  roi_pct                           Decimal  @db.Decimal
+  collection_gain_rank_in_portfolio Int
+  total_gain                        Decimal  @db.Decimal
 
+  @@unique([address, contract], map: "past_90_days_trading_roi_idx_address_contract")
   @@index([address], map: "past_90_days_trading_roi_idx_address")
   @@ignore
 }
@@ -412,6 +409,7 @@ model trade_roi_flat {
   buy_date                DateTime? @db.Date
   contract                String?   @db.VarChar
   token_id                String?   @db.VarChar
+  buy_eth_amount          Decimal?  @db.Decimal
   acquisition_floor_price Decimal?  @db.Decimal
   sell_floor_price        Decimal?  @db.Decimal
   current_floor_price     Decimal?  @db.Decimal
@@ -451,5 +449,30 @@ model first_acquisition {
 
   @@unique([contract, to_address], map: "first_acquisition_idx_contract_to_address")
   @@index([to_address], map: "first_acquisition_idx_to_address")
+  @@ignore
+}
+
+model insider_past_90_days_trading_roi {
+  insider_id                        String     @db.VarChar(100)
+  collection_id                     String     @db.VarChar(100)
+  buy_date                          DateTime   @db.Date
+  buy_eth_amount                    Decimal    @db.Decimal
+  gain                              Decimal    @db.Decimal
+  roi_pct                           Decimal    @db.Decimal
+  collection_gain_rank_in_portfolio Int
+  total_gain                        Decimal    @db.Decimal
+  collection                        collection @relation(fields: [collection_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  insider                           insider    @relation(fields: [insider_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([insider_id, collection_id], map: "insider_past_90_days_trading_roi_idx_address_contract")
+  @@index([insider_id], map: "insider_past_90_days_trading_roi_idx_insider_id")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model tmp {
+  collection_id         String?   @db.VarChar
+  created_at            DateTime? @db.Date
+  feed_importance_score Decimal?  @db.Decimal
+
   @@ignore
 }
