@@ -1,8 +1,6 @@
-import { useRouter } from "next/router";
 import { Heading, Text, Button, Stack } from "@chakra-ui/react";
 import Link from "next/link";
 import prisma from "../../lib/prisma";
-import moment from "moment";
 import {
   CartesianGrid,
   ReferenceLine,
@@ -10,17 +8,13 @@ import {
   ScatterChart,
   XAxis,
   YAxis,
+  ZAxis,
+  Label
 } from "recharts";
 import { add, differenceInCalendarDays, format, sub } from "date-fns";
 import { useEffect, useRef, useState } from "react";
+import { GiConsoleController } from "react-icons/gi";
 
-type ShadowTrade = {
-  //   entryPrice: number;
-  profit_or_loss: number;
-  entry_timestamp: number;
-  exit_timestamp?: number;
-  collection_name: string;
-};
 
 // server side data fetch
 export async function getServerSideProps(context) {
@@ -29,9 +23,7 @@ export async function getServerSideProps(context) {
     where: { id: id as string },
     include: { insider_past_90_days_trading_roi: true },
   });
-  console.log('🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨')
-  console.log(insider.insider_past_90_days_trading_roi[0].buy_date)
-  console.log(new Date(insider.insider_past_90_days_trading_roi[0].buy_date).getTime())
+
   return {
     props: {
       insider: JSON.parse(JSON.stringify(insider)),
@@ -39,59 +31,41 @@ export async function getServerSideProps(context) {
   };
 }
 
-const toDataPoint = (t: ShadowTrade) => {
-  return {
-    x: moment(t.entry_timestamp).unix() * 1000,
-    y: t.profit_or_loss * 100,
-  };
-};
+// const getTicks = (startDate, endDate, num) => {
+//   const diffDays = differenceInCalendarDays(endDate, startDate);
 
-const getTicks = (startDate, endDate, num) => {
-  const diffDays = differenceInCalendarDays(endDate, startDate);
+//   let current = startDate,
+//     velocity = Math.round(diffDays / (num - 1));
 
-  let current = startDate,
-    velocity = Math.round(diffDays / (num - 1));
+//   const ticks = [startDate.getTime()];
 
-  const ticks = [startDate.getTime()];
+//   for (let i = 1; i < num - 1; i++) {
+//     ticks.push(add(current, { days: i * velocity }).getTime());
+//   }
 
-  for (let i = 1; i < num - 1; i++) {
-    ticks.push(add(current, { days: i * velocity }).getTime());
-  }
-
-  ticks.push(endDate.getTime());
-  return ticks;
-};
+//   ticks.push(endDate.getTime());
+//   return ticks;
+// };
 
 const dateFormatter = (timestamp: number) => {
-  const dateStr = format(new Date(timestamp), "M/dd");
-  console.log(dateStr);
+  const dateStr = format(new Date(timestamp), "MMM/dd");
   return dateStr;
 };
 
 const User = ({ insider }) => {
-  const router = useRouter();
-  const { id } = router.query;
 
+  const { id, insider_past_90_days_trading_roi } = insider
   const ref = useRef();
-  const [graphWidth, setGraphWidth] = useState(1024);
-  const { shadow_trade_summary: shadowTrades } = insider;
 
-  const shadowTradesData = shadowTrades.map(toDataPoint);
+  const trades = insider_past_90_days_trading_roi.map(roi => ({
+    "timestamp": new Date(roi.buy_date).getTime(),
+    "roi": roi.roi_pct * 100,
+    'investment': roi.buy_eth_amount
+  }))
 
-  shadowTradesData.sort((a, b) => a.x - b.x);
-  const maxDate = Math.max(
-    ...shadowTrades.map((t) => moment(t.entry_timestamp).unix())
-  );
-  const minDate = Math.min(
-    ...shadowTrades.map((t) => moment(t.entry_timestamp).unix())
-  );
+  const maxDate = Math.max(...trades.map(t => t.timestamp)) + 86400000 * 8;
+  const minDate = Math.min(...trades.map(t => t.timestamp)) - 86400000 * 8;
 
-  const ticks = getTicks(new Date(minDate * 1000), new Date(maxDate * 1000), 5);
-  console.log(ticks);
-
-  useEffect(() => {
-    setGraphWidth(1024);
-  }, []);
 
   return (
     <Stack direction={'column'}>
@@ -99,24 +73,29 @@ const User = ({ insider }) => {
         Smart Money Wallet recent trading ROI: <br />{id}
       </Text>
       <div ref={ref}>
-        <ScatterChart
-          width={graphWidth}
-          height={300}
-          margin={{ top: 20, right: 20, bottom: 10, left: 10 }}
-        >
+        <ScatterChart width={730} height={250}
+          margin={{ top: 20, right: 20, bottom: 10, left: 10 }}>
           <CartesianGrid strokeDasharray="3 3" />
-          <ReferenceLine y="0" stroke="green" label="Break Even" />
           <XAxis
-            dataKey="x"
+            dataKey="timestamp"
             name="time"
-            scale="time"
             type="number"
-            ticks={ticks}
-            domain={[() => minDate * 1000, () => maxDate * 1000]}
+            domain={[() => minDate, () => maxDate]}
             tickFormatter={dateFormatter}
           />
-          <YAxis dataKey="y" name="% returns" unit="%" />
-          <Scatter name="Trades" data={shadowTradesData} fill="#00b5d8" />
+          <YAxis
+            dataKey="roi"
+            unit="%"
+            domain={['auto', 'auto']}
+          >
+            <Label value="Trade Return" angle={-90} offset={5} position="left" />
+          </YAxis>
+          <ZAxis dataKey="investment" range={[10, 20]} name="score" unit="km" />
+          {/*<Tooltip cursor={{ strokeDasharray: '3 3' }} />
+        <Legend /> */}
+          <ReferenceLine y="0" stroke="green" label="Break Even" strokeDasharray="3 3" alwaysShow={true} />
+          <ReferenceLine y="-100" stroke="red" label="Complete Loss" strokeDasharray="3 3" />
+          <Scatter name="A school" data={trades} fill="#8884d8" />
         </ScatterChart>
         <Link href={"/"}>
           <Button>Go Back</Button>

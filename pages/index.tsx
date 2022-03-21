@@ -13,7 +13,7 @@ export async function getStaticProps() {
   const posts = await prisma.post.findMany({
     where: { created_at: { gte: new Date("2021-08-14") } },
     include: { collection: { include: { insight: true } } },
-    take: 90,
+    take: 200,
     orderBy: { feed_importance_score: 'desc' }
   });
 
@@ -27,7 +27,7 @@ export async function getStaticProps() {
         }
       })
     },
-    revalidate: 600, // In seconds
+    revalidate: 600, // Frequency to refresh this on the server in seconds
   };
 }
 
