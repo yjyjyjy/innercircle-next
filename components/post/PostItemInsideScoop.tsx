@@ -46,7 +46,7 @@ const PostItemInsideScoop: React.FC<Props> = ({ post }) => {
               .slice(0, showTable ? orderedInsights.length : 3)
               .map(({ insider_id, action, num_tokens, total_eth_amount, last_traded_at, num_tokens_owned }) => (
                 <Tr key={insider_id + ':' + action}>
-                  <Td height={2}>
+                  <Td>
                     <Link href={`/profile/${insider_id}`} isExternal>
                       <Button variant={'link'} fontSize={['xs', 'md']}>
                         {`${insider_id.substring(0, 3)}...${insider_id.substring(insider_id.length - 3, insider_id.length)}`}
