@@ -1,4 +1,4 @@
-import { Heading, Text, Button, Stack } from "@chakra-ui/react";
+import { Heading, Text, Button, Stack, Box } from "@chakra-ui/react";
 import Link from "next/link";
 import prisma from "../../lib/prisma";
 import {
@@ -55,12 +55,13 @@ const dateFormatter = (timestamp: number) => {
 const User = ({ insider }) => {
 
   const { id, insider_past_90_days_trading_roi } = insider
-  const ref = useRef();
+  // const ref = useRef();
 
   const trades = insider_past_90_days_trading_roi.map(roi => ({
     "timestamp": new Date(roi.buy_date).getTime(),
     "roi": roi.roi_pct * 100,
-    'investment': roi.buy_eth_amount
+    'investment': roi.buy_eth_amount,
+    'total_gain': Math.round(roi.total_gain)
   }))
 
   const maxDate = Math.max(...trades.map(t => t.timestamp)) + 86400000 * 8;
@@ -69,10 +70,12 @@ const User = ({ insider }) => {
 
   return (
     <Stack direction={'column'}>
-      <Text fontSize={20} fontWeight={'bold'} py={10}>
-        Smart Money Wallet recent trading ROI: <br />{id}
+      <Text fontSize={18} fontWeight={'bold'} pt={10}>
+        Wallet Address:
       </Text>
-      <div ref={ref}>
+      <Text fontSize={15}>{id}</Text>
+      <Text fontSize={18} fontWeight={'bold'} pt={2}>Last 90 days Trading Gain: {trades[0].total_gain} ETH</Text>
+      <Box>
         <ScatterChart width={730} height={250}
           margin={{ top: 20, right: 20, bottom: 10, left: 10 }}>
           <CartesianGrid strokeDasharray="3 3" />
@@ -100,7 +103,7 @@ const User = ({ insider }) => {
         <Link href={"/"}>
           <Button>Go Back</Button>
         </Link>
-      </div>
+      </Box>
     </Stack >
   );
 };
