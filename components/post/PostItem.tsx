@@ -9,7 +9,7 @@ type Props = {
 const PostItem: React.FC<Props> = ({ post }) => {
   const createdDate = parse(post.created_at, "yyyy-MM-dd", new Date());
   return (
-    <VStack my={10}>
+    <VStack py={10}>
       {/* <Box w={"100%"} px={4} fontSize={"lg"} fontWeight={"bold"}>
         {post.created_at} - {formatDistanceToNow(createdDate)} ago
       </Box> */}

@@ -14,7 +14,7 @@ const PostItemInsideScoop: React.FC<Props> = ({ post }) => {
   ); // desc rank by feed_importance_score. Bigger feed_importance_score rank higher
   const action_dict = { "buy": "bought", "sell": "sold" }
   return (
-    <Box mt={5}>
+    <Box pt={5} maxW='100%' overflow='scroll'>
       <Stack
         direction="row"
         justifyContent="center"

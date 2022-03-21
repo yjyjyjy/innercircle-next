@@ -38,12 +38,15 @@ const PostItemCollectionInfo: React.FC<Props> = ({ post }) => {
     const [show, setShow] = React.useState(false);
     const handleToggle = () => setShow(!show);
     return (
-        <VStack my={3}>
-            <Box w={"100%"}>
+        <VStack py={3} maxW={'100%'}>
+            {/* <Box w={"100%"}>
                 <Heading as="h1" size="lg" isTruncated my={3} px={3} flex={1}>
                     {post.collection.name}
                 </Heading>
-            </Box>
+            </Box> */}
+            <Heading as='h1'>
+                {post.collection.name}
+            </Heading>
             <Box maxH={200} overflow="hidden" w={"100%"} position="relative">
                 <Image
                     src={post.collection.banner_image_url || "/default_gray.png"}
@@ -95,6 +98,7 @@ const PostItemCollectionInfo: React.FC<Props> = ({ post }) => {
                     )}
                 </Stack>
             </Flex>
+
         </VStack>
     );
 };
