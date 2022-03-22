@@ -30,6 +30,7 @@ model collection {
   wiki_url                         String?                            @db.VarChar
   payout_address                   String?                            @db.VarChar
   slug                             String?                            @db.VarChar
+  last_updated_at                  DateTime?                          @db.Timestamp(6)
   collection_to_circle_mapping     collection_to_circle_mapping[]
   insider_past_90_days_trading_roi insider_past_90_days_trading_roi[]
   insider_portfolio                insider_portfolio[]
@@ -148,6 +149,7 @@ model insider {
   ens                              String?                            @db.VarChar
   twitter_username                 String?                            @db.VarChar
   instagram_username               String?                            @db.VarChar
+  insider_metadata                 insider_metadata?
   insider_past_90_days_trading_roi insider_past_90_days_trading_roi[]
   insider_portfolio                insider_portfolio[]
   insider_to_circle_mapping        insider_to_circle_mapping[]
@@ -309,10 +311,9 @@ model address_metadata {
   is_contract              Boolean?
   is_special_address       Boolean?
   special_address_type     String?   @db.VarChar
-  opensea_user_created_at  DateTime? @db.Timestamp(6)
   opensea_display_name     String?   @db.VarChar
-  opensea_banner_image_url String?   @db.VarChar
   opensea_image_url        String?   @db.VarChar
+  opensea_banner_image_url String?   @db.VarChar
   opensea_bio              String?   @db.VarChar
   ens                      String?   @db.VarChar
   twitter_username         String?   @db.VarChar
@@ -320,6 +321,8 @@ model address_metadata {
   medium_username          String?   @db.VarChar
   email                    String?   @db.VarChar
   website                  String?   @db.VarChar
+  opensea_user_created_at  DateTime? @db.Timestamp(6)
+  last_updated_at          DateTime? @db.Timestamp(6)
 
   @@index([email], map: "address_metadata_idx_email")
   @@index([is_contract], map: "address_metadata_idx_is_contract")
@@ -346,13 +349,12 @@ model bkp_post_2022_03_18 {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 model cet_buy {
-  address                 String?   @db.VarChar
-  date                    DateTime? @db.Date
-  contract                String?   @db.VarChar
-  token_id                String?   @db.VarChar
-  floor_price_in_eth      Decimal?  @db.Decimal
-  price_per_token         Decimal?  @db.Decimal
-  acquisition_floor_price Decimal?  @db.Decimal
+  address            String?   @db.VarChar
+  date               DateTime? @db.Date
+  contract           String?   @db.VarChar
+  token_id           String?   @db.VarChar
+  floor_price_in_eth Decimal?  @db.Decimal
+  price_per_token    Decimal?  @db.Decimal
 
   @@index([address, contract, token_id], map: "buy_idx_address_contract_token_id")
   @@ignore
@@ -470,9 +472,76 @@ model insider_past_90_days_trading_roi {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 model tmp {
-  collection_id         String?   @db.VarChar
-  created_at            DateTime? @db.Date
-  feed_importance_score Decimal?  @db.Decimal
+  id                       String?   @db.VarChar
+  public_name_tag          String?   @db.VarChar
+  is_contract              Boolean?
+  is_special_address       Boolean?
+  special_address_type     String?   @db.VarChar
+  opensea_user_created_at  DateTime? @db.Timestamp(6)
+  opensea_display_name     String?   @db.VarChar
+  opensea_banner_image_url String?   @db.VarChar
+  opensea_image_url        String?   @db.VarChar
+  opensea_bio              String?   @db.VarChar
+  ens                      String?   @db.VarChar
+  twitter_username         String?   @db.VarChar
+  instagram_username       String?   @db.VarChar
+  medium_username          String?   @db.VarChar
+  email                    String?   @db.VarChar
+  website                  String?   @db.VarChar
+  last_updated_at          DateTime? @db.Timestamp(6)
 
   @@ignore
+}
+
+model address_metadata_opensea {
+  id                       String    @id @db.VarChar
+  opensea_display_name     String?   @db.VarChar
+  opensea_image_url        String?   @db.VarChar
+  opensea_banner_image_url String?   @db.VarChar
+  opensea_bio              String?   @db.VarChar
+  twitter_username         String?   @db.VarChar
+  instagram_username       String?   @db.VarChar
+  website                  String?   @db.VarChar
+  opensea_user_created_at  DateTime? @db.Timestamp(6)
+  last_updated_at          DateTime? @db.Timestamp(6)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model bkp_collection_2022_03_21 {
+  id                      String?   @db.VarChar
+  name                    String?   @db.VarChar
+  safelist_request_status String?   @db.VarChar
+  description             String?   @db.VarChar
+  image_url               String?   @db.VarChar
+  banner_image_url        String?   @db.VarChar
+  external_url            String?   @db.VarChar
+  twitter_username        String?   @db.VarChar
+  discord_url             String?   @db.VarChar
+  telegram_url            String?   @db.VarChar
+  instagram_username      String?   @db.VarChar
+  medium_username         String?   @db.VarChar
+  wiki_url                String?   @db.VarChar
+  payout_address          String?   @db.VarChar
+  slug                    String?   @db.VarChar
+  last_updated_at         DateTime? @db.Timestamp(6)
+
+  @@ignore
+}
+
+model insider_metadata {
+  insider_id               String    @id @db.VarChar
+  public_name_tag          String?   @db.VarChar
+  opensea_display_name     String?   @db.VarChar
+  opensea_image_url        String?   @db.VarChar
+  opensea_banner_image_url String?   @db.VarChar
+  opensea_bio              String?   @db.VarChar
+  ens                      String?   @db.VarChar
+  twitter_username         String?   @db.VarChar
+  instagram_username       String?   @db.VarChar
+  medium_username          String?   @db.VarChar
+  email                    String?   @db.VarChar
+  website                  String?   @db.VarChar
+  opensea_user_created_at  DateTime? @db.Timestamp(6)
+  last_updated_at          DateTime? @db.Timestamp(6)
+  insider                  insider   @relation(fields: [insider_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

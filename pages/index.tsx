@@ -7,12 +7,27 @@ import PostItem from '../components/post/PostItem'
 import Header from "../components/Header";
 import Layout from "../components/Layout";
 import { Button, Heading, Text } from "@chakra-ui/react";
+import { includes } from "lodash";
 
 // using get static props with periodical refresh/recache
 export async function getStaticProps() {
   const posts = await prisma.post.findMany({
     where: { created_at: { gte: new Date("2021-08-14") } },
-    include: { collection: { include: { insight: true } } },
+    include: {
+      collection: {
+        include: {
+          insight: {
+            include: {
+              insider: {
+                include: {
+                  insider_metadata: true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     take: 100,
     orderBy: { feed_importance_score: 'desc' }
   });
@@ -32,6 +47,7 @@ export async function getStaticProps() {
 }
 
 export default ({ posts }) => {
+  console.log(posts[0])
   return (
     <>
       <Heading py={5}>

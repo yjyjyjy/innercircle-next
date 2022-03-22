@@ -44,23 +44,33 @@ const PostItemInsideScoop: React.FC<Props> = ({ post }) => {
           <Tbody>
             {orderedInsights
               .slice(0, showTable ? orderedInsights.length : 3)
-              .map(({ insider_id, action, num_tokens, total_eth_amount, last_traded_at, num_tokens_owned }) => (
-                <Tr key={insider_id + ':' + action}>
-                  <Td>
-                    <Link href={`/profile/${insider_id}`} isExternal>
-                      <Button variant={'link'} fontSize={['xs', 'md']}>
-                        {`${insider_id.substring(0, 3)}...${insider_id.substring(insider_id.length - 3, insider_id.length)}`}
-                        <ExternalLinkIcon mx={[0, 2]} />
-                      </Button>
-                    </Link>
-                  </Td>
-                  <Td>{action_dict[action]}</Td>
-                  <Td>{num_tokens}</Td>
-                  <Td>{Math.round(total_eth_amount * 100) / 100} ETH</Td>
-                  <Td>{format(parse(last_traded_at.substring(0, 10), "yyyy-MM-dd", new Date()), "MMM-d-yyyy")}</Td>
-                  <Td>{num_tokens_owned}</Td>
-                </Tr>
-              ))}
+              .map(
+                ({
+                  insider_id,
+                  action,
+                  num_tokens,
+                  total_eth_amount,
+                  last_traded_at,
+                  num_tokens_owned,
+                  insider
+                }) => (
+                  <Tr key={insider_id + ':' + action}>
+                    <Td>
+                      <Link href={`/profile/${insider_id}`} isExternal>
+                        <Button variant={'link'} fontSize={['xs', 'md']}>
+                          {insider.insider_metadata.opensea_display_name ||
+                            `${insider_id.substring(0, 3)}...${insider_id.substring(insider_id.length - 3, insider_id.length)}`}
+                          <ExternalLinkIcon mx={[0, 2]} />
+                        </Button>
+                      </Link>
+                    </Td>
+                    <Td>{action_dict[action]}</Td>
+                    <Td>{num_tokens}</Td>
+                    <Td>{Math.round(total_eth_amount * 100) / 100} ETH</Td>
+                    <Td>{format(parse(last_traded_at.substring(0, 10), "yyyy-MM-dd", new Date()), "MMM-d-yyyy")}</Td>
+                    <Td>{num_tokens_owned}</Td>
+                  </Tr>
+                ))}
           </Tbody>
           {orderedInsights.length > 5 && (
             <TableCaption>
