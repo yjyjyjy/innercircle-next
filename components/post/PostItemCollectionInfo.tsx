@@ -38,7 +38,7 @@ const PostItemCollectionInfo: React.FC<Props> = ({ post }) => {
     const [show, setShow] = React.useState(false);
     const handleToggle = () => setShow(!show);
     return (
-        <VStack py={3} maxW={'100%'}>
+        <Flex py={3} maxW={'100%'} direction='column' overflow={'hidden'}>
             {/* <Box w={"100%"}>
                 <Heading as="h1" size="lg" isTruncated my={3} px={3} flex={1}>
                     {post.collection.name}
@@ -47,7 +47,7 @@ const PostItemCollectionInfo: React.FC<Props> = ({ post }) => {
             <Heading as='h1'>
                 {post.collection.name}
             </Heading>
-            <Box maxH={200} overflow="hidden" w={"100%"} position="relative">
+            <Box maxH={200} overflow="hidden" w={"100%"} position="relative" display={'flex'} alignItems={'center'}>
                 <Image
                     src={post.collection.banner_image_url || "/default_gray.png"}
                     alt="Collection Banner Image"
@@ -56,7 +56,6 @@ const PostItemCollectionInfo: React.FC<Props> = ({ post }) => {
             <Flex justifyContent="center">
                 {post.collection.image_url && (
                     <Box
-                        maxH={80}
                         marginTop={-20}
                         zIndex={1}
                         borderRadius={"50%"}
@@ -64,7 +63,12 @@ const PostItemCollectionInfo: React.FC<Props> = ({ post }) => {
                         border="2px"
                         borderColor={"white"}
                     >
-                        <Image src={post.collection.image_url} />
+                        <Image
+                            src={post.collection.image_url}
+                            objectFit={'cover'}
+                            width={126}
+                            height={126}
+                        />
                     </Box>
                 )}
             </Flex>
@@ -99,7 +103,7 @@ const PostItemCollectionInfo: React.FC<Props> = ({ post }) => {
                 </Stack>
             </Flex>
 
-        </VStack>
+        </Flex>
     );
 };
 
