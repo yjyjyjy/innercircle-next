@@ -1,4 +1,4 @@
-import { Link, Flex, Image, Text, Button, Stack, Box, Heading } from "@chakra-ui/react";
+import { Link, Flex, Image, Text, Button, Stack, Box, Heading, AccordionButton } from "@chakra-ui/react";
 import prisma from "../../lib/prisma";
 import {
   CartesianGrid,
@@ -60,21 +60,11 @@ const dateFormatter = (timestamp: number) => {
   return dateStr;
 };
 
-// const CustomTooltip = (payload) => {
-//   console.log(payload)
-//   return (
-//     <div >
-//       <p>FRESH</p>
-//     </div>
-//   );
-
-// }
-
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     return (
       <Box bg={'white'}>
-        <Text>Collection: {payload[0].payload.collection_name}</Text>
+        <Text>{payload[0].payload.collection_name}</Text>
         <Text>Investment: {Math.round(payload[0].payload.investment * 10) / 10} ETH</Text>
         <Text>Return: {Math.round(payload[0].payload.roi * 10) / 10} %</Text>
         <Text>Gain: {Math.round((payload[0].payload.investment * payload[0].payload.roi / 10) / 10)} ETH</Text>
@@ -91,6 +81,7 @@ const User = ({ insider }) => {
   // const ref = useRef();
   console.log(insider_past_90_days_trading_roi)
 
+
   const trades = insider_past_90_days_trading_roi.map(roi => ({
     "timestamp": new Date(roi.buy_date).getTime(),
     "roi": roi.roi_pct * 100,
@@ -103,7 +94,7 @@ const User = ({ insider }) => {
   const minDate = Math.min(...trades.map(t => t.timestamp)) - 86400000 * 8;
 
   return (
-    <Stack direction={'column'} maxW={'100%'} overflow='scroll'>
+    <Stack direction={'column'} maxW={'100%'}>
       <Flex h='120px' w='100%' direction={'row'} p={5}>
         <Box
           borderRadius={"50%"}
@@ -133,44 +124,52 @@ const User = ({ insider }) => {
         </Flex>
       </Flex>
 
-
-
-      <Text fontSize={18} fontWeight={'bold'} pt={2}>Last 90 days Trading Gain: {trades[0].total_gain} ETH</Text>
-      <Box>
-        <ScatterChart
-          width={600}
-          height={250}
-          margin={{ top: 20, right: 20, bottom: 10, left: 10 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="timestamp"
-            name="time"
-            type="number"
-            domain={[() => minDate, () => maxDate]}
-            tickFormatter={dateFormatter}
-          />
-          <YAxis
-            dataKey="roi"
-            unit="%"
-            domain={['auto', 'auto']}
+      <Flex direction={'column'} >
+        <Heading as={'h2'} fontSize={20} py={2}>
+          Last 90 Days Trading Perf.
+        </Heading>
+        <Text fontSize={16} fontWeight={'bold'}>
+          Total Gain: {trades[0].total_gain} ETH
+        </Text>
+        <Text fontSize={16} fontWeight={'bold'} pb={4}>
+          {trades.filter(t => t.roi > 0).length} out of {trades.length} trades profitable ({Math.round(trades.filter(t => t.roi > 0).length / trades.length * 1000) / 10}%)
+        </Text>
+        <Box overflow='scroll'>
+          <ScatterChart
+            width={600}
+            height={250}
+            margin={{ top: 20, right: 20, bottom: 10, left: 10 }}
           >
-            <Label value="Trade Return" angle={-90} offset={5} position="left" />
-          </YAxis>
-          <ZAxis dataKey="investment" range={[10, 20]} name="investment" unit={'ETH'} />
-          {/* <Tooltip payload={[{ name: '05-01', value: 12, unit: 'kg' }]} /> */}
-          {/* <Tooltip content={<CustomTooltip payload={payload} />} /> */}
-          <Tooltip content={<CustomTooltip payload={trades} />} />
-          {/*<Tooltip cursor={{ strokeDasharray: '3 3' }} />
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="timestamp"
+              name="time"
+              type="number"
+              domain={[() => minDate, () => maxDate]}
+              tickFormatter={dateFormatter}
+            />
+            <YAxis
+              dataKey="roi"
+              unit="%"
+              domain={['auto', 'auto']}
+            >
+              <Label value="Trade Return" angle={-90} offset={5} position="left" />
+            </YAxis>
+            <ZAxis dataKey="investment" range={[10, 20]} name="investment" unit={'ETH'} />
+            {/* <Tooltip payload={[{ name: '05-01', value: 12, unit: 'kg' }]} /> */}
+            {/* <Tooltip content={<CustomTooltip payload={payload} />} /> */}
+            <Tooltip content={<CustomTooltip payload={trades} />} />
+            {/*<Tooltip cursor={{ strokeDasharray: '3 3' }} />
         <Legend /> */}
-          <ReferenceLine y="0" stroke="green" label="Break Even" strokeDasharray="3 3" alwaysShow={true} />
-          <ReferenceLine y="-100" stroke="red" label="Complete Loss" strokeDasharray="3 3" />
-          <Scatter name="A school" data={trades} fill="#8884d8" />
-        </ScatterChart>
-        <Link href={"/"}>
-          <Button>Go Back</Button>
-        </Link>
-      </Box>
+            <ReferenceLine y="0" stroke="green" label="Break Even" strokeDasharray="3 3" alwaysShow={true} />
+            <ReferenceLine y="-100" stroke="red" label="Complete Loss" strokeDasharray="3 3" />
+            <Scatter name="A school" data={trades} fill="#8884d8" />
+          </ScatterChart>
+        </Box>
+      </Flex>
+      <Link href={"/"}>
+        <Button>Go Back</Button>
+      </Link>
     </Stack >
   );
 };
