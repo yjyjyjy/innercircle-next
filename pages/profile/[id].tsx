@@ -107,7 +107,7 @@ const User = ({ insider }) => {
           height={100}
         >
           <Image
-            src={opensea_image_url}
+            src={opensea_image_url || '/default_gray.png'} // under public folder
             objectFit={'cover'}
             width={100}
             height={100}
@@ -115,7 +115,7 @@ const User = ({ insider }) => {
         </Box>
         <Flex ml={3} direction='column'>
           <Heading as={'h2'}>
-            {opensea_display_name}
+            {opensea_display_name || 'Unnamed Address'}
           </Heading>
           <Text fontSize={15} pt={2}>
             Address: <Link
