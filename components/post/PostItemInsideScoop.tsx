@@ -64,7 +64,7 @@ const PostItemInsideScoop: React.FC<Props> = ({ post }) => {
                         </Button>
                       </Link>
                     </Td>
-                    <Td>{action_dict[action]}</Td>
+                    <Td bg={action == 'buy' ? 'green.100' : 'red.100'}>{action_dict[action]}</Td>
                     <Td>{num_tokens}</Td>
                     <Td>{Math.round(total_eth_amount * 100) / 100} ETH</Td>
                     <Td>{format(parse(last_traded_at.substring(0, 10), "yyyy-MM-dd", new Date()), "MMM-d-yyyy")}</Td>
