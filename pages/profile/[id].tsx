@@ -22,10 +22,10 @@ export async function getServerSideProps(context) {
   const { id } = context.query;
   const insider = await prisma.insider.findUnique({
     where: { id: id as string },
-    select: {
-      opensea_display_name: true,
-      opensea_image_url: true,
-      id: true,
+    include: {
+      // opensea_display_name: true,
+      // opensea_image_url: true,
+      // id: true,
       insider_past_90_days_trading_roi: {
         include: {
           collection: true
@@ -81,7 +81,7 @@ const CustomTooltip = ({ active, payload }: any) => {
 const User = ({ insider }) => {
   const { id, insider_past_90_days_trading_roi, opensea_display_name, opensea_image_url } = insider
   // const ref = useRef();
-  console.log(insider_past_90_days_trading_roi)
+  console.log(insider)
 
 
   const trades = insider_past_90_days_trading_roi.map(roi => ({
