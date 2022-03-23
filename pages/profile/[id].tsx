@@ -70,7 +70,8 @@ const CustomTooltip = ({ active, payload }: any) => {
     return (
       <Box bg={'white'}>
         <Text>{payload[0].payload.collection_name}</Text>
-        <Text>Investment: {Math.round(payload[0].payload.investment * 10) / 10} ETH</Text>
+        {/* <Text>Investment: {Math.round((Math.pow(2, payload[0].payload.investment) - 2) * 10) / 10} ETH</Text> */}
+        <Text>Investment: {Math.round((payload[0].payload.investment - 10) * 100) / 10} ETH</Text>
         <Text>Return: {Math.round(payload[0].payload.roi * 10) / 10} %</Text>
         <Text>Gain: {Math.round((payload[0].payload.investment * payload[0].payload.roi / 10) / 10)} ETH</Text>
       </Box>
@@ -79,7 +80,6 @@ const CustomTooltip = ({ active, payload }: any) => {
 
   return null;
 };
-
 
 const User = ({ insider }) => {
   const { id, insider_past_90_days_trading_roi, opensea_display_name, opensea_image_url } = insider
@@ -92,7 +92,8 @@ const User = ({ insider }) => {
   const trades = insider_past_90_days_trading_roi.map(roi => ({
     "timestamp": new Date(roi.buy_date).getTime(),
     "roi": roi.roi_pct * 100,
-    'investment': roi.buy_eth_amount,
+    // 'investment': Math.log2(roi.buy_eth_amount),
+    'investment': roi.buy_eth_amount / 10 + 10,
     'total_gain': Math.round(roi.total_gain),
     'collection_name': roi.collection.name
   }))
@@ -168,7 +169,7 @@ const User = ({ insider }) => {
             >
               <Label value="Trade Return" angle={-90} offset={5} position="left" />
             </YAxis>
-            <ZAxis dataKey="investment" range={[10, 20]} name="investment" unit={'ETH'} />
+            <ZAxis dataKey="investment" range={[30, 400]} unit={'ETH'} />
             <Tooltip content={<CustomTooltip payload={trades} />} />
             <ReferenceLine y="0" stroke="green" label="Break Even" strokeDasharray="3 3" alwaysShow={true} />
             <ReferenceLine y="-100" stroke="red" label="Complete Loss" strokeDasharray="3 3" />
