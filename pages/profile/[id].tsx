@@ -22,7 +22,10 @@ export async function getServerSideProps(context) {
   const { id } = context.query;
   const insider = await prisma.insider.findUnique({
     where: { id: id as string },
-    include: {
+    select: {
+      opensea_display_name: true,
+      opensea_image_url: true,
+      id: true,
       insider_past_90_days_trading_roi: {
         include: {
           collection: true
