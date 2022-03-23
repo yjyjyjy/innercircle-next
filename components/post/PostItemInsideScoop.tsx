@@ -58,7 +58,7 @@ const PostItemInsideScoop: React.FC<Props> = ({ post }) => {
                     <Td>
                       <Link href={`/profile/${insider_id}`} isExternal>
                         <Button variant={'link'} fontSize={['xs', 'md']}>
-                          {insider.insider_metadata.opensea_display_name ||
+                          {insider.opensea_display_name ||
                             `${insider_id.substring(0, 3)}...${insider_id.substring(insider_id.length - 3, insider_id.length)}`}
                           <ExternalLinkIcon mx={[0, 2]} />
                         </Button>

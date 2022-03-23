@@ -285,9 +285,19 @@ model first_acquisition {
 
 model insider {
   id                               String                             @id @db.VarChar
+  public_name_tag                  String?                            @db.VarChar
+  opensea_display_name             String?                            @db.VarChar
+  opensea_image_url                String?                            @db.VarChar
+  opensea_banner_image_url         String?                            @db.VarChar
+  opensea_bio                      String?                            @db.VarChar
   ens                              String?                            @db.VarChar
   twitter_username                 String?                            @db.VarChar
   instagram_username               String?                            @db.VarChar
+  medium_username                  String?                            @db.VarChar
+  email                            String?                            @db.VarChar
+  website                          String?                            @db.VarChar
+  opensea_user_created_at          DateTime?                          @db.Timestamp(6)
+  last_updated_at                  DateTime?                          @db.Timestamp(6)
   insider_metadata                 insider_metadata?
   insider_past_90_days_trading_roi insider_past_90_days_trading_roi[]
   insider_portfolio                insider_portfolio[]
@@ -490,23 +500,10 @@ model subscriber {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 model tmp {
-  id                       String?   @db.VarChar
-  public_name_tag          String?   @db.VarChar
-  is_contract              Boolean?
-  is_special_address       Boolean?
-  special_address_type     String?   @db.VarChar
-  opensea_user_created_at  DateTime? @db.Timestamp(6)
-  opensea_display_name     String?   @db.VarChar
-  opensea_banner_image_url String?   @db.VarChar
-  opensea_image_url        String?   @db.VarChar
-  opensea_bio              String?   @db.VarChar
-  ens                      String?   @db.VarChar
-  twitter_username         String?   @db.VarChar
-  instagram_username       String?   @db.VarChar
-  medium_username          String?   @db.VarChar
-  email                    String?   @db.VarChar
-  website                  String?   @db.VarChar
-  last_updated_at          DateTime? @db.Timestamp(6)
+  id                 String? @db.VarChar
+  ens                String? @db.VarChar
+  twitter_username   String? @db.VarChar
+  instagram_username String? @db.VarChar
 
   @@ignore
 }

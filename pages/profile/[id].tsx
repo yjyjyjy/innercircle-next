@@ -28,7 +28,6 @@ export async function getServerSideProps(context) {
           collection: true
         }
       },
-      insider_metadata: true
     },
   });
 
@@ -77,7 +76,7 @@ const CustomTooltip = ({ active, payload }: any) => {
 
 
 const User = ({ insider }) => {
-  const { id, insider_past_90_days_trading_roi, insider_metadata } = insider
+  const { id, insider_past_90_days_trading_roi, opensea_display_name, opensea_image_url } = insider
   // const ref = useRef();
   console.log(insider_past_90_days_trading_roi)
 
@@ -105,7 +104,7 @@ const User = ({ insider }) => {
           height={100}
         >
           <Image
-            src={insider_metadata.opensea_image_url}
+            src={opensea_image_url}
             objectFit={'cover'}
             width={100}
             height={100}
@@ -113,7 +112,7 @@ const User = ({ insider }) => {
         </Box>
         <Flex ml={3} direction='column'>
           <Heading as={'h2'}>
-            {insider_metadata.opensea_display_name}
+            {opensea_display_name}
           </Heading>
           <Text fontSize={15} pt={2}>
             Address: <Link

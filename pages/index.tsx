@@ -18,11 +18,7 @@ export async function getStaticProps() {
         include: {
           insight: {
             include: {
-              insider: {
-                include: {
-                  insider_metadata: true
-                }
-              }
+              insider: true
             }
           }
         }
