@@ -4,10 +4,7 @@ import prisma from '../lib/prisma';
 import moment from "moment";
 
 import PostItem from '../components/post/PostItem'
-import Header from "../components/Header";
-import Layout from "../components/Layout";
 import { Button, Heading, Text } from "@chakra-ui/react";
-import { includes } from "lodash";
 
 // using get static props with periodical refresh/recache
 export async function getStaticProps() {

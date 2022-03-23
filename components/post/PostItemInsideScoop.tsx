@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Button, Heading, Stack, Table, Thead, Tbody, Tr, Th, Td, TableCaption, Link } from "@chakra-ui/react";
+import { Box, Button, Heading, Stack, Table, Thead, Tbody, Tr, Th, Td, TableCaption } from "@chakra-ui/react";
 import { FaRocket } from "react-icons/fa";
 import { format, parse } from "date-fns";
 type Props = {
@@ -8,6 +8,7 @@ type Props = {
 // import NextLink from "next/link"
 // import Link from "next/link";
 import { ExternalLinkIcon } from '@chakra-ui/icons'
+import Link from "next/link";
 
 
 
@@ -56,12 +57,14 @@ const PostItemInsideScoop: React.FC<Props> = ({ post }) => {
                 }) => (
                   <Tr key={insider_id + ':' + action}>
                     <Td>
-                      <Link href={`/profile/${insider_id}`} isExternal>
-                        <Button variant={'link'} fontSize={['xs', 'md']}>
-                          {insider.opensea_display_name ||
-                            `${insider_id.substring(0, 3)}...${insider_id.substring(insider_id.length - 3, insider_id.length)}`}
-                          <ExternalLinkIcon mx={[0, 2]} />
-                        </Button>
+                      <Link href={`/profile/${insider_id}`} passHref={true}>
+                        <a target={'_blank'}>
+                          <Button variant={'link'} fontSize={['xs', 'md']}>
+                            {insider.opensea_display_name ||
+                              `${insider_id.substring(0, 3)}...${insider_id.substring(insider_id.length - 3, insider_id.length)}`}
+                            <ExternalLinkIcon mx={[0, 2]} />
+                          </Button>
+                        </a>
                       </Link>
                     </Td>
                     <Td bg={action == 'buy' ? 'green.100' : 'red.100'}>{action_dict[action]}</Td>

@@ -1,4 +1,5 @@
-import { Link, Flex, Image, Text, Button, Stack, Box, Heading, AccordionButton } from "@chakra-ui/react";
+import { Flex, Image, Text, Button, Stack, Box, Heading, Link } from "@chakra-ui/react";
+// import Link from "next/link";
 import prisma from "../../lib/prisma";
 import {
   CartesianGrid,
@@ -11,10 +12,12 @@ import {
   Label,
   Tooltip
 } from "recharts";
-import { add, differenceInCalendarDays, format, sub } from "date-fns";
-// import { useEffect, useRef, useState } from "react";
+import { format } from "date-fns";
+// import { useEffect, useState } from "react";
 // import { GiConsoleController } from "react-icons/gi";
 import { ExternalLinkIcon } from '@chakra-ui/icons'
+import { useMediaQuery } from '@chakra-ui/react'
+
 
 
 // server side data fetch
@@ -82,6 +85,8 @@ const User = ({ insider }) => {
   const { id, insider_past_90_days_trading_roi, opensea_display_name, opensea_image_url } = insider
   // const ref = useRef();
   console.log(insider)
+  const [isBigScreen] = useMediaQuery('(min-width: 500px)')
+
 
 
   const trades = insider_past_90_days_trading_roi.map(roi => ({
@@ -118,17 +123,22 @@ const User = ({ insider }) => {
             {opensea_display_name || 'Unnamed Address'}
           </Heading>
           <Text fontSize={15} pt={2}>
-            Address: <Link
-              href={`https://opensea.io/${id}`}
-              isExternal
-            >{`${id.substring(0, 3)}...${id.substring(id.length - 3, id.length)}`} <ExternalLinkIcon mx={[0, 2]} /></Link>
+            Address:
+            <a href={`https://opensea.io/${id}`} target="_blank">
+              <Button variant={'link'}>
+                {isBigScreen ? id
+                  : `${id.substring(0, 4)}...${id.substring(id.length - 3, id.length)}`
+                }
+                <ExternalLinkIcon mx={[0, 2]} />
+              </Button>
+            </a>
           </Text>
         </Flex>
       </Flex>
 
       <Flex direction={'column'} >
-        <Heading as={'h2'} fontSize={20} py={2}>
-          Last 90 Days Trading Perf.
+        <Heading as={'h2'} fontSize={20} py={3}>
+          Last 90 Days Trading Record
         </Heading>
         <Text fontSize={16} fontWeight={'bold'}>
           Total Gain: {trades[0].total_gain} ETH
@@ -139,8 +149,9 @@ const User = ({ insider }) => {
         <Box overflow='scroll'>
           <ScatterChart
             width={600}
-            height={250}
-            margin={{ top: 20, right: 20, bottom: 10, left: 10 }}
+            height={300}
+            margin={{ top: 30, right: 20, bottom: 10, left: 10 }}
+
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
@@ -158,22 +169,22 @@ const User = ({ insider }) => {
               <Label value="Trade Return" angle={-90} offset={5} position="left" />
             </YAxis>
             <ZAxis dataKey="investment" range={[10, 20]} name="investment" unit={'ETH'} />
-            {/* <Tooltip payload={[{ name: '05-01', value: 12, unit: 'kg' }]} /> */}
-            {/* <Tooltip content={<CustomTooltip payload={payload} />} /> */}
             <Tooltip content={<CustomTooltip payload={trades} />} />
-            {/*<Tooltip cursor={{ strokeDasharray: '3 3' }} />
-        <Legend /> */}
             <ReferenceLine y="0" stroke="green" label="Break Even" strokeDasharray="3 3" alwaysShow={true} />
             <ReferenceLine y="-100" stroke="red" label="Complete Loss" strokeDasharray="3 3" />
             <Scatter name="A school" data={trades} fill="#8884d8" />
           </ScatterChart>
         </Box>
       </Flex>
+
       <Link href={"/"}>
-        <Button>Go Back</Button>
+        <Button>
+          Go Back
+        </Button>
       </Link>
+
     </Stack >
   );
 };
-
+//  <ExternalLinkIcon mx={[0, 2]} />
 export default User;
