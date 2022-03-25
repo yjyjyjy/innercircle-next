@@ -4,6 +4,7 @@ import Layout from "../components/Layout";
 import Head from 'next/head'
 // import '../styles/globals.css'
 import Script from "next/script";
+import * as gtag from '../lib/gtag'
 // import { useState, useEffect } from "react";
 // import { useRouter } from "next/router";
 
@@ -33,18 +34,23 @@ const App = ({ Component, pageProps }: AppProps) => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Script
-        strategy='lazyOnload'
-        src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_GOOGLE_ANALYTICS_TAG}`} />
+        strategy="afterInteractive"
+        src={`https://www.googletagmanager.com/gtag/js?id=${gtag.GA_TRACKING_ID}`}
+      />
       <Script
-        strategy='lazyOnload'>
-        {
-          `window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-
-        gtag('config', '${process.env.NEXT_GOOGLE_ANALYTICS_TAG}');`
-        }
-      </Script>
+        id="gtag-init"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${gtag.GA_TRACKING_ID}', {
+              page_path: window.location.pathname,
+            });
+          `,
+        }}
+      />
       <Layout>
         <Component {...pageProps} />
       </Layout>
