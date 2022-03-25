@@ -84,7 +84,6 @@ const CustomTooltip = ({ active, payload }: any) => {
 const User = ({ insider }) => {
   const { id, insider_past_90_days_trading_roi, opensea_display_name, opensea_image_url } = insider
   // const ref = useRef();
-  console.log(insider)
   const [isBigScreen] = useMediaQuery('(min-width: 500px)')
 
 

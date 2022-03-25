@@ -40,7 +40,6 @@ export async function getStaticProps() {
 }
 
 export default ({ posts }) => {
-  console.log(posts[0])
   return (
     <>
       <Heading py={5}>
