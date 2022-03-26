@@ -13,7 +13,7 @@ const PostItem: React.FC<Props> = ({ post }) => {
       {/* <Box w={"100%"} px={4} fontSize={"lg"} fontWeight={"bold"}>
         {post.created_at} - {formatDistanceToNow(createdDate)} ago
       </Box> */}
-      <PostItemCollectionInfo post={post} />
+      <PostItemCollectionInfo collection={post.collection} />
       <PostItemInsideScoop post={post} />
     </VStack >
   );

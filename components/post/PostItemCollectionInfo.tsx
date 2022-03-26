@@ -5,7 +5,7 @@ import { CgWebsite } from "react-icons/cg";
 import { FaDiscord, FaInstagram, FaTwitter, FaTelegram, FaMedium, FaWikipediaW } from "react-icons/fa";
 import { GiSailboat } from "react-icons/gi";
 type Props = {
-    post: any;
+    collection: any;
 };
 const externaLinks = {
     external_url: { icon: CgWebsite, url: "", label: "Website" },
@@ -34,27 +34,22 @@ const externaLinks = {
     wiki_url: { icon: FaWikipediaW, url: "", label: "Wiki" },
 };
 
-const PostItemCollectionInfo: React.FC<Props> = ({ post }) => {
+const PostItemCollectionInfo: React.FC<Props> = ({ collection }) => {
     const [show, setShow] = React.useState(false);
     const handleToggle = () => setShow(!show);
     return (
         <Flex py={3} maxW={'100%'} direction='column' overflow={'hidden'}>
-            {/* <Box w={"100%"}>
-                <Heading as="h1" size="lg" isTruncated my={3} px={3} flex={1}>
-                    {post.collection.name}
-                </Heading>
-            </Box> */}
             <Heading as='h1'>
-                {post.collection.name}
+                {collection.name}
             </Heading>
             <Box maxH={200} overflow="hidden" w={"100%"} position="relative" display={'flex'} alignItems={'center'}>
                 <Image
-                    src={post.collection.banner_image_url || "/default_gray.png"}
+                    src={collection.banner_image_url || "/default_gray.png"}
                     alt="Collection Banner Image"
                 />
             </Box>
             <Flex justifyContent="center">
-                {post.collection.image_url && (
+                {collection.image_url && (
                     <Box
                         marginTop={-20}
                         zIndex={1}
@@ -64,7 +59,7 @@ const PostItemCollectionInfo: React.FC<Props> = ({ post }) => {
                         borderColor={"white"}
                     >
                         <Image
-                            src={post.collection.image_url}
+                            src={collection.image_url}
                             objectFit={'cover'}
                             width={126}
                             height={126}
@@ -75,7 +70,7 @@ const PostItemCollectionInfo: React.FC<Props> = ({ post }) => {
             {/* Collection description */}
             <Box pt={3} width={'100%'}>
                 <Text noOfLines={show ? 0 : 2}>
-                    <ReactMarkdown>{post.collection.description}</ReactMarkdown>
+                    <ReactMarkdown>{collection.description}</ReactMarkdown>
                 </Text>
                 <Button size="sm" onClick={handleToggle} variant={"link"}>
                     Show {show ? "Less" : "More"}
@@ -87,9 +82,9 @@ const PostItemCollectionInfo: React.FC<Props> = ({ post }) => {
                     {Object.entries(externaLinks).map(
                         ([key, { icon: IconComponent, url, label }]) => {
                             return (
-                                post.collection[key] && (
+                                collection[key] && (
                                     <Tooltip label={label}>
-                                        <a href={`${url}${post.collection[key]}`} target={"_blank"} rel="noreferrer">
+                                        <a href={`${url}${collection[key]}`} target={"_blank"} rel="noreferrer">
                                             <IconButton
                                                 aria-label={label}
                                                 icon={<IconComponent size={25} />}
