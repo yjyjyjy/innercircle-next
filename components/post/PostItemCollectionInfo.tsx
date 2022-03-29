@@ -69,9 +69,9 @@ const PostItemCollectionInfo: React.FC<Props> = ({ collection }) => {
             </Flex>
             {/* Collection description */}
             <Box pt={3} width={'100%'}>
-                <Text noOfLines={show ? 0 : 2}>
+                <Box maxHeight={show ? 500 : 14} overflow='hidden'>
                     <ReactMarkdown>{collection.description}</ReactMarkdown>
-                </Text>
+                </Box>
                 <Button size="sm" onClick={handleToggle} variant={"link"}>
                     Show {show ? "Less" : "More"}
                 </Button>

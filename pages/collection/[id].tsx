@@ -40,9 +40,8 @@ const Collection = ({ collection }) => {
           Go Back
         </Button>
       </Link>
-
     </Stack >
   );
 };
-//  <ExternalLinkIcon mx={[0, 2]} />
+
 export default Collection;
