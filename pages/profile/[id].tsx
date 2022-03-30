@@ -16,7 +16,6 @@ import { format } from "date-fns";
 // import { useEffect, useState } from "react";
 // import { GiConsoleController } from "react-icons/gi";
 import { ExternalLinkIcon } from '@chakra-ui/icons'
-import { useMediaQuery } from '@chakra-ui/react'
 import ProfilePicture from "../../components/profile/ProfilePicture";
 
 
@@ -85,7 +84,6 @@ const CustomTooltip = ({ active, payload }: any) => {
 const User = ({ insider }) => {
   const { id, insider_past_90_days_trading_roi, opensea_display_name, opensea_image_url } = insider
   // const ref = useRef();
-  const [isBigScreen] = useMediaQuery('(min-width: 500px)')
 
 
 
@@ -113,9 +111,7 @@ const User = ({ insider }) => {
             Address:
             <a href={`https://opensea.io/${id}`} target="_blank">
               <Button variant={'link'}>
-                {isBigScreen ? id
-                  : `${id.substring(0, 4)}...${id.substring(id.length - 3, id.length)}`
-                }
+                {`${id.substring(0, 4)}...${id.substring(id.length - 3, id.length)}`}
                 <ExternalLinkIcon mx={[0, 2]} />
               </Button>
             </a>

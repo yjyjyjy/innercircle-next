@@ -1,8 +1,6 @@
 import { Flex, Image, Text, Button, Stack, Box, Heading, Link } from "@chakra-ui/react";
 import prisma from "../../lib/prisma";
 import { format } from "date-fns";
-import { ExternalLinkIcon } from '@chakra-ui/icons'
-import { useMediaQuery } from '@chakra-ui/react'
 import PostItemCollectionInfo from "../../components/post/PostItemCollectionInfo";
 import PostItemInsideScoop from "../../components/post/PostItemInsideScoop";
 import CollectionBackers from "../../components/collection/CollectionBackers";

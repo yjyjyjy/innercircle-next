@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Heading, VStack, Box, Text, Grid, GridItem, Center, Image, useColorModeValue, Flex, useMediaQuery, Button } from "@chakra-ui/react";
+import { Heading, VStack, Box, Text, Grid, GridItem, useColorModeValue, Flex, Button } from "@chakra-ui/react";
 import ProfilePicture from "../profile/ProfilePicture";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 
@@ -9,14 +9,18 @@ type Props = {
 };
 const CollectionBackers: React.FC<Props> = ({ insiderCollectionOwnership }) => {
     const [showAllBackers, setShowAllBackers] = useState(false)
-    const [isBigScreen] = useMediaQuery('(min-width: 500px)')
     let orderedInsiderOwnership = [...insiderCollectionOwnership].sort(
         (a, b) => a.num_tokens > b.num_tokens ? -1 : 1
     );
     return (
         <VStack py={10}>
             <Heading as={'h2'} fontSize="x-large">Notable Collectors ({orderedInsiderOwnership.length})</Heading>
-            <Grid templateColumns={isBigScreen ? 'repeat(4, 1fr)' : 'repeat(2, 1fr)'} gap={3} py={4}>
+            <Grid
+                // templateColumns={isBigScreen ? 'repeat(4, 1fr)' : 'repeat(2, 1fr)'}
+                templateColumns={['repeat(2, 1fr)', 'repeat(4, 1fr)']}
+                gap={3}
+                py={4}
+            >
                 {orderedInsiderOwnership
                     .slice(0, showAllBackers ? orderedInsiderOwnership.length : 4)
                     .map(i =>
