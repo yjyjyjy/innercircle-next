@@ -17,6 +17,7 @@ import { format } from "date-fns";
 // import { GiConsoleController } from "react-icons/gi";
 import { ExternalLinkIcon } from '@chakra-ui/icons'
 import { useMediaQuery } from '@chakra-ui/react'
+import ProfilePicture from "../../components/profile/ProfilePicture";
 
 
 
@@ -103,21 +104,7 @@ const User = ({ insider }) => {
   return (
     <Stack direction={'column'} maxW={'100%'}>
       <Flex h='120px' w='100%' direction={'row'} p={5}>
-        <Box
-          borderRadius={"50%"}
-          overflow="hidden"
-          border="2px"
-          borderColor={"white"}
-          width={100}
-          height={100}
-        >
-          <Image
-            src={opensea_image_url || '/default_gray.png'} // under public folder
-            objectFit={'cover'}
-            width={100}
-            height={100}
-          />
-        </Box>
+        <ProfilePicture image_url={opensea_image_url} />
         <Flex ml={3} direction='column'>
           <Heading as={'h2'}>
             {opensea_display_name || 'Unnamed Address'}

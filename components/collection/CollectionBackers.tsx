@@ -1,20 +1,31 @@
 import React from "react";
-import { Heading, VStack, Link } from "@chakra-ui/react";
+import { Heading, VStack, Box, Stack, Grid, GridItem } from "@chakra-ui/react";
+import prisma from "../../lib/prisma";
+import ProfilePicture from "../profile/ProfilePicture";
+
 
 type Props = {
-    post: any;
+    insiderCollectionOwnership: any[];
 };
-const PostItem: React.FC<Props> = ({ post }) => {
+const CollectionBackers: React.FC<Props> = ({ insiderCollectionOwnership }) => {
+    console.log('YOOOOo')
+    console.log(insiderCollectionOwnership)
+    let orderedInsiderOwnership = [...insiderCollectionOwnership].sort(
+        (a, b) => a.num_tokens > b.num_tokens ? -1 : 1
+    );
     return (
         <VStack py={10}>
-            <Link href={`/collection/${post.collection.id}`} isExternal={true}>
-                <Heading as='h1'>
-                    {post.collection.name}
-                </Heading>
-            </Link>
-
+            <Heading>HEY</Heading>
+            <Grid templateColumns='repeat(3, 1fr)' gap={3}>
+                {orderedInsiderOwnership.map(i =>
+                    <GridItem key={i.insider_id}>
+                        {i.insider_id}, {i.num_tokens}
+                        <ProfilePicture image_url={i.insider.opensea_image_url} />
+                    </GridItem>
+                )}
+            </Grid>
         </VStack >
     );
 };
 
-export default PostItem;
+export default CollectionBackers;
