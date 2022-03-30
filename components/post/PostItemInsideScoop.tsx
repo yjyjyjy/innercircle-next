@@ -82,7 +82,7 @@ const PostItemInsideScoop: React.FC<Props> = ({ collection }) => {
                   setShowTable(!showTable);
                 }}
               >
-                {showTable ? "Less" : "More"}
+                {showTable ? "Show less" : "Show more"}
               </Button>
             </TableCaption>
           )}

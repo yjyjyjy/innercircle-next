@@ -41,9 +41,6 @@ const dateFormatter = (timestamp: number) => {
 };
 
 const Collection = ({ collection }) => {
-  const [isBigScreen] = useMediaQuery('(min-width: 500px)')
-  console.log(collection)
-
   return (
     <Stack mt={4} direction={'column'} maxW={'100%'}>
       <Link href={"/"}>
