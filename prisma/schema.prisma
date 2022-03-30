@@ -151,10 +151,12 @@ model collection {
   slug                             String?                            @db.VarChar
   last_updated_at                  DateTime?                          @db.Timestamp(6)
   collection_to_circle_mapping     collection_to_circle_mapping[]
+  insider_collection_ownership     insider_collection_ownership[]
   insider_past_90_days_trading_roi insider_past_90_days_trading_roi[]
   insider_portfolio                insider_portfolio[]
   insight                          insight[]
   insight_trx                      insight_trx[]
+  nft_ownership                    nft_ownership[]
   post                             post[]
 }
 
@@ -298,11 +300,27 @@ model insider {
   website                          String?                            @db.VarChar
   opensea_user_created_at          DateTime?                          @db.Timestamp(6)
   last_updated_at                  DateTime?                          @db.Timestamp(6)
+  insider_collection_ownership     insider_collection_ownership[]
   insider_past_90_days_trading_roi insider_past_90_days_trading_roi[]
   insider_portfolio                insider_portfolio[]
   insider_to_circle_mapping        insider_to_circle_mapping[]
   insight                          insight[]
   insight_trx                      insight_trx[]
+}
+
+model insider_collection_ownership {
+  insider_id                String     @db.VarChar(100)
+  collection_id             String     @db.VarChar(100)
+  num_tokens                Int?
+  oldest_token_collected_at DateTime?  @db.Timestamp(6)
+  newest_token_collected_at DateTime?  @db.Timestamp(6)
+  num_token_buy             Int?
+  num_token_sell            Int?
+  net_num_token_buy         Int?
+  collection                collection @relation(fields: [collection_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  insider                   insider    @relation(fields: [insider_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([insider_id, collection_id])
 }
 
 model insider_past_90_days_trading_roi {
@@ -408,10 +426,11 @@ model nft_contract_floor_price {
 }
 
 model nft_ownership {
-  contract            String    @db.VarChar
-  token_id            String    @db.VarChar
-  address             String?   @db.VarChar
-  last_transferred_at DateTime? @db.Timestamp(6)
+  contract            String     @db.VarChar
+  token_id            String     @db.VarChar
+  address             String?    @db.VarChar
+  last_transferred_at DateTime?  @db.Timestamp(6)
+  collection          collection @relation(fields: [contract], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_contract_collection_id")
 
   @@id([contract, token_id])
   @@index([address], map: "nft_ownership_idx_address")
@@ -477,6 +496,20 @@ model post {
 model subscriber {
   id    Int     @id @default(autoincrement())
   email String? @unique(map: "subscriber_unique_idx_email") @db.VarChar
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model tmp {
+  insider_id                String?   @db.VarChar
+  collection_id             String?   @db.VarChar
+  num_tokens                BigInt?
+  oldest_token_collected_at DateTime? @db.Timestamp(6)
+  newest_token_collected_at DateTime? @db.Timestamp(6)
+  num_token_buy             Int?
+  num_token_sell            Int?
+  net_num_token_buy         Int?
+
+  @@ignore
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.

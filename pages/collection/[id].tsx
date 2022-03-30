@@ -5,6 +5,7 @@ import { ExternalLinkIcon } from '@chakra-ui/icons'
 import { useMediaQuery } from '@chakra-ui/react'
 import PostItemCollectionInfo from "../../components/post/PostItemCollectionInfo";
 import PostItemInsideScoop from "../../components/post/PostItemInsideScoop";
+import CollectionBackers from "../../components/collection/CollectionBackers";
 
 
 
@@ -19,10 +20,13 @@ export async function getServerSideProps(context) {
           insider: true
         }
       }
+      , insider_collection_ownership: {
+        include: {
+          insider: true
+        }
+      }
     }
   });
-  console.log(id)
-  console.log(collection)
 
   return {
     props: {
@@ -37,9 +41,6 @@ const dateFormatter = (timestamp: number) => {
 };
 
 const Collection = ({ collection }) => {
-  const [isBigScreen] = useMediaQuery('(min-width: 500px)')
-  console.log(collection)
-
   return (
     <Stack mt={4} direction={'column'} maxW={'100%'}>
       <Link href={"/"}>
@@ -52,6 +53,7 @@ const Collection = ({ collection }) => {
       </Heading>
       <PostItemCollectionInfo collection={collection} />
       <PostItemInsideScoop collection={collection} />
+      <CollectionBackers insiderCollectionOwnership={collection.insider_collection_ownership} />
       <Link href={"/"}>
         <Button>
           Back to Feed
