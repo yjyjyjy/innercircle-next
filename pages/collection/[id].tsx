@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { ExternalLinkIcon } from '@chakra-ui/icons'
 import { useMediaQuery } from '@chakra-ui/react'
 import PostItemCollectionInfo from "../../components/post/PostItemCollectionInfo";
+import PostItemInsideScoop from "../../components/post/PostItemInsideScoop";
 
 
 
@@ -11,7 +12,14 @@ import PostItemCollectionInfo from "../../components/post/PostItemCollectionInfo
 export async function getServerSideProps(context) {
   const { id } = context.query;
   const collection = await prisma.collection.findUnique({
-    where: { id: id.toLowerCase() as string }
+    where: { id: id.toLowerCase() as string },
+    include: {
+      insight: {
+        include: {
+          insider: true
+        }
+      }
+    }
   });
   console.log(id)
   console.log(collection)
@@ -33,8 +41,12 @@ const Collection = ({ collection }) => {
   console.log(collection)
 
   return (
-    <Stack direction={'column'} maxW={'100%'}>
+    <Stack mt={4} direction={'column'} maxW={'100%'}>
+      <Heading as='h1'>
+        {collection.name}
+      </Heading>
       <PostItemCollectionInfo collection={collection} />
+      <PostItemInsideScoop collection={collection} />
       <Link href={"/"}>
         <Button>
           Go Back

@@ -39,9 +39,6 @@ const PostItemCollectionInfo: React.FC<Props> = ({ collection }) => {
     const handleToggle = () => setShow(!show);
     return (
         <Flex py={3} maxW={'100%'} direction='column' overflow={'hidden'}>
-            <Heading as='h1'>
-                {collection.name}
-            </Heading>
             <Box maxH={200} overflow="hidden" w={"100%"} position="relative" display={'flex'} alignItems={'center'}>
                 <Image
                     src={collection.banner_image_url || "/default_gray.png"}

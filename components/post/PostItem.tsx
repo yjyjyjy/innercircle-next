@@ -1,5 +1,6 @@
 import React from "react";
-import { Box, VStack } from "@chakra-ui/react";
+import { Heading, VStack, Link } from "@chakra-ui/react";
+// import Link from "next/link";
 import { formatDistanceToNow, parse } from "date-fns";
 import PostItemCollectionInfo from "./PostItemCollectionInfo";
 import PostItemInsideScoop from "./PostItemInsideScoop";
@@ -13,8 +14,13 @@ const PostItem: React.FC<Props> = ({ post }) => {
       {/* <Box w={"100%"} px={4} fontSize={"lg"} fontWeight={"bold"}>
         {post.created_at} - {formatDistanceToNow(createdDate)} ago
       </Box> */}
+      <Link href={`/collection/${post.collection.id}`} isExternal={true}>
+        <Heading as='h1'>
+          {post.collection.name}
+        </Heading>
+      </Link>
       <PostItemCollectionInfo collection={post.collection} />
-      <PostItemInsideScoop post={post} />
+      <PostItemInsideScoop collection={post.collection} />
     </VStack >
   );
 };

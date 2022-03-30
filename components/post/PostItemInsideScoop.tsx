@@ -3,7 +3,7 @@ import { Box, Button, Heading, Stack, Table, Thead, Tbody, Tr, Th, Td, TableCapt
 import { FaRocket } from "react-icons/fa";
 import { format, parse } from "date-fns";
 type Props = {
-  post: any;
+  collection: any;
 };
 // import NextLink from "next/link"
 // import Link from "next/link";
@@ -12,9 +12,9 @@ import Link from "next/link";
 
 
 
-const PostItemInsideScoop: React.FC<Props> = ({ post }) => {
+const PostItemInsideScoop: React.FC<Props> = ({ collection }) => {
   const [showTable, setShowTable] = React.useState(false);
-  let orderedInsights = [...post.collection.insight].sort(
+  let orderedInsights = [...collection.insight].sort(
     (a, b) => a.feed_importance_score > b.feed_importance_score ? -1 : 1
   ); // desc rank by feed_importance_score. Bigger feed_importance_score rank higher
   const action_dict = { "buy": "bought", "sell": "sold" }
