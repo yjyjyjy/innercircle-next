@@ -55,7 +55,7 @@ const CollectionBackers: React.FC<Props> = ({ insiderCollectionOwnership }) => {
                                         <Text
                                             bgColor={i.net_num_token_buy > 0 ? 'green.100' : 'red.100'}
                                             textColor={i.net_num_token_buy > 0 ? 'green' : 'red'}
-                                        >Last 3 days: {i.net_num_token_buy} {i.net_num_token_buy > 0 ? <TriangleUpIcon /> : <TriangleDownIcon />}
+                                        >Last 3d: {i.net_num_token_buy} {i.net_num_token_buy > 0 ? <TriangleUpIcon /> : <TriangleDownIcon />}
                                         </Text>}
                                 </Flex>
                             </Box>
