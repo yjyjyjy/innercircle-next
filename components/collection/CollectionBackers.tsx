@@ -50,10 +50,10 @@ const CollectionBackers: React.FC<Props> = ({ insiderCollectionOwnership }) => {
                                         maxW='100%'
                                         overflow={'hidden'}
                                     >{i.insider.opensea_display_name || 'unknown'}</Text>
-                                    <Text>Token Owned: {i.num_tokens}</Text>
+                                    <Text>Owns: {i.num_tokens}</Text>
                                     {i.net_num_token_buy !== 0 &&
                                         <Text
-                                            bgColor={i.net_num_token_buy > 0 ? 'green.100' : 'red'}
+                                            bgColor={i.net_num_token_buy > 0 ? 'green.100' : 'red.100'}
                                             textColor={i.net_num_token_buy > 0 ? 'green' : 'red'}
                                         >Last 3 days: {i.net_num_token_buy} {i.net_num_token_buy > 0 ? <TriangleUpIcon /> : <TriangleDownIcon />}
                                         </Text>}
