@@ -42,6 +42,11 @@ const Collection = ({ collection }) => {
 
   return (
     <Stack mt={4} direction={'column'} maxW={'100%'}>
+      <Link href={"/"}>
+        <Button>
+          Back to Feed
+        </Button>
+      </Link>
       <Heading as='h1'>
         {collection.name}
       </Heading>
@@ -49,7 +54,7 @@ const Collection = ({ collection }) => {
       <PostItemInsideScoop collection={collection} />
       <Link href={"/"}>
         <Button>
-          Go Back
+          Back to Feed
         </Button>
       </Link>
     </Stack >
