@@ -67,66 +67,52 @@ const Header = (props) => {
   return (
     <Flex direction={'column'}>
       <Flex
-        as="nav"
-        align="center"
-        justify="space-between"
-        wrap="wrap"
-        padding={4}
+        justifyContent='center'
         bg="cyan.500"
         color="white"
-        {...props}
       >
-        <Flex align="center" mr={5}>
-          <Heading as="h1" size="lg" letterSpacing={"tighter"}>
-            <Link href={'/'}>
-              innerCircle
-            </Link>
-          </Heading>
-        </Flex>
-
-        {/* <Box display={{ base: "block", md: "none" }} onClick={handleToggle}>
-        <GiHamburgerMenu />
-      </Box>
-
-      <Stack
-        direction={{ base: "column", md: "row" }}
-        display={{ base: isOpen ? "block" : "none", md: "flex" }}
-        width={{ base: "full", md: "auto" }}
-        alignItems="center"
-        flexGrow={1}
-        mt={{ base: 4, md: 0 }}
-      >
-        <Text>Docs</Text>
-        <Text>Examples</Text>
-        <Text>Blog</Text>
-      </Stack> */}
-
-        <Box
-        // display={{ base: isOpen ? "block" : "none", md: "block" }}
-        // mt={{ base: 4, md: 0 }}
+        <Flex
+          as="nav"
+          direction={'row'}
+          justifyContent="space-between"
+          // wrap="wrap"
+          padding={4}
+          width={'container.lg'}
+          {...props}
         >
-          <Tooltip label={'Join our Discord for product updates, future NFT mints, and hangout!'}>
-            <a href={"https://discord.gg/CBr32zf4g7"} target={"_blank"} rel="noreferrer">
-              <IconButton
-                mr={3}
-                colorScheme='cyan.700'
-                aria-label={'Discord'}
-                icon={<SiDiscord size={25} />}
-              />
-            </a>
-          </Tooltip>
-          <Tooltip label={'Get an email notification when there is a new project invested by smart money investors'}>
-            <Button
-              colorScheme="cyan.700"
-              variant="outline"
-              _hover={{ bg: "cyan.700", borderColor: "cyan.700" }}
-              onClick={toggleSubscriptionFormOpen}
-            >
-              Get Newsletter
-            </Button>
-          </Tooltip>
+          {/* <Box maxW="100%"> */}
+          <Flex align="center" mr={5}>
+            <Heading as="h1" size="lg" letterSpacing={"tighter"}>
+              <Link href={'/'}>
+                innerCircle
+              </Link>
+            </Heading>
+          </Flex>
 
-        </Box>
+          <Box>
+            <Tooltip label={'Join our Discord for product updates, future NFT mints, and hangout!'}>
+              <a href={"https://discord.gg/CBr32zf4g7"} target={"_blank"} rel="noreferrer">
+                <IconButton
+                  mr={3}
+                  colorScheme='cyan.700'
+                  aria-label={'Discord'}
+                  icon={<SiDiscord size={25} />}
+                />
+              </a>
+            </Tooltip>
+            <Tooltip label={'Get an email notification when there is a new project invested by smart money investors'}>
+              <Button
+                colorScheme="cyan.700"
+                variant="outline"
+                _hover={{ bg: "cyan.700", borderColor: "cyan.700" }}
+                onClick={toggleSubscriptionFormOpen}
+              >
+                Get Newsletter
+              </Button>
+            </Tooltip>
+
+          </Box>
+        </Flex>
       </Flex>
       {/* subscription form */}
       <Stack
@@ -163,7 +149,7 @@ const Header = (props) => {
         </Flex>
         <Flex justify={'center'} w='100%' color={'gray.500'}>We will never sell your data or spam you 🦄</Flex>
       </Stack>
-    </Flex>
+    </Flex >
   );
 };
 
