@@ -88,7 +88,17 @@ const Header = (props) => {
               </Link>
             </Heading>
           </Flex>
-
+          {/* <Stack
+            direction={{ base: "column", md: "row" }}
+            // display={{ base: isOpen ? "block" : "none", md: "flex" }}
+            width={{ base: "full", md: "auto" }}
+            alignItems="center"
+            flexGrow={1}
+            mt={{ base: 4, md: 0 }}
+          >
+            <Link href="/">Join</Link>
+            <Link href="/feed">Feed</Link>
+          </Stack> */}
           <Box>
             <Tooltip label={'Join our Discord for product updates, future NFT mints, and hangout!'}>
               <a href={"https://discord.gg/CBr32zf4g7"} target={"_blank"} rel="noreferrer">
@@ -100,7 +110,7 @@ const Header = (props) => {
                 />
               </a>
             </Tooltip>
-            <Tooltip label={'Get an email notification when there is a new project invested by smart money investors'}>
+            {/* <Tooltip label={'Get an email notification when there is a new project invested by smart money investors'}>
               <Button
                 colorScheme="cyan.700"
                 variant="outline"
@@ -109,7 +119,7 @@ const Header = (props) => {
               >
                 Get Newsletter
               </Button>
-            </Tooltip>
+            </Tooltip> */}
 
           </Box>
         </Flex>
