@@ -5,18 +5,18 @@ import ProfilePicture from "../../components/profile/ProfilePicture";
 // server side data fetch
 export async function getServerSideProps(context) {
   const { id } = context.query;
-  const user = await prisma.user_profile.findUnique({
+  const users = await prisma.user_profile.findMany({
     where: { id: id as string },
   });
 
   return {
     props: {
-      user: user,
+      users: users,
     },
   };
 }
 
-const User = ({ user }) => {
+const User = (user) => {
   const {
     id,
     handle,
@@ -55,4 +55,14 @@ const User = ({ user }) => {
   );
 };
 
-export default User;
+const ShowCaseUsers = ({ users }) => {
+  return (
+    <>
+      {users.map((user) => {
+        return User(user);
+      })}
+    </>
+  );
+};
+
+export default ShowCaseUsers;

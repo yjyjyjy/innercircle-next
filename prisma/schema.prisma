@@ -41,6 +41,9 @@ model address_metadata {
   website                  String?   @db.VarChar
   opensea_user_created_at  DateTime? @db.Timestamp(6)
   last_updated_at          DateTime? @db.Timestamp(6)
+  twitter_username_verifed Boolean?
+  twitter_follower         String?   @db.VarChar
+  discord_username         String?   @db.VarChar
 
   @@index([email], map: "address_metadata_idx_email")
   @@index([is_contract], map: "address_metadata_idx_is_contract")
@@ -150,6 +153,8 @@ model collection {
   payout_address                   String?                            @db.VarChar
   slug                             String?                            @db.VarChar
   last_updated_at                  DateTime?                          @db.Timestamp(6)
+  collection_similarity            collection_similarity[]            @ignore
+  collection_tag                   collection_tag[]                   @ignore
   collection_to_circle_mapping     collection_to_circle_mapping[]
   insider_collection_ownership     insider_collection_ownership[]
   insider_past_90_days_trading_roi insider_past_90_days_trading_roi[]
@@ -500,14 +505,9 @@ model subscriber {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 model tmp {
-  insider_id                String?   @db.VarChar
-  collection_id             String?   @db.VarChar
-  num_tokens                BigInt?
-  oldest_token_collected_at DateTime? @db.Timestamp(6)
-  newest_token_collected_at DateTime? @db.Timestamp(6)
-  num_token_buy             Int?
-  num_token_sell            Int?
-  net_num_token_buy         Int?
+  to_address String? @db.VarChar
+  address_k  String? @db.VarChar(100)
+  address_u  String? @db.VarChar(100)
 
   @@ignore
 }
@@ -539,4 +539,240 @@ model trx_with_floor_price {
   floor_price_in_eth Decimal?  @db.Decimal
 
   @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model address_social {
+  address          String?   @db.VarChar(100)
+  platform         String?   @db.VarChar(100)
+  username         String?   @db.VarChar
+  followers        Int?
+  verified_linkage Boolean?
+  real_account     Boolean?
+  last_verified_at DateTime? @db.Timestamp(6)
+
+  @@unique([address, platform, username], map: "social_account_unqiue_idx")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model bkp_address_metadata_2022_04_05 {
+  id                       String?   @db.VarChar
+  public_name_tag          String?   @db.VarChar
+  is_contract              Boolean?
+  is_special_address       Boolean?
+  special_address_type     String?   @db.VarChar
+  opensea_display_name     String?   @db.VarChar
+  opensea_image_url        String?   @db.VarChar
+  opensea_banner_image_url String?   @db.VarChar
+  opensea_bio              String?   @db.VarChar
+  ens                      String?   @db.VarChar
+  twitter_username         String?   @db.VarChar
+  instagram_username       String?   @db.VarChar
+  medium_username          String?   @db.VarChar
+  email                    String?   @db.VarChar
+  website                  String?   @db.VarChar
+  opensea_user_created_at  DateTime? @db.Timestamp(6)
+  last_updated_at          DateTime? @db.Timestamp(6)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model bkp_address_metadata_2022_04_15 {
+  id                       String?   @db.VarChar
+  public_name_tag          String?   @db.VarChar
+  is_contract              Boolean?
+  is_special_address       Boolean?
+  special_address_type     String?   @db.VarChar
+  opensea_display_name     String?   @db.VarChar
+  opensea_image_url        String?   @db.VarChar
+  opensea_banner_image_url String?   @db.VarChar
+  opensea_bio              String?   @db.VarChar
+  ens                      String?   @db.VarChar
+  twitter_username         String?   @db.VarChar
+  instagram_username       String?   @db.VarChar
+  medium_username          String?   @db.VarChar
+  email                    String?   @db.VarChar
+  website                  String?   @db.VarChar
+  opensea_user_created_at  DateTime? @db.Timestamp(6)
+  last_updated_at          DateTime? @db.Timestamp(6)
+  twitter_username_verifed Boolean?
+  twitter_follower         String?   @db.VarChar
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model collection_similarity {
+  collection_id             String?     @db.VarChar(100)
+  counterpart_collection_id String?     @db.VarChar(100)
+  similarity                Decimal?    @db.Decimal
+  collection                collection? @relation(fields: [collection_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([collection_id, counterpart_collection_id], map: "collection_similarity_unique_idx_collection_id_counterpart_coll")
+  @@index([collection_id], map: "collection_similarity_idx_collection_id")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model collection_tag {
+  collection_id String?     @db.VarChar(100)
+  tag           String?     @db.VarChar(500)
+  collection    collection? @relation(fields: [collection_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([collection_id, tag], map: "collection_tag_unique_idx_collection_id_tag")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model eth_token_transfers_2022_staging {
+  timestamp         DateTime? @db.Timestamp(6)
+  trx_hash          String?   @db.VarChar
+  contract          String?   @db.VarChar
+  from_address      String?   @db.VarChar
+  to_address        String?   @db.VarChar
+  token_id_or_value String?   @db.VarChar
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model export_blockie_top_collectors {
+  address          String?  @db.VarChar
+  address_rank     BigInt?
+  total_worth      Decimal? @db.Decimal
+  platform         String?  @db.VarChar(100)
+  username         String?  @db.VarChar
+  followers        Int?
+  real_account     Boolean?
+  verified_linkage Boolean?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model export_top_1k_vol_nft_collectors_instagram {
+  instagram String? @db.VarChar
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model export_top_1k_vol_nft_collectors_twitter {
+  twitter String? @db.VarChar
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model export_tribe_x_overlap {
+  contract           String? @db.VarChar
+  num_owners         BigInt?
+  name               String? @db.VarChar
+  description        String? @db.VarChar
+  external_url       String? @db.VarChar
+  twitter_username   String? @db.VarChar
+  instagram_username String? @db.VarChar
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model export_wallstreetfam {
+  address                                 String?  @db.VarChar(100)
+  discord                                 String?  @db.VarChar
+  twitter                                 String?  @db.VarChar
+  real_account                            Boolean?
+  followers                               Int?
+  total_worth                             Decimal? @db.Decimal
+  top_collection_name                     String?  @db.VarChar
+  top_collection_worth                    Decimal? @db.Decimal
+  top_collection_num_tokens               BigInt?
+  top_collection_worth_as_pct_total_worth Decimal? @db.Decimal
+  top_collection_contract_address         String?  @db.VarChar
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model export_wsf_top_1k_projects {
+  twitter String? @db.VarChar
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model export_wsf_utility_nft_buyers {
+  username String? @db.VarChar
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model export_wsf_utility_nft_buyers_instagram {
+  username String? @db.VarChar
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model import_premint_xyz {
+  wallet_address              String?   @db.VarChar
+  ip_address_hash             String?   @db.VarChar
+  discord_username            String?   @db.VarChar
+  discord_id                  BigInt?
+  twitter_username            String?   @db.VarChar
+  twitter_id                  BigInt?
+  create_time                 DateTime? @db.Timestamp(6)
+  eth_balance_at_registration Decimal?  @db.Decimal
+  collab                      String?   @db.VarChar
+  custom_field                String?   @db.VarChar
+  listname                    String?   @db.VarChar
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model import_wallstreetfam {
+  wallet_address              String?   @db.VarChar(100)
+  ip_address_hash             String?   @db.VarChar(100)
+  discord_username            String?   @db.VarChar(200)
+  discord_id                  BigInt?
+  twitter_username            String?   @db.VarChar(200)
+  twitter_id                  BigInt?
+  create_time                 DateTime? @db.Timestamp(6)
+  eth_balance_at_registration Decimal?  @db.Decimal
+  collab                      String?   @db.VarChar(200)
+  custom_field                String?   @db.VarChar(200)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model upload_twitter_profile {
+  twitter_username String?   @unique(map: "upload_twitter_profile_idx_twitter_username") @db.VarChar
+  verified         Boolean?
+  followers        String?   @db.VarChar
+  last_verified_at DateTime? @db.Timestamp(6)
+
+  @@ignore
+}
+
+model user_profile {
+  id              String   @id @db.VarChar
+  handle          String   @unique(map: "user_profile_unique_idx_handle") @db.VarChar
+  profile_name    String   @db.VarChar
+  email           String   @db.VarChar
+  twitter         String?  @db.VarChar
+  linkedin        String?  @db.VarChar
+  bio             String?  @db.VarChar
+  look_for        String?  @db.VarChar
+  skills          String?  @db.VarChar
+  hiring          Boolean?
+  open_to_work    Boolean?
+  on_core_team    Boolean?
+  open_to_invest  Boolean?
+  profile_picture String?  @db.VarChar
+  resume          String?  @db.VarChar
 }
