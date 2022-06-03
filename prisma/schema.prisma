@@ -775,22 +775,26 @@ model user_profile {
   open_to_invest  Boolean?
   profile_picture String?  @db.VarChar
   resume          String?  @db.VarChar
+
+  //TODO User.id should be added as a foreign key here
+  userId String @db.VarChar
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 //NextAuth - Prisma Adapter Models
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -806,13 +810,14 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String         @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?        @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
+  user_profile  user_profile[]
 }
 
 model VerificationToken {

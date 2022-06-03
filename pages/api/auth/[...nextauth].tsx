@@ -18,8 +18,8 @@ export default NextAuth({
     GoogleProvider({
       clientId:
         "1008494238652-vned4rr72j9vh3u7g8ql27nuulgqiuq9.apps.googleusercontent.com",
-      clientSecret: "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",
+      clientSecret: "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",
     }),
   ],
-  //TODO When working. Add a secret
+  secret: "244642dc9eb49958c0501bbeb197e83b",
 });

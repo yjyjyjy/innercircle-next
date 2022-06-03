@@ -6,28 +6,18 @@ import {
   Tooltip,
   useToast,
   Spinner,
-  useDisclosure,
   Box,
   Stack,
   Heading,
   Flex,
-  Text,
   Button,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
 import { SiDiscord } from "react-icons/si";
 import { useSession, signIn, signOut } from "next-auth/react";
 
 const Header: React.FC = (props) => {
   const { data: session, status } = useSession();
-  console.log("session: ", session);
-  console.log("status: ", status);
-
-  const toast = useToast();
   const [isSubscriptionFormOpen, setIsSubscriptionFormOpen] = useState(false);
-  const toggleSubscriptionFormOpen = () => {
-    setIsSubscriptionFormOpen(!isSubscriptionFormOpen);
-  };
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,28 +33,15 @@ const Header: React.FC = (props) => {
           as="nav"
           direction={"row"}
           justifyContent="space-between"
-          // wrap="wrap"
           padding={4}
           width={"container.lg"}
           {...props}
         >
-          {/* <Box maxW="100%"> */}
           <Flex align="center" mr={5}>
             <Heading as="h1" size="lg" letterSpacing={"tighter"}>
               <Link href={"/"}>innerCircle</Link>
             </Heading>
           </Flex>
-          {/* <Stack
-            direction={{ base: "column", md: "row" }}
-            // display={{ base: isOpen ? "block" : "none", md: "flex" }}
-            width={{ base: "full", md: "auto" }}
-            alignItems="center"
-            flexGrow={1}
-            mt={{ base: 4, md: 0 }}
-          >
-            <Link href="/">Join</Link>
-            <Link href="/feed">Feed</Link>
-          </Stack> */}
           <Box>
             <Tooltip
               label={

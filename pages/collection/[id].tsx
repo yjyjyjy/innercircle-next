@@ -4,7 +4,6 @@ import PostItemCollectionInfo from "../../components/post/PostItemCollectionInfo
 import PostItemInsideScoop from "../../components/post/PostItemInsideScoop";
 import CollectionBackers from "../../components/collection/CollectionBackers";
 import { GetServerSideProps } from "next";
-import { Prisma } from "@prisma/client";
 
 // server side data fetch
 export const getServerSideProps: GetServerSideProps = async (context) => {
