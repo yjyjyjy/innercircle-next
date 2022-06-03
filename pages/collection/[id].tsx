@@ -9,12 +9,21 @@ import { GetServerSideProps } from "next";
 // server side data fetch
 export const getServerSideProps: GetServerSideProps = async (context) => {
   let { id } = context.query;
+
+  //Ensure its a string
   if (typeof id === "object") {
     id = id[0];
   }
 
+  //Ensure id is defined
+  if (!id) {
+    return {
+      props: {},
+    };
+  }
+
   const collection = await prisma.collection.findUnique({
-    where: { id: id.toLowerCase() as string },
+    where: { id: v },
     include: {
       insight: {
         include: {
@@ -34,11 +43,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       collection: JSON.parse(JSON.stringify(collection)),
     },
   };
-};
-
-const dateFormatter = (timestamp: number) => {
-  const dateStr = format(new Date(timestamp), "MMM/dd");
-  return dateStr;
 };
 
 const Collection = ({ collection }) => {
