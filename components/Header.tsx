@@ -18,7 +18,7 @@ import { useRouter } from "next/router";
 import { SiDiscord } from "react-icons/si";
 import { useSession, signIn, signOut } from "next-auth/react";
 
-const Header = (props) => {
+const Header: React.FC = (props) => {
   const { data: session, status } = useSession();
   console.log("session: ", session);
   console.log("status: ", status);
@@ -30,45 +30,6 @@ const Header = (props) => {
   };
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubscribe = async () => {
-    setIsLoading(true);
-    const response = await fetch("/api/subscribe", {
-      method: "POST",
-      body: JSON.stringify({ email }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const data = await response.json();
-    if (response.status === 200) {
-      toast({
-        title: "Success!",
-        description: `${data.email} is subscribed. You are all set!`,
-        status: "success",
-        position: "top",
-        variant: "subtle",
-        duration: 5000,
-        isClosable: true,
-      });
-      setEmail("");
-      setIsSubscriptionFormOpen(false);
-    } else {
-      const errMessage = data.error;
-
-      toast({
-        title: "Subscription failed.",
-        description: errMessage,
-        status: "warning",
-        position: "top",
-        variant: "subtle",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-    setIsLoading(false);
-  };
 
   console.log("Session: ", session);
 
@@ -126,11 +87,11 @@ const Header = (props) => {
           </Box>
           <Box>
             {session ? (
-              <Button mx={3} colorScheme={"blue"} onClick={signOut}>
+              <Button mx={3} colorScheme={"blue"} onClick={() => signOut()}>
                 Sign Out
               </Button>
             ) : (
-              <Button mx={3} colorScheme={"blue"} onClick={signIn}>
+              <Button mx={3} colorScheme={"blue"} onClick={() => signIn()}>
                 Sign In
               </Button>
             )}
@@ -164,9 +125,6 @@ const Header = (props) => {
             aria-label={"Your Email"}
             required
           />
-          <Button mx={3} colorScheme={"blue"} onClick={handleSubscribe}>
-            Subscribe
-          </Button>
           <Spinner
             display={isLoading ? "block" : "none"}
             position={"absolute"}

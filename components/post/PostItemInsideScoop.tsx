@@ -1,5 +1,17 @@
 import React from "react";
-import { Box, Button, Heading, Stack, Table, Thead, Tbody, Tr, Th, Td, TableCaption } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Heading,
+  Stack,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableCaption,
+} from "@chakra-ui/react";
 import { FaRocket } from "react-icons/fa";
 import { format, parse } from "date-fns";
 type Props = {
@@ -7,19 +19,17 @@ type Props = {
 };
 // import NextLink from "next/link"
 // import Link from "next/link";
-import { ExternalLinkIcon } from '@chakra-ui/icons'
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import Link from "next/link";
-
-
 
 const PostItemInsideScoop: React.FC<Props> = ({ collection }) => {
   const [showTable, setShowTable] = React.useState(false);
-  let orderedInsights = [...collection.insight].sort(
-    (a, b) => a.feed_importance_score > b.feed_importance_score ? -1 : 1
+  let orderedInsights = [...collection.insight].sort((a, b) =>
+    a.feed_importance_score > b.feed_importance_score ? -1 : 1
   ); // desc rank by feed_importance_score. Bigger feed_importance_score rank higher
-  const action_dict = { "buy": "bought", "sell": "sold" }
+
   return (
-    <Box py={5} maxW='100%' overflow='scroll'>
+    <Box py={5} maxW="100%" overflow="scroll">
       <Stack
         direction="row"
         justifyContent="center"
@@ -30,10 +40,15 @@ const PostItemInsideScoop: React.FC<Props> = ({ collection }) => {
         <Heading fontSize="x-large">Inside Scoop</Heading>
         <FaRocket />
       </Stack>
-      <Box overflowX={'auto'}>
-        <Table variant="simple" colorScheme={'facebook'} fontSize={['xs', 'md']} size={'sm'}>
+      <Box overflowX={"auto"}>
+        <Table
+          variant="simple"
+          colorScheme={"facebook"}
+          fontSize={["xs", "md"]}
+          size={"sm"}
+        >
           <Thead>
-            <Tr >
+            <Tr>
               <Th>Address</Th>
               <Th>Action</Th>
               <Th>Num Token</Th>
@@ -53,27 +68,45 @@ const PostItemInsideScoop: React.FC<Props> = ({ collection }) => {
                   total_eth_amount,
                   last_traded_at,
                   num_tokens_owned,
-                  insider
+                  insider,
                 }) => (
-                  <Tr key={insider_id + ':' + action}>
+                  <Tr key={insider_id + ":" + action}>
                     <Td>
                       <Link href={`/profile/${insider_id}`} passHref={true}>
-                        <a target={'_blank'}>
-                          <Button variant={'link'} fontSize={['xs', 'md']}>
+                        <a target={"_blank"}>
+                          <Button variant={"link"} fontSize={["xs", "md"]}>
                             {insider.opensea_display_name ||
-                              `${insider_id.substring(0, 3)}...${insider_id.substring(insider_id.length - 3, insider_id.length)}`}
+                              `${insider_id.substring(
+                                0,
+                                3
+                              )}...${insider_id.substring(
+                                insider_id.length - 3,
+                                insider_id.length
+                              )}`}
                             <ExternalLinkIcon mx={[0, 2]} />
                           </Button>
                         </a>
                       </Link>
                     </Td>
-                    <Td bg={action == 'buy' ? 'green.100' : 'red.100'}>{action_dict[action]}</Td>
+                    <Td bg={action == "buy" ? "green.100" : "red.100"}>
+                      {action == "buy" ? "bought" : "sold"}
+                    </Td>
                     <Td>{num_tokens}</Td>
                     <Td>{Math.round(total_eth_amount * 100) / 100} ETH</Td>
-                    <Td>{format(parse(last_traded_at.substring(0, 10), "yyyy-MM-dd", new Date()), "MMM-d-yyyy")}</Td>
+                    <Td>
+                      {format(
+                        parse(
+                          last_traded_at.substring(0, 10),
+                          "yyyy-MM-dd",
+                          new Date()
+                        ),
+                        "MMM-d-yyyy"
+                      )}
+                    </Td>
                     <Td>{num_tokens_owned}</Td>
                   </Tr>
-                ))}
+                )
+              )}
           </Tbody>
           {orderedInsights.length > 5 && (
             <TableCaption>
@@ -88,7 +121,7 @@ const PostItemInsideScoop: React.FC<Props> = ({ collection }) => {
           )}
         </Table>
       </Box>
-    </Box >
+    </Box>
   );
 };
 
