@@ -2,26 +2,49 @@ import { Flex, Text, Stack, Heading } from '@chakra-ui/react'
 import prisma from '../../lib/prisma'
 import ProfilePicture from '../../components/profile/ProfilePicture'
 import { getSession } from 'next-auth/react'
+import { Session } from 'next-auth'
+
+interface ESession extends Session {
+   userID: string
+}
+
+type EGetSession = ESession | null
 
 // server side data fetch
 export async function getServerSideProps(context) {
-   const session = await getSession()
-   const userId = session?.id
+   console.log('On My Profile')
+
+   const session = (await getSession(context)) as EGetSession
+   console.log('session from my_profile: ', session)
+
+   //If you haven't logged in, you can't view your profile
+   if (!session) {
+      return {
+         props: {
+            users: [],
+         },
+      }
+   }
+
+   const userID = session.userID ? session.userID : ''
+   console.log('session from my_profile: ', session)
 
    const user = await prisma.user_profile.findUnique({
-      where: { id: userId as string },
+      where: {
+         user_id: userID,
+      },
    })
 
    return {
       props: {
-         users: user,
+         user: user,
       },
    }
 }
 
-const User = (user) => {
+const User = ({ user }) => {
    const {
-      id,
+      user_id,
       handle,
       profile_name,
       email,
@@ -58,14 +81,4 @@ const User = (user) => {
    )
 }
 
-const MyProfile = ({ users }) => {
-   return (
-      <>
-         {users.map((user) => {
-            return User(user)
-         })}
-      </>
-   )
-}
-
-export default MyProfile
+export default User

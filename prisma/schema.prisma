@@ -505,9 +505,21 @@ model subscriber {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 model tmp {
-  to_address String? @db.VarChar
-  address_k  String? @db.VarChar(100)
-  address_u  String? @db.VarChar(100)
+  id              String?  @db.VarChar
+  handle          String?  @db.VarChar
+  profile_name    String?  @db.VarChar
+  email           String?  @db.VarChar
+  twitter         String?  @db.VarChar
+  linkedin        String?  @db.VarChar
+  bio             String?  @db.VarChar
+  look_for        String?  @db.VarChar
+  skills          String?  @db.VarChar
+  hiring          Boolean?
+  open_to_work    Boolean?
+  on_core_team    Boolean?
+  open_to_invest  Boolean?
+  profile_picture String?  @db.VarChar
+  resume          String?  @db.VarChar
 
   @@ignore
 }
@@ -760,7 +772,7 @@ model upload_twitter_profile {
 }
 
 model user_profile {
-  id              String   @id @db.VarChar
+  user_id         String   @unique(map: "user_profile_unique_idx_user_id") @db.VarChar
   handle          String   @unique(map: "user_profile_unique_idx_handle") @db.VarChar
   profile_name    String   @db.VarChar
   email           String   @db.VarChar
@@ -775,28 +787,23 @@ model user_profile {
   open_to_invest  Boolean?
   profile_picture String?  @db.VarChar
   resume          String?  @db.VarChar
-
-  //TODO User.id should be added as a foreign key here
-  userId String @db.VarChar
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            User     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
-//NextAuth - Prisma Adapter Models
 model Account {
   id                String  @id @default(cuid())
   userId            String
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -810,14 +817,14 @@ model Session {
 }
 
 model User {
-  id            String         @id @default(cuid())
+  id            String        @id @default(cuid())
   name          String?
-  email         String?        @unique
+  email         String?       @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
-  user_profile  user_profile[]
+  user_profile  user_profile?
 }
 
 model VerificationToken {
