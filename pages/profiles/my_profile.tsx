@@ -4,6 +4,16 @@ import ProfilePicture from '../../components/profile/ProfilePicture'
 import { getSession } from 'next-auth/react'
 import { Session } from 'next-auth'
 
+// DB design:
+// user to profile mapping should be many to one. Each log in creates a new user. But multiple users can be tied to the same profile.
+// We will provide email log in and Google log in only. So they are both tied to email. and that will serve as a join key to find profiles.
+
+// TODO
+// 1. query the profiles table for the profile that is tied to the current logged in user.
+// 2. create a profile if there is none. redirect to the profile editing page.
+// 3. create the editing page. See design at page 1 in https://www.figma.com/file/Lkv9SVkA7wSKVYBEiMO5OI/Untitled?node-id=0%3A1
+// 4. Auto save or submit to update the profile page in the backend.
+
 interface ESession extends Session {
    userID: string
 }

@@ -4,9 +4,7 @@ import ProfilePicture from "../../components/profile/ProfilePicture";
 
 // server side data fetch
 export async function getServerSideProps(context) {
-  const { id } = context.query;
   const users = await prisma.user_profile.findMany({
-    where: { id: id as string },
   });
 
   return {

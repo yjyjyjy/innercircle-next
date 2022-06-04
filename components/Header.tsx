@@ -45,7 +45,7 @@ const Header: React.FC = (props) => {
                <Box>
                   <Tooltip
                      label={
-                        'Join our Discord for product updates, future NFT mints, and hangout!'
+                        'Got opinions on what should be built? Join our Discord! Also, token drop in the future!'
                      }
                   >
                      <a
@@ -83,45 +83,6 @@ const Header: React.FC = (props) => {
                </Box>
             </Flex>
          </Flex>
-         {/* subscription form */}
-         <Stack
-            direction={'column'}
-            bg={'cyan.200'}
-            w={'100%'}
-            display={isSubscriptionFormOpen ? 'block' : 'none'}
-         >
-            <Flex
-               direction={'row'}
-               justify={'center'}
-               w={'100%'}
-               p={2}
-               alignItems={'center'}
-            >
-               <Input
-                  id={'email'}
-                  type={'email'}
-                  placeholder={'Your Email'}
-                  variant={'solid'}
-                  maxW={'50%'}
-                  value={email}
-                  onChange={(e) => {
-                     setEmail(e.target.value)
-                  }}
-                  aria-label={'Your Email'}
-                  required
-               />
-               <Spinner
-                  display={isLoading ? 'block' : 'none'}
-                  position={'absolute'}
-                  color="blue.500"
-                  emptyColor="gray.300"
-                  thickness="3px"
-               />
-            </Flex>
-            <Flex justify={'center'} w="100%" color={'gray.500'}>
-               We will never sell your data or spam you 🦄
-            </Flex>
-         </Stack>
       </Flex>
    )
 }
