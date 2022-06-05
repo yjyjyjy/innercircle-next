@@ -772,22 +772,22 @@ model upload_twitter_profile {
 }
 
 model user_profile {
-  id                           Int                            @id @default(autoincrement())
-  handle                       String                         @unique(map: "user_profile_unique_idx_handle") @db.VarChar
-  profile_name                 String                         @db.VarChar
-  email                        String                         @db.VarChar
-  twitter                      String?                        @db.VarChar
-  linkedin                     String?                        @db.VarChar
-  bio                          String?                        @db.VarChar
-  look_for                     String?                        @db.VarChar
-  skills                       String?                        @db.VarChar
-  hiring                       Boolean?
-  open_to_work                 Boolean?
-  on_core_team                 Boolean?
-  open_to_invest               Boolean?
-  profile_picture              String?                        @db.VarChar
-  resume                       String?                        @db.VarChar
-  user_to_user_profile_mapping user_to_user_profile_mapping[]
+  id              Int      @id @default(autoincrement())
+  handle          String   @unique(map: "user_profile_unique_idx_handle") @db.VarChar
+  profile_name    String   @db.VarChar
+  email           String   @unique(map: "user_profile_unique_idx_email") @db.VarChar
+  twitter         String?  @db.VarChar
+  linkedin        String?  @db.VarChar
+  bio             String?  @db.VarChar
+  look_for        String?  @db.VarChar
+  skills          String?  @db.VarChar
+  hiring          Boolean?
+  open_to_work    Boolean?
+  on_core_team    Boolean?
+  open_to_invest  Boolean?
+  profile_picture String?  @db.VarChar
+  resume          String?  @db.VarChar
+  User            User     @relation(fields: [email], references: [email], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model Account {
@@ -817,14 +817,14 @@ model Session {
 }
 
 model User {
-  id                           String                         @id @default(cuid())
-  name                         String?
-  email                        String?                        @unique
-  emailVerified                DateTime?
-  image                        String?
-  accounts                     Account[]
-  sessions                     Session[]
-  user_to_user_profile_mapping user_to_user_profile_mapping[]
+  id            String        @id @default(cuid())
+  name          String?
+  email         String?       @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  user_profile  user_profile?
 }
 
 model VerificationToken {
@@ -833,13 +833,4 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
-}
-
-model user_to_user_profile_mapping {
-  user_id         String       @db.VarChar
-  user_profile_id Int
-  User            User         @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user_profile    user_profile @relation(fields: [user_profile_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@unique([user_id, user_profile_id], map: "user_to_user_profile_mapping_idx_user_id_user_profile_id")
 }

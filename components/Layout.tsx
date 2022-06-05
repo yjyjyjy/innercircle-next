@@ -8,7 +8,7 @@ type Props = {
 const Layout: React.FC<Props> = (props) => (
     <div>
         <Header />
-        <Container maxW="container.lg">
+        <Container maxW="container.xl">
             <div className="layout">{props.children}</div>
         </Container>
     </div>

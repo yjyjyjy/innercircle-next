@@ -34,7 +34,7 @@ const Header: React.FC = (props) => {
                direction={'row'}
                justifyContent="space-between"
                padding={4}
-               width={'container.lg'}
+               width={'container.xl'}
                {...props}
             >
                <Flex align="center" mr={5}>
