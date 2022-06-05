@@ -1,20 +1,23 @@
 import { Flex, Text, Stack, Heading } from "@chakra-ui/react";
 import prisma from "../../lib/prisma";
 import ProfilePicture from "../../components/profile/ProfilePicture";
+import { GetServerSideProps } from "next";
 
 // server side data fetch
-export async function getServerSideProps(context) {
-  const users = await prisma.user_profile.findMany({
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { handle } = context.query;
+  const user = await prisma.user_profile.findUnique({
+    where: { handle: handle as string },
   });
 
   return {
     props: {
-      users: users,
+      user: user,
     },
   };
-}
+};
 
-const User = (user) => {
+const User = ({ user }) => {
   const {
     id,
     handle,
@@ -53,14 +56,4 @@ const User = (user) => {
   );
 };
 
-const ShowCaseUsers = ({ users }) => {
-  return (
-    <>
-      {users.map((user) => {
-        return User(user);
-      })}
-    </>
-  );
-};
-
-export default ShowCaseUsers;
+export default User;

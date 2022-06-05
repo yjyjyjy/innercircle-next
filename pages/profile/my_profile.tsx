@@ -22,7 +22,7 @@ interface ESession extends Session {
 
 // server side data fetch
 export async function getServerSideProps(context) {
-   const session = (await getSession(context))
+   const session = (await getSession(context)) as ESession
    console.log('session from my_profile: ', session)
 
    //If you haven't logged in, you can't view your profile
