@@ -3,6 +3,7 @@ import prisma from '../../lib/prisma'
 import ProfilePicture from '../../components/profile/ProfilePicture'
 import { getSession } from 'next-auth/react'
 import { Session } from 'next-auth'
+import { any } from 'prop-types'
 
 // DB design:
 // user to profile mapping should be many to one. Each log in creates a new user. But multiple users can be tied to the same profile.
@@ -18,14 +19,12 @@ interface ESession extends Session {
    userID: string
 }
 
-// type EGetSession = ESession | null
-
 // server side data fetch
 export async function getServerSideProps(context) {
    const session = (await getSession(context)) as ESession
-   console.log('session from my_profile: ', session)
 
    //If you haven't logged in, you can't view your profile
+   // TODO This is not properly protected.
    if (!session) {
       return {
          props: {
@@ -41,6 +40,13 @@ export async function getServerSideProps(context) {
       where: {
          id: userID
       },
+      include: {
+         user_to_user_profile_mapping: {
+            include: {
+               user_profile: true
+            }
+         }
+      }
    })
 
    return {
@@ -52,28 +58,42 @@ export async function getServerSideProps(context) {
 
 const User = ({ user }) => {
    const {
-      user_id,
-      handle,
-      profile_name,
+      id,
+      name,
       email,
-      twitter,
-      linkedin,
-      bio,
-      look_for,
-      skills,
-      hiring,
-      open_to_work,
-      on_core_team,
-      open_to_invest,
-      profile_picture,
-      resume,
+      emailVerified,
+      image,
+      user_to_user_profile_mapping
    } = user
 
+   type Profile = {
+      handle: string
+      , profile_name: string
+      , twitter: string
+      , linkedin: string
+      , bio: string
+      , look_for: string
+      , skills: string
+      , hiring: boolean
+      , open_to_work: boolean
+      , open_to_invest: boolean
+      , on_core_team: boolean
+      , profile_picture: string
+      , resume: string
+   }
+
+   let profile = {}
+   if (user_to_user_profile_mapping && user_to_user_profile_mapping.lenghth > 0) {
+      profile = user_to_user_profile_mapping[0]
+   }
+
+
+
    return (
-      <Stack direction={'column'} maxW={'100%'}>
-         <Flex h="120px" w="100%" direction={'row'} p={5}>
-            <ProfilePicture image_url={profile_picture} />
-            <Flex ml={3} direction="column">
+      <Stack direction={'row'} maxW={'100%'}>
+         <Stack direction={'column'} p={5}>
+            <ProfilePicture image_url={image} />
+            {/* <Flex ml={3} direction="column">
                <Heading as={'h2'}>
                   {profile_name} ({handle})
                </Heading>
@@ -83,8 +103,8 @@ const User = ({ user }) => {
                <Text fontSize={15} pt={2}>
                   {bio}
                </Text>
-            </Flex>
-         </Flex>
+            </Flex> */}
+         </Stack>
       </Stack>
    )
 }
