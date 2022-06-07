@@ -12,27 +12,22 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         return
     }
 
-    console.log('SERVER SIDE SESSION', session)
-
-    const userID = session.userID as string // current logged in user's id
-
-    const user = await prisma.user.findUnique({
-        where: {
-            id: userID
-        },
-    })
-
-    console.log('useruseruser', user)
-
     if (req.method === 'POST') {
         const { type } = req.headers
         // adding email so the database constraint is satisfied
         const payload_data = {
             ...JSON.parse(req.body),
-            email: session.user.email
+            email: session.user.email // attch the curent user's email
         }
-        if (type === 'create') {
-            // Process a POST request
+
+        const existing_profile = await prisma.user_profile.findUnique({
+            where: {
+                email: session.user.email
+            }
+        })
+
+        if (!existing_profile) {
+            // create a profile
             await prisma.user_profile.create({
                 data: payload_data
             })
@@ -48,7 +43,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     } else {
         // Handle any other HTTP method
-        res.status(200).json({ name: 'John Doe' })
+        res.status(200).json({ name: 'Nothing happened.' })
     }
 }
 

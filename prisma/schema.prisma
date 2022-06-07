@@ -772,22 +772,42 @@ model upload_twitter_profile {
 }
 
 model user_profile {
-  id              Int      @id @default(autoincrement())
-  handle          String   @unique(map: "user_profile_unique_idx_handle") @db.VarChar
-  profile_name    String   @db.VarChar
-  email           String   @unique(map: "user_profile_unique_idx_email") @db.VarChar
-  twitter         String?  @db.VarChar
-  linkedin        String?  @db.VarChar
-  bio             String?  @db.VarChar
-  look_for        String?  @db.VarChar
-  skills          String?  @db.VarChar
-  hiring          Boolean?
-  open_to_work    Boolean?
-  on_core_team    Boolean?
-  open_to_invest  Boolean?
-  profile_picture String?  @db.VarChar
-  resume          String?  @db.VarChar
-  User            User     @relation(fields: [email], references: [email], onDelete: NoAction, onUpdate: NoAction)
+  id                         Int      @id @default(autoincrement())
+  handle                     String   @unique(map: "user_profile_unique_idx_handle") @db.VarChar
+  profile_name               String   @db.VarChar
+  profile_picture            String?  @db.VarChar
+  email                      String   @unique(map: "user_profile_unique_idx_email") @db.VarChar
+  twitter                    String?  @db.VarChar
+  linkedin                   String?  @db.VarChar
+  bio                        String?  @db.VarChar
+  hiring                     Boolean?
+  open_to_work               Boolean?
+  open_to_cofounder_matching Boolean?
+  open_to_product_feedback   Boolean?
+  fundraising                Boolean?
+  open_to_invest             Boolean?
+  on_core_team               Boolean?
+  skill_founder              Boolean?
+  skill_frontend_eng         Boolean?
+  skill_backend_eng          Boolean?
+  skill_fullstack_eng        Boolean?
+  skill_blockchain_eng       Boolean?
+  skill_data_eng             Boolean?
+  skill_game_dev             Boolean?
+  skill_dev_ops              Boolean?
+  skill_product_manager      Boolean?
+  skill_product_designer     Boolean?
+  skill_token_designer       Boolean?
+  skill_technical_writer     Boolean?
+  skill_project_launch       Boolean?
+  skill_people_connector     Boolean?
+  skill_community_manager    Boolean?
+  skill_marketing_growth     Boolean?
+  skill_developer_relations  Boolean?
+  skill_influencer_relations Boolean?
+  skill_investor_relations   Boolean?
+  resume                     String?  @db.VarChar
+  User                       User     @relation(fields: [email], references: [email], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model Account {
