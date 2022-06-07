@@ -1,14 +1,10 @@
-import { Flex, Text, Stack, Heading, FormControl, FormLabel, Input, Textarea, Button, Checkbox, Grid, GridItem, Center, useMediaQuery } from '@chakra-ui/react'
+import { Flex, Text, Stack, FormControl, FormLabel, Input, Textarea, Button, Checkbox, Grid, GridItem, Center, useMediaQuery, useToast } from '@chakra-ui/react'
 import prisma from '../../lib/prisma'
-import ProfilePicture from '../../components/profile/ProfilePicture'
 import { getSession } from 'next-auth/react'
 import { Session } from 'next-auth'
 import { User, user_profile as UserProfile } from '@prisma/client'
-import default_gray from '../../public/default_gray.png'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import MemberProfileCard, { UserProfileData } from '../../components/profile/MemberProfileCard'
-
-
 
 // DB design:
 // user to profile mapping should be many to one. Each log in creates a new user. But multiple users can be tied to the same profile.
@@ -31,18 +27,18 @@ interface ESession extends Session {
    userID: string
 }
 
-
 // server side data fetch
 export async function getServerSideProps(context) {
    const session = (await getSession(context)) as ESession
 
    //If you haven't logged in, you can't view your profile
-   // TODO This is not properly protected.
    if (!session) {
       return {
-         props: {
-            user: {},
+         redirect: {
+            permanent: false,
+            destination: '/',
          },
+         props: {},
       }
    }
 
@@ -67,7 +63,7 @@ type UserJoinUserProfile = (User & {
    user_profile: UserProfile | null;
 })
 
-const User = ({ user }: { user: UserJoinUserProfile }) => {
+const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
    const {
       id,
       name,
@@ -115,15 +111,19 @@ const User = ({ user }: { user: UserJoinUserProfile }) => {
       createOrUpdateUserProfile(formData);
    }
 
-   const createOrUpdateUserProfile = (formData) => {
-      fetch('/api/profile', {
+   const toast = useToast()
+   const createOrUpdateUserProfile = async (formData) => {
+      const res = await fetch('/api/profile', {
          method: 'POST',
          body: JSON.stringify(formData)
       })
-         .then((res) => res.json())
-         .then((data) => {
-            console.log(data)
-         })
+      const { message } = await res.json()
+      toast({
+         title: message,
+         status: res.status === 200 ? 'success' : 'error',
+         duration: 4000,
+         isClosable: true
+      })
    }
 
    const onChangeHandler = (e) => {
@@ -222,7 +222,7 @@ const User = ({ user }: { user: UserJoinUserProfile }) => {
                      <OpenToCheckBox dataKey='on_core_team' text="I'm on a web3 core team" />
                   </Flex>
                   <Flex direction={'column'} py={3}>
-                     <Text fontSize={'xl'} py={4}>What are your super powers? (up to 3)</Text>
+                     <Text fontSize={'xl'} py={4}>What are your super powers? (up to 5)</Text>
                      <Grid templateColumns={isLargerThan1280 ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)'} gap={3}>
                         <SkillCheckBox dataKey='skill_founder' skill_text='Founder' />
                         <SkillCheckBox dataKey='skill_frontend_eng' skill_text='Frontend Eng' />
@@ -258,9 +258,8 @@ const User = ({ user }: { user: UserJoinUserProfile }) => {
             <Text fontSize={'lg'} fontWeight='bold'>Profile Preview</Text>
             <MemberProfileCard user_profile={formData} />
          </Stack>
-
       </Stack >
    )
 }
 
-export default User
+export default MyProfile

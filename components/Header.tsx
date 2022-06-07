@@ -2,26 +2,24 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import {
    IconButton,
-   Input,
    Tooltip,
    useToast,
    Spinner,
    Box,
-   Stack,
    Heading,
    Flex,
    Button,
 } from '@chakra-ui/react'
 import { SiDiscord } from 'react-icons/si'
+import { BsPersonFill } from 'react-icons/bs'
 import { useSession, signIn, signOut } from 'next-auth/react'
+import Router from 'next/router'
 
 const Header: React.FC = (props) => {
    const { data: session, status } = useSession()
-   const [isSubscriptionFormOpen, setIsSubscriptionFormOpen] = useState(false)
-   const [email, setEmail] = useState('')
+
    const [isLoading, setIsLoading] = useState(false)
 
-   console.log('Session: ', session)
 
    if (status === 'loading') {
       return <h1>Loading</h1>
@@ -63,12 +61,30 @@ const Header: React.FC = (props) => {
                         </a>
                      </Tooltip>
                   </Box>
+                  {session ? (<Box>
+                     <Tooltip
+                        label={
+                           'My Profile'
+                        }
+                     >
+                        <Link href={'/profile/my_profile'}>
+                           <IconButton
+                              mr={3}
+                              colorScheme='blue.300'
+                              aria-label={'My Profile'}
+                              icon={<BsPersonFill size={25} />}
+                           />
+                        </Link>
+                     </Tooltip>
+                  </Box>) : undefined}
                   <Box>
                      {session ? (
                         <Button
                            mx={3}
                            colorScheme={'blue'}
-                           onClick={() => signOut()}
+                           onClick={() => signOut({
+                              callbackUrl: `${window.location.origin}`
+                           })}
                         >
                            Sign Out
                         </Button>
