@@ -33,10 +33,6 @@ export async function getServerSideProps(context) {
   // If you haven't logged in, you can't use the tool yet.
   if (!session) {
     return {
-      redirect: {
-        permanent: false,
-        destination: '/',
-      },
       props: {},
     }
   }

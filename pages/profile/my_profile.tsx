@@ -12,19 +12,35 @@ import { ESession } from '../index'
 // We will provide email log in and Google log in only. So they are both tied to email. and that will serve as a join key to find profiles.
 
 // TODO
+
+// P0
+// I offer / I need (.1)
+// Headers and Nav (.5)
+// check handle if it's taken (1)
+// check handle against special chars (FE and BE) (1)
+// handle, Name, bio, bio_short length (1)
+// Super power count (FE, BE) (1)
+// Conference tags (FE, BE) (3)
+// Discovery Filters (3)
+// Email sign up (2)
+// Messaging (10)
+
+// P1
+// Mini profile vs. full profile (2)
+// Implement Auto Save an more obvious Save button (.5)
+// Social Links: input txt box. regex check. show logo in Profile (3)
+// Wallet connection (2)
+// Search (Elastic Search and it's database) (10)
+// Image Uploader (5)
+
+// P2
+// Pagination
+// Performance diagnositic tool
+// Client Side Rendering
+
+// Done
 // Auth Guard FE and BE
-// Headers and Nav
-// Image Uploader
-// check handle against special chars (FE and BE)
-// handle, Name, bio length
-// Super power count
-// Messaging
-// Mini profile vs. full profile
-// Discovery
-// Implement Auto Save an more obvious Save button
-// Social Links
-// Wallet connection
-// Search
+
 
 
 // server side data fetch
