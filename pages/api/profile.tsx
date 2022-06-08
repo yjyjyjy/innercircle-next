@@ -67,6 +67,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 }
 
 const isHandleUnique = async (handle: string): Promise<boolean> => {
+   handle = handle.toLowerCase()
+   handle = handle.replace(/\s/g, '')
    const usersWithHandle = await prisma.user_profile.count({
       where: {
          handle: handle,
