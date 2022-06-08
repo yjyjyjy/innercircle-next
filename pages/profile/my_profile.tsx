@@ -1,10 +1,11 @@
 import { Flex, Text, Stack, FormControl, FormLabel, Input, Textarea, Button, Checkbox, Grid, GridItem, Center, useMediaQuery, useToast } from '@chakra-ui/react'
 import prisma from '../../lib/prisma'
 import { getSession } from 'next-auth/react'
-import { Session } from 'next-auth'
+
 import { User, user_profile as UserProfile } from '@prisma/client'
 import { useState } from 'react'
 import MemberProfileCard, { UserProfileData } from '../../components/profile/MemberProfileCard'
+import { ESession } from '../index'
 
 // DB design:
 // user to profile mapping should be many to one. Each log in creates a new user. But multiple users can be tied to the same profile.
@@ -17,15 +18,14 @@ import MemberProfileCard, { UserProfileData } from '../../components/profile/Mem
 // check handle against special chars (FE and BE)
 // handle, Name, bio length
 // Super power count
+// Messaging
+// Mini profile vs. full profile
+// Discovery
 // Implement Auto Save an more obvious Save button
 // Social Links
-// Discovery
+// Wallet connection
 // Search
 
-
-interface ESession extends Session {
-   userID: string
-}
 
 // server side data fetch
 export async function getServerSideProps(context) {
@@ -77,30 +77,37 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
    const [formData, setFormData] = useState<UserProfileData>({
       profile_name: user_profile?.profile_name ? user_profile.profile_name : name ? name : '',
       handle: user_profile?.handle ? user_profile.handle : '',
+      bio_short: user_profile?.bio_short ? user_profile?.bio_short : '',
       bio: user_profile?.bio ? user_profile.bio : '',
-      hiring: user_profile?.hiring ? user_profile?.hiring : false,
-      open_to_work: user_profile?.open_to_work ? user_profile?.open_to_work : false,
-      open_to_cofounder_matching: user_profile?.open_to_cofounder_matching ? user_profile.open_to_cofounder_matching : false,
-      open_to_product_feedback: user_profile?.open_to_product_feedback ? user_profile.open_to_product_feedback : false,
-      fundraising: user_profile?.fundraising ? user_profile.fundraising : false,
-      open_to_invest: user_profile?.open_to_invest ? user_profile.open_to_invest : false,
-      on_core_team: user_profile?.on_core_team ? user_profile.on_core_team : false,
+      label_hiring: user_profile?.label_hiring ? user_profile?.label_hiring : false,
+      label_open_to_work: user_profile?.label_open_to_work ? user_profile?.label_open_to_work : false,
+      label_open_to_cofounder_matching: user_profile?.label_open_to_cofounder_matching ? user_profile.label_open_to_cofounder_matching : false,
+      label_need_product_feedback: user_profile?.label_need_product_feedback ? user_profile.label_need_product_feedback : false,
+      label_open_to_discover_new_project: user_profile?.label_open_to_discover_new_project ? user_profile.label_open_to_discover_new_project : false,
+      label_fundraising: user_profile?.label_fundraising ? user_profile.label_fundraising : false,
+      label_open_to_invest: user_profile?.label_open_to_invest ? user_profile.label_open_to_invest : false,
+      label_on_core_team: user_profile?.label_on_core_team ? user_profile.label_on_core_team : false,
       skill_founder: user_profile?.skill_founder ? user_profile.skill_founder : false,
+      skill_web3_domain_expert: user_profile?.skill_web3_domain_expert ? user_profile.skill_web3_domain_expert : false,
+      skill_artist: user_profile?.skill_artist ? user_profile.skill_artist : false,
       skill_frontend_eng: user_profile?.skill_frontend_eng ? user_profile.skill_frontend_eng : false,
       skill_backend_eng: user_profile?.skill_backend_eng ? user_profile.skill_backend_eng : false,
       skill_fullstack_eng: user_profile?.skill_fullstack_eng ? user_profile.skill_fullstack_eng : false,
       skill_blockchain_eng: user_profile?.skill_blockchain_eng ? user_profile.skill_blockchain_eng : false,
       skill_data_eng: user_profile?.skill_data_eng ? user_profile.skill_data_eng : false,
+      skill_data_science: user_profile?.skill_data_science ? user_profile.skill_data_science : false,
+      skill_hareware_dev: user_profile?.skill_hareware_dev ? user_profile.skill_hareware_dev : false,
       skill_game_dev: user_profile?.skill_game_dev ? user_profile.skill_game_dev : false,
       skill_dev_ops: user_profile?.skill_dev_ops ? user_profile.skill_dev_ops : false,
       skill_product_manager: user_profile?.skill_product_manager ? user_profile.skill_product_manager : false,
       skill_product_designer: user_profile?.skill_product_designer ? user_profile.skill_product_designer : false,
       skill_token_designer: user_profile?.skill_token_designer ? user_profile.skill_token_designer : false,
       skill_technical_writer: user_profile?.skill_technical_writer ? user_profile.skill_technical_writer : false,
-      skill_project_launch: user_profile?.skill_project_launch ? user_profile.skill_project_launch : false,
-      skill_people_connector: user_profile?.skill_people_connector ? user_profile.skill_people_connector : false,
+      skill_social_media_influencer: user_profile?.skill_social_media_influencer ? user_profile.skill_social_media_influencer : false,
+      skill_i_bring_capital: user_profile?.skill_i_bring_capital ? user_profile.skill_i_bring_capital : false,
       skill_community_manager: user_profile?.skill_community_manager ? user_profile.skill_community_manager : false,
       skill_marketing_growth: user_profile?.skill_marketing_growth ? user_profile.skill_marketing_growth : false,
+      skill_business_development: user_profile?.skill_business_development ? user_profile.skill_business_development : false,
       skill_developer_relations: user_profile?.skill_developer_relations ? user_profile.skill_developer_relations : false,
       skill_influencer_relations: user_profile?.skill_influencer_relations ? user_profile.skill_influencer_relations : false,
       skill_investor_relations: user_profile?.skill_investor_relations ? user_profile.skill_investor_relations : false,
@@ -213,33 +220,39 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
                      />
                   </FormControl>
                   <Flex direction={'column'} maxW={'400px'}>
-                     <OpenToCheckBox dataKey='hiring' text="I'm hiring" />
-                     <OpenToCheckBox dataKey='open_to_work' text="Open to work" />
-                     <OpenToCheckBox dataKey='open_to_cofounder_matching' text="Cofounder searching" />
-                     <OpenToCheckBox dataKey='open_to_product_feedback' text="Looking for feedback on my product" />
-                     <OpenToCheckBox dataKey='fundraising' text="Fundraising" />
-                     <OpenToCheckBox dataKey='open_to_invest' text="Want to invest" />
-                     <OpenToCheckBox dataKey='on_core_team' text="I'm on a web3 core team" />
+                     <OpenToCheckBox dataKey='label_hiring' text="I'm hiring" />
+                     <OpenToCheckBox dataKey='label_open_to_work' text="Open to work" />
+                     <OpenToCheckBox dataKey='label_open_to_cofounder_matching' text="Cofounder searching" />
+                     <OpenToCheckBox dataKey='label_need_product_feedback' text="Need feedback on my product" />
+                     <OpenToCheckBox dataKey='label_open_to_discover_new_project' text="Open to discover new project" />
+                     <OpenToCheckBox dataKey='label_fundraising' text="Fundraising" />
+                     <OpenToCheckBox dataKey='label_open_to_invest' text="Want to invest" />
+                     <OpenToCheckBox dataKey='label_on_core_team' text="I'm on a web3 core team" />
                   </Flex>
                   <Flex direction={'column'} py={3}>
                      <Text fontSize={'xl'} py={4}>What are your super powers? (up to 5)</Text>
                      <Grid templateColumns={isLargerThan1280 ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)'} gap={3}>
                         <SkillCheckBox dataKey='skill_founder' skill_text='Founder' />
+                        <SkillCheckBox dataKey='skill_web3_domain_expert' skill_text='Web3 Domain Expert' />
+                        <SkillCheckBox dataKey='skill_artist' skill_text='Artist' />
                         <SkillCheckBox dataKey='skill_frontend_eng' skill_text='Frontend Eng' />
                         <SkillCheckBox dataKey='skill_backend_eng' skill_text='Backend Eng' />
                         <SkillCheckBox dataKey='skill_fullstack_eng' skill_text='Full Stack Eng' />
                         <SkillCheckBox dataKey='skill_blockchain_eng' skill_text='Blockchain Dev' />
                         <SkillCheckBox dataKey='skill_data_eng' skill_text='Data Eng' />
+                        <SkillCheckBox dataKey='skill_data_science' skill_text='Data Scientist' />
                         <SkillCheckBox dataKey='skill_game_dev' skill_text='Game Dev' />
                         <SkillCheckBox dataKey='skill_dev_ops' skill_text='Dev Ops' />
                         <SkillCheckBox dataKey='skill_product_manager' skill_text='Product Manager' />
                         <SkillCheckBox dataKey='skill_product_designer' skill_text='Product Designer' />
                         <SkillCheckBox dataKey='skill_token_designer' skill_text='Token Designer' />
                         <SkillCheckBox dataKey='skill_technical_writer' skill_text='Technical Writer' />
-                        <SkillCheckBox dataKey='skill_people_connector' skill_text='People Connector' />
+                        <SkillCheckBox dataKey='skill_social_media_influencer' skill_text='Influencer (w/ audience)' />
+                        <SkillCheckBox dataKey='skill_i_bring_capital' skill_text='I bring capital' />
                         <SkillCheckBox dataKey='skill_community_manager'
                            skill_text={isLargerThan1280 ? 'Community Manager' : 'Community Mgr.'} />
                         <SkillCheckBox dataKey='skill_marketing_growth' skill_text='Marketing/Growth' />
+                        <SkillCheckBox dataKey='skill_marketing_growth' skill_text='Biz Development' />
                         <SkillCheckBox dataKey='skill_developer_relations' skill_text='Developer Relations' />
                         <SkillCheckBox dataKey='skill_influencer_relations' skill_text='Influencer relations' />
                         <SkillCheckBox dataKey='skill_investor_relations' skill_text='Investor relations' />
