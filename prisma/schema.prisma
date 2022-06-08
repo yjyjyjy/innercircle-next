@@ -504,27 +504,6 @@ model subscriber {
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
-model tmp {
-  id              String?  @db.VarChar
-  handle          String?  @db.VarChar
-  profile_name    String?  @db.VarChar
-  email           String?  @db.VarChar
-  twitter         String?  @db.VarChar
-  linkedin        String?  @db.VarChar
-  bio             String?  @db.VarChar
-  look_for        String?  @db.VarChar
-  skills          String?  @db.VarChar
-  hiring          Boolean?
-  open_to_work    Boolean?
-  on_core_team    Boolean?
-  open_to_invest  Boolean?
-  profile_picture String?  @db.VarChar
-  resume          String?  @db.VarChar
-
-  @@ignore
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 model trade_roi_flat {
   address                 String?   @db.VarChar
   buy_date                DateTime? @db.Date
@@ -772,22 +751,52 @@ model upload_twitter_profile {
 }
 
 model user_profile {
-  id              Int      @id @default(autoincrement())
-  handle          String   @unique(map: "user_profile_unique_idx_handle") @db.VarChar
-  profile_name    String   @db.VarChar
-  email           String   @unique(map: "user_profile_unique_idx_email") @db.VarChar
-  twitter         String?  @db.VarChar
-  linkedin        String?  @db.VarChar
-  bio             String?  @db.VarChar
-  look_for        String?  @db.VarChar
-  skills          String?  @db.VarChar
-  hiring          Boolean?
-  open_to_work    Boolean?
-  on_core_team    Boolean?
-  open_to_invest  Boolean?
-  profile_picture String?  @db.VarChar
-  resume          String?  @db.VarChar
-  User            User     @relation(fields: [email], references: [email], onDelete: NoAction, onUpdate: NoAction)
+  id                                      Int      @id @default(autoincrement())
+  handle                                  String   @unique(map: "user_profile_unique_idx_handle") @db.VarChar
+  profile_name                            String   @db.VarChar
+  profile_picture                         String?  @db.VarChar
+  email                                   String   @unique(map: "user_profile_unique_idx_email") @db.VarChar
+  twitter                                 String?  @db.VarChar
+  linkedin                                String?  @db.VarChar
+  bio_short                               String?  @db.VarChar
+  bio                                     String?  @db.VarChar
+  label_hiring                            Boolean?
+  label_open_to_work                      Boolean?
+  label_open_to_cofounder_matching        Boolean?
+  label_need_product_feedback             Boolean?
+  label_open_to_discover_new_project      Boolean?
+  label_fundraising                       Boolean?
+  label_open_to_invest                    Boolean?
+  label_on_core_team                      Boolean?
+  label_text_hiring                       String?  @db.VarChar
+  label_text_open_to_work                 String?  @db.VarChar
+  label_text_open_to_discover_new_project String?  @db.VarChar
+  skill_founder                           Boolean?
+  skill_web3_domain_expert                Boolean?
+  skill_artist                            Boolean?
+  skill_frontend_eng                      Boolean?
+  skill_backend_eng                       Boolean?
+  skill_fullstack_eng                     Boolean?
+  skill_blockchain_eng                    Boolean?
+  skill_data_eng                          Boolean?
+  skill_data_science                      Boolean?
+  skill_hareware_dev                      Boolean?
+  skill_game_dev                          Boolean?
+  skill_dev_ops                           Boolean?
+  skill_product_manager                   Boolean?
+  skill_product_designer                  Boolean?
+  skill_token_designer                    Boolean?
+  skill_technical_writer                  Boolean?
+  skill_social_media_influencer           Boolean?
+  skill_i_bring_capital                   Boolean?
+  skill_community_manager                 Boolean?
+  skill_marketing_growth                  Boolean?
+  skill_business_development              Boolean?
+  skill_developer_relations               Boolean?
+  skill_influencer_relations              Boolean?
+  skill_investor_relations                Boolean?
+  resume                                  String?  @db.VarChar
+  User                                    User     @relation(fields: [email], references: [email], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model Account {
