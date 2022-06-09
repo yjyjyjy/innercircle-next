@@ -14,8 +14,6 @@ import { ESession } from '../index'
 // TODO
 
 // P0
-// I offer / I need (.1)
-// Headers and Nav (.5)
 // check handle if it's taken (1)
 // check handle against special chars (FE and BE) (1)
 // handle, Name, bio, bio_short length (1)
@@ -23,6 +21,8 @@ import { ESession } from '../index'
 // Conference tags (FE, BE) (3)
 // Discovery Filters (3)
 // Email sign up (2)
+// I offer / I need (.1)
+// Headers and Nav (.5)
 // Messaging (10)
 
 // P1
@@ -208,8 +208,8 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
          <Stack direction={'column'} py={10} w={isLargerThan1280 ? '60%' : '100%'}>
             <form onSubmit={onSubmitHandler}>
                <Flex direction={'column'} fontWeight='bold'>
-                  <FormControl isRequired maxW={'400px'} p={3}>
-                     <FormLabel fontWeight={'bold'}>Name</FormLabel>
+                  <FormControl isRequired maxW={'450px'} pt={3}>
+                     <FormLabel fontSize={'lg'} fontWeight={'bold'}>Name</FormLabel>
                      <Input
                         value={formData.profile_name}
                         name='profile_name'
@@ -217,8 +217,8 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
                         onChange={(e) => onChangeHandler(e)}
                      />
                   </FormControl>
-                  <FormControl isRequired p={3}>
-                     <FormLabel fontWeight={'bold'}>Choose a profile handle (your profile url)</FormLabel>
+                  <FormControl isRequired maxW={'450px'} pt={3}>
+                     <FormLabel fontSize={'lg'} fontWeight={'bold'}>Choose a profile handle (your profile url)</FormLabel>
                      <Input
                         value={formData.handle}
                         placeholder='handle'
@@ -227,8 +227,18 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
                      />
                      {/* <Input placeholder='Community Manager @ Hooli Protocol' /> */}
                   </FormControl>
-                  <FormControl p={3}>
-                     <FormLabel fontWeight={'bold'}>Bio & what you are looking for</FormLabel>
+                  <FormControl isRequired maxW={'450px'} pt={3}>
+                     <FormLabel fontSize={'lg'} fontWeight={'bold'}>Your one-liner intro</FormLabel>
+                     <Input
+                        value={formData.bio_short}
+                        placeholder='co-founder & CEO @ hoolie; billionaire'
+                        name='bio_short'
+                        onChange={(e) => onChangeHandler(e)}
+                     />
+                     {/* <Input placeholder='Community Manager @ Hooli Protocol' /> */}
+                  </FormControl>
+                  <FormControl pt={3}>
+                     <FormLabel fontSize={'lg'} fontWeight={'bold'}>Bio & what you are looking for</FormLabel>
                      <Textarea
                         value={formData.bio}
                         name='bio'
@@ -236,6 +246,7 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
                      />
                   </FormControl>
                   <Flex direction={'column'} maxW={'400px'}>
+                     <Text fontSize={'lg'} fontWeight='bold' py={4}>How innerCircle community can help you?</Text>
                      <OpenToCheckBox dataKey='label_hiring' text="I'm hiring" />
                      <OpenToCheckBox dataKey='label_open_to_work' text="Open to work" />
                      <OpenToCheckBox dataKey='label_open_to_cofounder_matching' text="Cofounder searching" />
@@ -246,7 +257,7 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
                      <OpenToCheckBox dataKey='label_on_core_team' text="I'm on a web3 core team" />
                   </Flex>
                   <Flex direction={'column'} py={3}>
-                     <Text fontSize={'xl'} py={4}>What are your super powers? (up to 5)</Text>
+                     <Text fontSize={'lg'} fontWeight='bold' py={4}>What are your super powers? (up to 5)</Text>
                      <Grid templateColumns={isLargerThan1280 ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)'} gap={3}>
                         <SkillCheckBox dataKey='skill_founder' skill_text='Founder' />
                         <SkillCheckBox dataKey='skill_web3_domain_expert' skill_text='Web3 Domain Expert' />

@@ -159,23 +159,31 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile }) => {
             rounded={"lg"}>
             <ProfilePicture image_url={'https://en.gravatar.com/userimage/67165895/bd41f3f601291d2f313b1d8eec9f8a4d.jpg?size=200'} />
             <Flex direction={'row'} pt={4}>
-                <Text
-                    w='60%'
-                    overflow={'hidden'}
-                >{profile_name}
-                </Text>
+                <Flex direction={'column'} w='60%' overflow={'hidden'}>
+                    <Text
+                        fontSize={'xl'}
+                        fontWeight={'bold'}
+                    >{profile_name}
+                    </Text>
+                    <Text fontSize={'sm'}>
+                        @{handle}
+                    </Text>
+                </Flex>
                 <Tag variant={'outline'}>
                     <TagLeftIcon as={AiOutlineMail} />
                     <TagLabel>Message</TagLabel>
                 </Tag>
             </Flex>
-            <Text py={2}>{bio_short}</Text>
-            <Flex direction={'row'} pt={2} wrap={'wrap'}>
+            <Text fontWeight='bold'>{bio_short}</Text>
+            <Text>{bio}</Text>
+            <Text fontWeight={'bold'}>I need:</Text>
+            <Flex direction={'row'} wrap={'wrap'}>
                 {Object.keys(tagTextMapping).filter(dataKey => (dataKey.startsWith('label_'))).map(dataKey => (
                     user_profile[dataKey] ? <ProfileTag key={dataKey} dataKey={dataKey} /> : undefined
                 ))}
             </Flex>
-            <Flex direction={'row'} pt={2} wrap={'wrap'}>
+            <Text fontWeight={'bold'}>I can offer:</Text>
+            <Flex direction={'row'} wrap={'wrap'}>
                 {Object.keys(tagTextMapping).filter(dataKey => dataKey.startsWith('skill_')).map(dataKey => (
                     user_profile[dataKey] ? <ProfileTag key={dataKey} dataKey={dataKey} /> : undefined
                 ))}

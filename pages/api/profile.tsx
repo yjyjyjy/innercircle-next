@@ -19,7 +19,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
         const existingProfileWithEmail = await prisma.user_profile.findUnique({
             where: {
-                email: session.user.email,
+                email: session.user.email as string,
             },
         })
 
