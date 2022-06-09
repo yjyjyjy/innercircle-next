@@ -3,76 +3,61 @@ import prisma from '../../lib/prisma'
 import { getSession } from 'next-auth/react'
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-   const session = await getSession({ req })
+    const session = await getSession({ req })
 
-   if (!session || !session.userID || !session.user?.email) {
-      res.status(500).json({ message: 'Please log in first' })
-      return
-   }
+    if (!session || !session.userID || !session.user?.email) {
+        res.status(500).json({ message: 'Please log in first' })
+        return
+    }
 
-   if (req.method === 'POST') {
-      // adding email so the database constraint is satisfied
-      const payload_data = {
-         ...JSON.parse(req.body),
-         email: session.user.email, // attch the curent user's email
-      }
+    if (req.method === 'POST') {
+        // adding email so the database constraint is satisfied
+        let payloadData = {
+            ...JSON.parse(req.body),
+            email: session.user.email, // attach the curent user's email
+        }
 
-      const existing_profile = await prisma.user_profile.findUnique({
-         where: {
-            email: session.user.email,
-         },
-      })
-
-      //Create new profile if email is new
-      if (!existing_profile) {
-         //Check if handle is already in use by other user
-         const handleTaken = await isHandleUnique(payload_data.handle)
-         if (handleTaken) {
-            res.status(500).json({
-               message: 'Handle is already in use',
-            })
-            return
-         }
-
-         // create a profile
-         await prisma.user_profile.create({
-            data: payload_data,
-         })
-         res.status(200).json({ message: 'Profile successfully created!' })
-      } else {
-         //If user wants to change handle
-         if (existing_profile?.handle !== payload_data.handle) {
-            //Check new handle is unique
-            const handleTaken = await isHandleUnique(payload_data.handle)
-            if (handleTaken) {
-               res.status(500).json({
-                  message: 'Handle is already in use',
-               })
-               return
-            }
-         }
-
-         await prisma.user_profile.update({
+        const existingProfileWithEmail = await prisma.user_profile.findUnique({
             where: {
-               email: session.user.email,
+                email: session.user.email,
             },
-            data: payload_data,
-         })
-         res.status(200).json({ message: 'Profile successfully updated!' })
-      }
-   } else {
-      // Handle any other HTTP method
-      res.status(200).json({ message: 'Nothing happened.' })
-   }
-}
+        })
 
-const isHandleUnique = async (handle: string): Promise<boolean> => {
-   handle = handle.toLowerCase()
-   handle = handle.replace(/\s/g, '')
-   const usersWithHandle = await prisma.user_profile.count({
-      where: {
-         handle: handle,
-      },
-   })
-   return usersWithHandle === 0 ? false : true
+        // clean up the payloadData handle
+        payloadData = { ...payloadData, handle: payloadData.handle.toLowerCase().replace(/\s/g, '') }
+
+        //Check if handle is already in use by other user
+        const existingProfileWithHandle = await prisma.user_profile.findUnique({
+            where: {
+                handle: payloadData.handle,
+            },
+        })
+
+        if (existingProfileWithHandle && existingProfileWithHandle.email.toLowerCase() !== payloadData.email) {
+            res.status(500).json({ message: 'Profile handle has been taken. Please choose a different one.' })
+            return
+        }
+
+        //Create new profile if email is new
+        if (!existingProfileWithEmail) {
+            // create a profile
+            await prisma.user_profile.create({
+                data: payloadData,
+            })
+            res.status(200).json({ message: 'Profile successfully created!' })
+
+        } else {
+
+            await prisma.user_profile.update({
+                where: {
+                    email: session.user.email,
+                },
+                data: payloadData,
+            })
+            res.status(200).json({ message: 'Profile successfully updated!' })
+        }
+    } else {
+        // Handle any other HTTP method
+        res.status(200).json({ message: 'Nothing happened.' })
+    }
 }
