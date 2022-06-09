@@ -103,21 +103,16 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
       profile_name: user_profile?.profile_name
          ? user_profile.profile_name
          : name
-         ? name
-         : '',
+            ? name
+            : '',
       handle: user_profile?.handle ? user_profile.handle : '',
       bio_short: user_profile?.bio_short ? user_profile?.bio_short : '',
       bio: user_profile?.bio ? user_profile.bio : '',
       label_hiring: user_profile?.label_hiring
-         ? user_profile?.label_hiring
-         : false,
-      label_open_to_work: user_profile?.label_open_to_work
-         ? user_profile?.label_open_to_work
-         : false,
-      label_open_to_cofounder_matching:
-         user_profile?.label_open_to_cofounder_matching
-            ? user_profile.label_open_to_cofounder_matching
-            : false,
+         ? user_profile?.label_hiring : false, label_open_to_work: user_profile?.label_open_to_work
+            ? user_profile?.label_open_to_work : false, label_open_to_cofounder_matching: user_profile?.label_open_to_cofounder_matching
+               ? user_profile.label_open_to_cofounder_matching
+               : false,
       label_need_product_feedback: user_profile?.label_need_product_feedback
          ? user_profile.label_need_product_feedback
          : false,
