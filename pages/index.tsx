@@ -42,8 +42,6 @@ export async function getServerSideProps(context) {
     where: { id: session.userID },
     include: { user_profile: true }
   })
-  console.log('🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥')
-  console.log(authUserWithProfile)
 
   if (authUserWithProfile?.id && !authUserWithProfile.user_profile?.handle) {
     console.log('here')

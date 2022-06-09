@@ -9,32 +9,42 @@ import {
    Heading,
    Flex,
    Button,
+   Container,
+   useMediaQuery,
+   HStack,
+   ButtonGroup,
+   Avatar
 } from '@chakra-ui/react'
 import { SiDiscord } from 'react-icons/si'
 import { BsPersonFill } from 'react-icons/bs'
 import { useSession, signIn, signOut } from 'next-auth/react'
+import { FiMenu } from 'react-icons/fi'
 import Router from 'next/router'
 
 const Header: React.FC = (props) => {
    const { data: session, status } = useSession()
+   const [isDesktop] = useMediaQuery('(min-width: 1290px)')
 
    if (status === 'loading') {
       return <h1>Loading</h1>
    }
    return (
-      <Flex justifyContent="center" bg='blue.300' color="white" position={'fixed'} w='100%' zIndex={999} left={0} right={0}>
+      <Flex justifyContent="center" bg='blue.300' color="white" position={'fixed'} w='100%' zIndex={888} left={0} right={0}>
          <Flex
-            as="nav"
+
             direction={'row'}
             justifyContent="space-between"
             padding={2}
             width={'container.xl'}
             {...props}
          >
-            <Flex align="center" mr={5}>
+            <Flex align="center" mr={5} as="nav">
                <Heading as="h1" size="lg" letterSpacing={'tighter'}>
                   <Link href={'/'}>innerCircle</Link>
                </Heading>
+               <ButtonGroup spacing="1" px={isDesktop ? '50px' : '0'} >
+                  <Link href={'/'}><Button color='white' colorScheme={'twitter'} fontSize='xl' variant='ghost'>Discover</Button></Link>
+               </ButtonGroup>
             </Flex>
             <Flex direction={'row'}>
                <Box>
@@ -63,14 +73,14 @@ const Header: React.FC = (props) => {
                         'My Profile'
                      }
                   >
-                     <a href={'/profile/my_profile'}>
+                     <Link href={'/profile/my_profile'}>
                         <IconButton
                            mr={3}
                            colorScheme='blue.300'
                            aria-label={'My Profile'}
                            icon={<BsPersonFill size={25} />}
                         />
-                     </a>
+                     </Link>
                   </Tooltip>
                </Box>) : undefined}
                <Box>
@@ -96,7 +106,7 @@ const Header: React.FC = (props) => {
                </Box>
             </Flex>
          </Flex>
-      </Flex>
+      </Flex >
    )
 }
 
