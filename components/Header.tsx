@@ -22,13 +22,12 @@ const Header: React.FC = (props) => {
       return <h1>Loading</h1>
    }
    return (
-      // <Flex direction={'column'} >
-      <Flex justifyContent="center" bg='blue.300' color="white">
+      <Flex justifyContent="center" bg='blue.300' color="white" position={'fixed'} w='100%' zIndex={999} left={0} right={0}>
          <Flex
             as="nav"
             direction={'row'}
             justifyContent="space-between"
-            padding={4}
+            padding={2}
             width={'container.xl'}
             {...props}
          >
@@ -98,7 +97,6 @@ const Header: React.FC = (props) => {
             </Flex>
          </Flex>
       </Flex>
-      // </Flex>
    )
 }
 
