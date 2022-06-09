@@ -37,12 +37,29 @@ export async function getServerSideProps(context) {
     }
   }
 
-  const userID = session.userID // current logged in user's id
+  // If userID doesn't have a userprofile redirect
+  const authUserWithProfile = await prisma.user.findUnique({
+    where: { id: session.userID },
+    include: { user_profile: true }
+  })
+  console.log('🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥')
+  console.log(authUserWithProfile)
 
-  const user_profiles = await prisma.user_profile.findMany()
+  if (authUserWithProfile?.id && !authUserWithProfile.user_profile?.handle) {
+    console.log('here')
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/profile/my_profile',
+      },
+      props: {},
+    }
+  }
+
+  const profiles = await prisma.user_profile.findMany()
   return {
     props: {
-      user_profiles: user_profiles,
+      userProfiles: profiles,
     },
   }
 }
@@ -97,9 +114,9 @@ export default function (props) {
         </Flex>
 
         <Grid templateColumns={isLargerThan1280 ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)'} gap={3}>
-          {props.user_profiles.map(user_profile => (
+          {props.userProfiles.map(userProfile => (
             <GridItem>
-              <MemberProfileCard user_profile={user_profile} />
+              <MemberProfileCard user_profile={userProfile} />
             </GridItem>
           ))}
 
