@@ -12,14 +12,16 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     if (req.method === 'POST') {
         // adding email so the database constraint is satisfied
+        const authUserEmail: string = session.user.email
+
         let payloadData = {
             ...JSON.parse(req.body),
-            email: session.user.email, // attach the curent user's email
+            email: authUserEmail, // attach the curent user's email
         }
 
         const existingProfileWithEmail = await prisma.user_profile.findUnique({
             where: {
-                email: session.user.email as string,
+                email: authUserEmail,
             },
         })
 
