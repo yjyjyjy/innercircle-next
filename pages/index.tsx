@@ -21,7 +21,7 @@ import { getSession, useSession } from "next-auth/react";
 import { useState } from "react";
 import { Session } from 'next-auth'
 import prisma from '../lib/prisma'
-import MemberProfileCard, { UserProfileData } from "../components/profile/MemberProfileCard";
+import MemberProfileCard from "../components/profile/MemberProfileCard";
 
 export interface ESession extends Session {
   userID: string

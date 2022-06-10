@@ -15,57 +15,6 @@ import ProfilePicture from './ProfilePicture'
 import { AiOutlineMail } from 'react-icons/ai'
 import { user_profile as UserProfile } from '@prisma/client'
 
-// export interface UserProfileData {
-//    id?: number
-//    profile_name: string
-//    handle: string
-//    profile_picture?: string
-//    email?: string
-//    twitter?: string
-//    linkedin?: string
-//    bio_short?: string
-//    bio?: string
-
-//    label_hiring?: boolean
-//    label_open_to_work?: boolean
-//    label_open_to_cofounder_matching?: boolean
-//    label_need_product_feedback?: boolean
-//    label_open_to_discover_new_project?: boolean
-//    label_fundraising?: boolean
-//    label_open_to_invest?: boolean
-//    label_on_core_team?: boolean
-//    label_text_hiring?: string
-//    label_text_open_to_work?: string
-//    label_text_open_to_discover_new_project?: string
-
-//    skill_founder: boolean
-//    skill_web3_domain_expert: boolean
-//    skill_artist: boolean
-//    skill_frontend_eng: boolean
-//    skill_backend_eng: boolean
-//    skill_fullstack_eng: boolean
-//    skill_blockchain_eng: boolean
-//    skill_data_eng: boolean
-//    skill_data_science: boolean
-//    skill_hareware_dev: boolean
-//    skill_game_dev: boolean
-//    skill_dev_ops: boolean
-//    skill_product_manager: boolean
-//    skill_product_designer: boolean
-//    skill_token_designer: boolean
-//    skill_technical_writer: boolean
-//    skill_social_media_influencer: boolean
-//    skill_i_bring_capital: boolean
-//    skill_community_manager: boolean
-//    skill_marketing_growth: boolean
-//    skill_business_development: boolean
-//    skill_developer_relations: boolean
-//    skill_influencer_relations: boolean
-//    skill_investor_relations: boolean
-
-//    user_profile_to_conference_mapping?: Array<Conference>
-// }
-
 export interface Conference {
    id: number,
    year: number,
