@@ -42,9 +42,9 @@ const Header: React.FC = (props) => {
                <Heading as="h1" size="lg" letterSpacing={'tighter'}>
                   <Link href={'/'}>innerCircle</Link>
                </Heading>
-               <ButtonGroup spacing="1" px={isDesktop ? '50px' : '0'} >
+               {session ? <ButtonGroup spacing="1" px={isDesktop ? '50px' : '0'} >
                   <Link href={'/'}><Button color='white' colorScheme={'twitter'} fontSize='xl' variant='ghost'>Discover</Button></Link>
-               </ButtonGroup>
+               </ButtonGroup> : undefined}
             </Flex>
             <Flex direction={'row'}>
                <Box>

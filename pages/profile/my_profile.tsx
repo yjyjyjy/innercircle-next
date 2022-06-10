@@ -27,10 +27,11 @@ import {
    useState,
 } from 'react'
 import MemberProfileCard, {
-   UserProfileData,
+   // UserProfileData,
 } from '../../components/profile/MemberProfileCard'
 import { ESession } from '../index'
 import { Field, Form, Formik } from 'formik'
+
 // DB design:
 // user to profile mapping should be many to one. Each log in creates a new user. But multiple users can be tied to the same profile.
 // We will provide email log in and Google log in only. So they are both tied to email. and that will serve as a join key to find profiles.
@@ -85,7 +86,15 @@ export async function getServerSideProps(context) {
          id: userID,
       },
       include: {
-         user_profile: true,
+         user_profile: {
+            include: {
+               user_profile_to_conference_mapping: {
+                  include: {
+                     conference: true
+                  }
+               }
+            }
+         },
       },
    })
 
@@ -106,16 +115,18 @@ interface formikContext {
       value: any,
       shouldValidate?: boolean | undefined
    ) => void
-   values: UserProfileData
+   values: UserProfile
 }
 
 const FormContext = createContext<formikContext>({
    setFieldValue: () => null,
-   values: {} as UserProfileData,
+   values: {} as UserProfile,
 })
 
 const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
    const { user_profile } = user
+
+
 
    const toast = useToast()
    const createOrUpdateUserProfile = async (formData) => {
@@ -163,13 +174,13 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
       )
    }
 
-   const initialValues = (): UserProfileData => {
+   const initialValues = (): UserProfile => {
       return {
          profile_name: user_profile?.profile_name
             ? user_profile.profile_name
             : user.name
-            ? user.name
-            : '',
+               ? user.name
+               : '',
          handle: user_profile?.handle,
          bio_short: user_profile?.bio_short,
          bio: user_profile?.bio,
@@ -217,14 +228,14 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
          label_text_open_to_discover_new_project:
             user_profile?.label_text_open_to_discover_new_project,
          label_text_open_to_work: user_profile?.label_text_open_to_work,
-      } as UserProfileData
+      } as UserProfile
    }
 
-   const [formData, setFormData] = useState<UserProfileData>(initialValues())
+   const [formData, setFormData] = useState<UserProfile>(initialValues())
 
    const [isLargerThan1280] = useMediaQuery('(min-width: 1290px)')
 
-   const validateFields = (values: UserProfileData) => {
+   const validateFields = (values: UserProfile) => {
       const errors = {}
       if (!values.handle.match(/^[a-zA-Z0-9_]*$/)) {
          errors['handle'] = 'Handle can only contain a-z A-Z 0-9 or _'
@@ -262,7 +273,6 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
          >
             <Formik
                onSubmit={(values, actions) => {
-                  console.log(values)
                   setTimeout(async () => {
                      await createOrUpdateUserProfile(values)
                      actions.setSubmitting(false)
@@ -568,9 +578,10 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
                               colorScheme="blue"
                               isLoading={isSubmitting}
                               type="submit"
+                              bg={'cyan.400'}
                               w={100}
                            >
-                              Submit
+                              Save
                            </Button>
                         </Flex>
                      </Form>
@@ -595,8 +606,8 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
 const SkillCheckBox: React.FC<{
    dataKey: string
    skill_text: string
-   formData: UserProfileData
-   setFormData: Dispatch<SetStateAction<UserProfileData>>
+   formData: UserProfile
+   setFormData: Dispatch<SetStateAction<UserProfile>>
 }> = ({ dataKey, skill_text }) => {
    const { setFieldValue, values } = useContext(FormContext)
 
@@ -626,7 +637,7 @@ const SkillCheckBox: React.FC<{
             w={'100%'}
             h={'100%'}
             bg={values[`${dataKey}`] ? 'blue.300' : 'white'}
-            _hover={{ cursor: 'pointer' }}
+            _hover={{ cursor: 'pointer', bg: '#9de1fc' }}
          >
             <Text
                color={values[`${dataKey}`] ? 'white' : 'blue.300'}
