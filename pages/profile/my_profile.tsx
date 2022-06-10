@@ -31,8 +31,6 @@ import MemberProfileCard, {
 } from '../../components/profile/MemberProfileCard'
 import { ESession } from '../index'
 import { Field, Form, Formik } from 'formik'
-import { useEffect } from 'react'
-
 // DB design:
 // user to profile mapping should be many to one. Each log in creates a new user. But multiple users can be tied to the same profile.
 // We will provide email log in and Google log in only. So they are both tied to email. and that will serve as a join key to find profiles.
@@ -143,7 +141,21 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
          <Checkbox
             p={1}
             name={dataKey}
-            onChange={() => setFieldValue(dataKey, !values[`${dataKey}`])}
+            onChange={() => {
+               const selectedLabel = Object.keys(values).filter(
+                  (dataKey) =>
+                     dataKey.startsWith('label_') &&
+                     values[`${dataKey}`] === true
+               )
+               //If trying to add new label
+               if (selectedLabel.length < 5 && !values[`${dataKey}`]) {
+                  setFieldValue(dataKey, true)
+               }
+               //If trying to de-select a label
+               else if (values[`${dataKey}`]) {
+                  setFieldValue(dataKey, false)
+               }
+            }}
             isChecked={values[`${dataKey}`]}
          >
             {text}
@@ -153,7 +165,11 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
 
    const initialValues = (): UserProfileData => {
       return {
-         profile_name: user_profile?.profile_name ? user_profile.profile_name : user.name ? user.name : '',
+         profile_name: user_profile?.profile_name
+            ? user_profile.profile_name
+            : user.name
+            ? user.name
+            : '',
          handle: user_profile?.handle,
          bio_short: user_profile?.bio_short,
          bio: user_profile?.bio,
@@ -228,7 +244,8 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
             'Profile name must be no more than 20 characters long'
       }
       if (values.bio_short && values.bio_short.length > 70) {
-         errors['bio_short'] = 'Short bio exceeded max length limit of 70 characters'
+         errors['bio_short'] =
+            'Short bio exceeded max length limit of 70 characters'
       }
       if (values.bio && values.bio.length > 400) {
          errors['bio'] = 'Bio exceeded max length limit of 400 characters'
@@ -270,7 +287,8 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
                                     isRequired
                                     isInvalid={!!form.errors.profile_name}
                                     maxW={'450px'}
-                                    pt={3}>
+                                    pt={3}
+                                 >
                                     <FormLabel
                                        fontSize={'lg'}
                                        fontWeight={'bold'}
@@ -294,7 +312,8 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
                                     isRequired
                                     isInvalid={!!form.errors.handle}
                                     maxW={'450px'}
-                                    pt={3}>
+                                    pt={3}
+                                 >
                                     <FormLabel
                                        fontSize={'lg'}
                                        fontWeight={'bold'}
@@ -315,7 +334,8 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
                                     isRequired
                                     isInvalid={!!form.errors.bio_short}
                                     maxW={'450px'}
-                                    pt={3}>
+                                    pt={3}
+                                 >
                                     <FormLabel
                                        fontSize={'lg'}
                                        fontWeight={'bold'}
@@ -333,7 +353,8 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
                               {({ field, form }) => (
                                  <FormControl
                                     isInvalid={!!form.errors.bio}
-                                    pt={3}>
+                                    pt={3}
+                                 >
                                     <FormLabel
                                        fontSize={'lg'}
                                        fontWeight={'bold'}
@@ -349,8 +370,10 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
                            </Field>
                            <Flex direction={'column'} maxW={'400px'}>
                               <Text fontSize={'lg'} fontWeight="bold" py={4}>
-                                 How innerCircle community can help you?
+                                 How innerCircle community can help you? (up to
+                                 5)
                               </Text>
+
                               <OpenToCheckBox
                                  dataKey="label_hiring"
                                  text="I'm hiring"
@@ -580,7 +603,20 @@ const SkillCheckBox: React.FC<{
    return (
       <GridItem
          h={'50px'}
-         onClick={() => setFieldValue(dataKey, !values[`${dataKey}`])}
+         onClick={() => {
+            const selectedSkills = Object.keys(values).filter(
+               (dataKey) =>
+                  dataKey.startsWith('skill_') && values[`${dataKey}`] === true
+            )
+            //If trying to add new skill
+            if (selectedSkills.length < 5 && !values[`${dataKey}`]) {
+               setFieldValue(dataKey, true)
+            }
+            //If trying to de-select a label
+            else if (values[`${dataKey}`]) {
+               setFieldValue(dataKey, false)
+            }
+         }}
       >
          <Center
             borderWidth={'1px'}
