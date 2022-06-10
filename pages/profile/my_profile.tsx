@@ -216,24 +216,24 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
          errors['handle'] = 'Handle can only contain a-z A-Z 0-9 or _'
       }
       if (values.handle.length > 20) {
-         errors['handle'] = 'Handle must be less than 20 charectors'
+         errors['handle'] = 'Handle must be no more than 20 characters'
       }
       if (values.handle.length < 3) {
-         errors['handle'] = 'Handle must be at least 3 charectors long'
+         errors['handle'] = 'Handle must be at least 3 characters long'
       }
       if (values.profile_name.length < 3) {
          errors['profile_name'] =
-            'Profile name must be at least 3 charectors long'
+            'Profile name must be at least 3 characters long'
       }
       if (values.profile_name.length > 20) {
          errors['profile_name'] =
-            'Profile name must be less than 20 charectors long'
+            'Profile name must be no more than 20 characters long'
       }
       if (values.bio_short && values.bio_short.length > 70) {
-         errors['bio_short'] = 'Short bio must be less than 70 charectors long'
+         errors['bio_short'] = 'Short bio exceeded max length limit of 70 characters'
       }
       if (values.bio && values.bio.length > 400) {
-         errors['bio'] = 'Short bio must be less than 400 charectors long'
+         errors['bio'] = 'Bio exceeded max length limit of 400 characters'
       }
       return errors
    }
@@ -268,7 +268,11 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
                         <Flex direction={'column'} fontWeight="bold">
                            <Field name="profile_name">
                               {({ field, form }) => (
-                                 <FormControl isRequired maxW={'450px'} pt={3}>
+                                 <FormControl
+                                    isRequired
+                                    isInvalid={!!form.errors.profile_name}
+                                    maxW={'450px'}
+                                    pt={3}>
                                     <FormLabel
                                        fontSize={'lg'}
                                        fontWeight={'bold'}
@@ -280,15 +284,19 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
                                        {...field}
                                        id="profile_name"
                                     />
-                                    <FormHelperText>
+                                    <FormErrorMessage>
                                        {form.errors.profile_name}
-                                    </FormHelperText>
+                                    </FormErrorMessage>
                                  </FormControl>
                               )}
                            </Field>
                            <Field name="handle">
                               {({ field, form }) => (
-                                 <FormControl isRequired maxW={'450px'} pt={3}>
+                                 <FormControl
+                                    isRequired
+                                    isInvalid={!!form.errors.handle}
+                                    maxW={'450px'}
+                                    pt={3}>
                                     <FormLabel
                                        fontSize={'lg'}
                                        fontWeight={'bold'}
@@ -297,15 +305,19 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
                                        url)
                                     </FormLabel>
                                     <Input placeholder="handle" {...field} />
-                                    <FormHelperText>
+                                    <FormErrorMessage>
                                        {form.errors.handle}
-                                    </FormHelperText>
+                                    </FormErrorMessage>
                                  </FormControl>
                               )}
                            </Field>
                            <Field name="bio_short">
                               {({ field, form }) => (
-                                 <FormControl isRequired maxW={'450px'} pt={3}>
+                                 <FormControl
+                                    isRequired
+                                    isInvalid={!!form.errors.bio_short}
+                                    maxW={'450px'}
+                                    pt={3}>
                                     <FormLabel
                                        fontSize={'lg'}
                                        fontWeight={'bold'}
@@ -313,15 +325,17 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
                                        Your one-liner intro
                                     </FormLabel>
                                     <Input name="bio_short" {...field} />
-                                    <FormHelperText>
+                                    <FormErrorMessage>
                                        {form.errors.bio_short}
-                                    </FormHelperText>
+                                    </FormErrorMessage>
                                  </FormControl>
                               )}
                            </Field>
                            <Field name="bio">
                               {({ field, form }) => (
-                                 <FormControl pt={3}>
+                                 <FormControl
+                                    isInvalid={!!form.errors.bio}
+                                    pt={3}>
                                     <FormLabel
                                        fontSize={'lg'}
                                        fontWeight={'bold'}
@@ -329,9 +343,9 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
                                        Bio & what you are looking for
                                     </FormLabel>
                                     <Textarea name="bio" {...field} />
-                                    <FormHelperText>
+                                    <FormErrorMessage>
                                        {form.errors.bio}
-                                    </FormHelperText>
+                                    </FormErrorMessage>
                                  </FormControl>
                               )}
                            </Field>
