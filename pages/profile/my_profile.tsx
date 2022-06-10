@@ -14,7 +14,6 @@ import {
    useMediaQuery,
    useToast,
    FormErrorMessage,
-   FormHelperText,
 } from '@chakra-ui/react'
 import prisma from '../../lib/prisma'
 import { getSession } from 'next-auth/react'
@@ -154,11 +153,10 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
 
    const initialValues = (): UserProfileData => {
       return {
-         profile_name: user_profile?.profile_name,
+         profile_name: user_profile?.profile_name ? user_profile.profile_name : user.name ? user.name : '',
          handle: user_profile?.handle,
          bio_short: user_profile?.bio_short,
          bio: user_profile?.bio,
-         email: user_profile?.email,
          linkedin: user_profile?.linkedin,
          twitter: user_profile?.twitter,
          profile_picture: user_profile?.profile_picture,
