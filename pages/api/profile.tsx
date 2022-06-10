@@ -40,6 +40,27 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
          return
       }
 
+      const skills = Object.keys(payloadData).filter(
+         (datakey) => payloadData[`${datakey}`] && datakey.startsWith('skill_')
+      )
+      const labels = Object.keys(payloadData).filter(
+         (datakey) => payloadData[`${datakey}`] && datakey.startsWith('label_')
+      )
+
+      if (skills.length > 5) {
+         res.status(500).json({
+            message: 'Can only select up to 5 skills',
+         })
+         return
+      }
+
+      if (labels.length > 5) {
+         res.status(500).json({
+            message: 'Can only select up to 5 labels',
+         })
+         return
+      }
+
       //Check if handle is already in use by other user
       const existingProfileWithHandle = await prisma.user_profile.findUnique({
          where: {
