@@ -92,8 +92,6 @@ export async function getServerSideProps(context) {
       },
    })
 
-   console.log(user)
-
    return {
       props: {
          user: JSON.parse(JSON.stringify(user)),
@@ -231,8 +229,8 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
          errors['profile_name'] =
             'Profile name must be less than 20 charectors long'
       }
-      if (values.bio_short && values.bio_short.length > 50) {
-         errors['bio_short'] = 'Short bio must be less than 50 charectors long'
+      if (values.bio_short && values.bio_short.length > 70) {
+         errors['bio_short'] = 'Short bio must be less than 70 charectors long'
       }
       if (values.bio && values.bio.length > 400) {
          errors['bio'] = 'Short bio must be less than 400 charectors long'
