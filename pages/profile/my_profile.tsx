@@ -216,9 +216,27 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
       const errors = {}
       if (!values.handle.match(/^[a-zA-Z0-9_]*$/)) {
          errors['handle'] = 'Handle can only contain a-z A-Z 0-9 or _'
-         // console.log('FOUND ERROR IN HANDLE')
       }
-      // console.log(errors)
+      if (values.handle.length > 20) {
+         errors['handle'] = 'Handle must be less than 20 charectors'
+      }
+      if (values.handle.length < 3) {
+         errors['handle'] = 'Handle must be at least 3 charectors long'
+      }
+      if (values.profile_name.length < 3) {
+         errors['profile_name'] =
+            'Profile name must be at least 3 charectors long'
+      }
+      if (values.profile_name.length > 20) {
+         errors['profile_name'] =
+            'Profile name must be less than 20 charectors long'
+      }
+      if (values.bio_short && values.bio_short.length > 50) {
+         errors['bio_short'] = 'Short bio must be less than 50 charectors long'
+      }
+      if (values.bio && values.bio.length > 400) {
+         errors['bio'] = 'Short bio must be less than 400 charectors long'
+      }
       return errors
    }
 
@@ -264,6 +282,9 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
                                        {...field}
                                        id="profile_name"
                                     />
+                                    <FormHelperText>
+                                       {form.errors.profile_name}
+                                    </FormHelperText>
                                  </FormControl>
                               )}
                            </Field>
@@ -294,9 +315,9 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
                                        Your one-liner intro
                                     </FormLabel>
                                     <Input name="bio_short" {...field} />
-                                    <FormErrorMessage>
+                                    <FormHelperText>
                                        {form.errors.bio_short}
-                                    </FormErrorMessage>
+                                    </FormHelperText>
                                  </FormControl>
                               )}
                            </Field>
@@ -310,9 +331,9 @@ const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
                                        Bio & what you are looking for
                                     </FormLabel>
                                     <Textarea name="bio" {...field} />
-                                    <FormErrorMessage>
+                                    <FormHelperText>
                                        {form.errors.bio}
-                                    </FormErrorMessage>
+                                    </FormHelperText>
                                  </FormControl>
                               )}
                            </Field>

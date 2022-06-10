@@ -167,7 +167,7 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile }) => {
          direction={'column'}
          p={6}
          maxW={'450px'}
-         maxH={'950px'}
+         maxH={'1100px'}
          boxShadow={'xl'}
          rounded={'lg'}
       >
