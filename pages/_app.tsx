@@ -1,10 +1,17 @@
 import { AppProps } from "next/app";
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import Layout from "../components/Layout";
 import Head from "next/head";
 import Script from "next/script";
 import * as gtag from "../lib/gtag";
 import { SessionProvider } from "next-auth/react";
+// import { MultiSelectTheme } from "chakra-multiselect";
+
+// const theme = extendTheme({
+//   components: {
+//     MultiSelect: MultiSelectTheme
+//   }
+// })
 
 const App = ({ Component, pageProps: { session, ...pageProps } }: AppProps) => {
   return (

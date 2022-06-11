@@ -421,7 +421,7 @@ const MyProfile = ({ user }) => {
                            </Flex>
                            <Flex direction={'column'} py={3}>
                               <Text fontSize={'lg'} fontWeight="bold" py={4}>
-                                 What are your super powers? (up to 5)
+                                 What are your super powers? (Please select up to 5)
                               </Text>
                               <Grid
                                  templateColumns={
@@ -608,11 +608,11 @@ const MyProfile = ({ user }) => {
 const SkillCheckBox: React.FC<{
    dataKey: string
    skill_text: string
+   colorTheme?: string
    formData: UserProfileWithConferences
    setFormData: Dispatch<SetStateAction<UserProfileWithConferences>>
-}> = ({ dataKey, skill_text }) => {
+}> = ({ dataKey, skill_text, colorTheme = 'blue' }) => {
    const { setFieldValue, values } = useContext(FormContext)
-
    return (
       <GridItem
          h={'50px'}
@@ -635,21 +635,23 @@ const SkillCheckBox: React.FC<{
             borderWidth={'1px'}
             borderRadius="md"
             overflow={'hidden'}
-            borderColor="blue.300"
+            borderColor={colorTheme + ".300"}
             w={'100%'}
             h={'100%'}
-            bg={values[`${dataKey}`] ? 'blue.300' : 'white'}
-            _hover={{ cursor: 'pointer', bg: '#9de1fc' }}
+            bg={values[`${dataKey}`] ? colorTheme + '.300' : 'white'}
+            _hover={{
+               cursor: 'pointer', bg: colorTheme + '.100'
+            }}
          >
             <Text
-               color={values[`${dataKey}`] ? 'white' : 'blue.300'}
+               color={values[`${dataKey}`] ? 'White' : colorTheme + '.300'}
                fontSize={'md'}
                fontWeight={'medium'}
             >
                {skill_text}
             </Text>
          </Center>
-      </GridItem>
+      </GridItem >
    )
 }
 

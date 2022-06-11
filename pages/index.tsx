@@ -14,14 +14,29 @@ import {
   Center,
   GridItem,
   Grid,
-  useMergeRefs,
   useMediaQuery,
+  Tag,
+  TagLeftIcon,
+  TagLabel,
+  VStack,
+  FormLabel,
 } from "@chakra-ui/react";
+
 import { getSession, useSession } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Session } from 'next-auth'
 import prisma from '../lib/prisma'
-import MemberProfileCard from "../components/profile/MemberProfileCard";
+import MemberProfileCard, { columnNameToTagTextMapping } from "../components/profile/MemberProfileCard";
+import { includes } from "lodash";
+import { AddIcon } from "@chakra-ui/icons";
+import { string } from "prop-types";
+import {
+  Select,
+  CreatableSelect,
+  AsyncSelect,
+  OptionBase,
+  GroupBase
+} from "chakra-react-select";
 
 export interface ESession extends Session {
   userID: string
@@ -54,30 +69,103 @@ export async function getServerSideProps(context) {
     }
   }
 
-  const profiles = await prisma.user_profile.findMany()
+  const profiles = await prisma.user_profile.findMany({
+    include: {
+      user_profile_to_conference_mapping: {
+        include: { conference: true }
+      }
+    }
+  })
+
+  const conferences = await prisma.conference.findMany({
+    where: {
+      end_date: { gte: new Date() }
+    },
+    orderBy: { end_date: 'asc' },
+    take: 10
+  })
+
   return {
     props: {
-      userProfiles: profiles,
+      userProfiles: JSON.parse(JSON.stringify(profiles)),
+      conferences: JSON.parse(JSON.stringify(conferences)),
     },
   }
 }
 
 export default function (props) {
+
+
   const { data: session, status } = useSession() // "loading" | "authenticated" | "unauthenticated"
-  const [searchText, setSearchText] = useState('')
   const [isLargerThan1280] = useMediaQuery('(min-width: 1290px)')
-  const onChangeHandler = (e) => {
+
+  const [searchText, setSearchText] = useState('')
+  const onSearchTextChangeHandler = (e) => {
     setSearchText(e.target.value)
     console.log(searchText)
   }
 
+  interface IFilterState {
+    conferences: string[],
+    skills: string[],
+    labels: string[]
+  }
+
+  const [filterState, setFilterState] = useState<IFilterState>({
+    conferences: [],
+    skills: [],
+    labels: []
+  })
+  const onConferenceFilterClickHandler = ({ name }) => {
+    if (filterState.conferences.includes(name))
+      setFilterState({ ...filterState, conferences: filterState.conferences.filter(item => item !== name) })
+    else {
+      setFilterState({ ...filterState, conferences: [...filterState.conferences, name] })
+    }
+  }
+
+  const filterTag = (
+    {
+      name,
+      label,
+      isChecked = false,
+      colorTheme = 'blue' }
+  ) => (
+    <Box
+      p={2}
+      key={name}
+    >
+      <Tag
+        size={'lg'}
+        onClick={() => onConferenceFilterClickHandler({ name })}
+        variant={isChecked ? 'solid' : 'outline'}
+        colorScheme={colorTheme}
+        _hover={{ cursor: 'pointer', bg: colorTheme + '.100' }}
+      >
+        <TagLeftIcon boxSize='12px' as={AddIcon} />
+        <TagLabel>{label}</TagLabel>
+      </Tag >
+    </Box>
+  )
 
   if (status === 'loading') {
     return <h1>Loading</h1>
   }
 
-  if (status === 'authenticated') { // signed in user experience
+  interface FilterOption extends OptionBase {
+    label: string;
+    value: string;
+    color?: string;
+  }
 
+
+  // signed in user experience
+  if (status === 'authenticated') {
+
+    const skillLabelSelectOptions = Object.keys(columnNameToTagTextMapping).map(dataKey => (
+      { value: dataKey, label: columnNameToTagTextMapping[dataKey], color: 'blue' }
+    ))
+    console.log(filterState)
 
     return (
       <Flex direction={"column"}>
@@ -88,8 +176,8 @@ export default function (props) {
                 <Input
                   value={searchText}
                   name='profile_name'
-                  placeholder="Search in name, bio, skillset... "
-                  onChange={(e) => onChangeHandler(e)}
+                  placeholder="Search in name, bio, skill, need ..."
+                  onChange={(e) => onSearchTextChangeHandler(e)}
                 />
               </FormControl>
               <Button
@@ -101,19 +189,64 @@ export default function (props) {
             </Flex>
           </form>
         </Center>
-        <Flex direction={'row'}>
-          Conferences
+
+        <Flex direction={'row'} wrap={'wrap'} >
+          <Text
+            transform="translateY(25%)"
+            fontWeight={'bold'}
+            pr={'2'}
+          >Filter on conferences:</Text>
+          {/* {props.conferences.map(
+            conf => filterTag(
+              { name: conf.id, label: conf.conference_name, isChecked: filterState.conferences.includes(conf.id) }
+            ))} */}
         </Flex>
-        <Flex direction={'row'}>
-          Skills
+
+        <Flex direction={'row'} wrap={'wrap'}>
+          <Text
+            transform="translateY(25%)"
+            fontWeight={'bold'}
+            pr={'2'}
+          >Filter on their skills / experiences:</Text>
+          <FormControl py={3} display={"inline"}>
+            <Select<FilterOption, true, GroupBase<FilterOption>>
+              isMulti
+              name="colors"
+              colorScheme="purple"
+              options={skillLabelSelectOptions.filter(item => item.value.startsWith('skill_'))}
+              placeholder="Select the skills they have ..."
+              closeMenuOnSelect={false}
+              onChange={e => {
+                setFilterState({ ...filterState, skills: e.map(item => item.value) || [] })
+              }}
+            />
+          </FormControl>
         </Flex>
-        <Flex direction={'row'}>
-          Open to...
+
+        <Flex direction={'row'} wrap={'wrap'}>
+          <Text
+            transform="translateY(25%)"
+            fontWeight={'bold'}
+            pr={'2'}
+          >Filter on their needs:</Text>
+          <FormControl py={3} display={"inline"}>
+            <Select<FilterOption, true, GroupBase<FilterOption>>
+              isMulti
+              name="colors"
+              colorScheme="pink"
+              options={skillLabelSelectOptions.filter(item => item.value.startsWith('label_'))}
+              placeholder="Select the skills they have ..."
+              closeMenuOnSelect={false}
+              onChange={e => {
+                setFilterState({ ...filterState, labels: e.map(item => item.value) || [] })
+              }}
+            />
+          </FormControl>
         </Flex>
 
         <Grid templateColumns={isLargerThan1280 ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)'} gap={3}>
           {props.userProfiles.map(userProfile => (
-            <GridItem>
+            <GridItem key={userProfile.id}>
               <MemberProfileCard user_profile={userProfile} />
             </GridItem>
           ))}
