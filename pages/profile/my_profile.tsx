@@ -18,7 +18,7 @@ import {
 import prisma from '../../lib/prisma'
 import { getSession } from 'next-auth/react'
 
-import { User, user_profile as UserProfile, user_profile_to_conference_mapping as UserProfileToConferenceMapping, conference as Conference } from '@prisma/client'
+import { User, user_profile as UserProfile } from '@prisma/client'
 import {
    createContext,
    Dispatch,
