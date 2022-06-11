@@ -59,7 +59,6 @@ export async function getServerSideProps(context) {
   })
 
   if (authUserWithProfile?.id && !authUserWithProfile.user_profile?.handle) {
-    console.log('here')
     return {
       redirect: {
         permanent: false,
@@ -94,8 +93,6 @@ export async function getServerSideProps(context) {
 }
 
 export default function (props) {
-
-
   const { data: session, status } = useSession() // "loading" | "authenticated" | "unauthenticated"
   const [isLargerThan1280] = useMediaQuery('(min-width: 1290px)')
 
@@ -162,6 +159,18 @@ export default function (props) {
   // signed in user experience
   if (status === 'authenticated') {
 
+    const userProfiles = props.userProfiles.map(
+      userProfile => (
+        {
+          ...userProfile,
+          conference_ids: userProfile.user_profile_to_conference_mapping.map(
+            m => m.conference.id
+          )
+        }
+      )
+    )
+    console.log(userProfiles)
+
     const skillLabelSelectOptions = Object.keys(columnNameToTagTextMapping).map(dataKey => (
       { value: dataKey, label: columnNameToTagTextMapping[dataKey], color: 'blue' }
     ))
@@ -196,10 +205,10 @@ export default function (props) {
             fontWeight={'bold'}
             pr={'2'}
           >Filter on conferences:</Text>
-          {/* {props.conferences.map(
+          {props.conferences.map(
             conf => filterTag(
               { name: conf.id, label: conf.conference_name, isChecked: filterState.conferences.includes(conf.id) }
-            ))} */}
+            ))}
         </Flex>
 
         <Flex direction={'row'} wrap={'wrap'}>
@@ -235,7 +244,7 @@ export default function (props) {
               name="colors"
               colorScheme="pink"
               options={skillLabelSelectOptions.filter(item => item.value.startsWith('label_'))}
-              placeholder="Select the skills they have ..."
+              placeholder="Select the need they expressed ..."
               closeMenuOnSelect={false}
               onChange={e => {
                 setFilterState({ ...filterState, labels: e.map(item => item.value) || [] })
@@ -245,7 +254,9 @@ export default function (props) {
         </Flex>
 
         <Grid templateColumns={isLargerThan1280 ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)'} gap={3}>
-          {props.userProfiles.map(userProfile => (
+          {userProfiles.filter(
+            userProfile => filterState.conferences.length === 0 || userProfile.conference_ids.some(r => filterState.conferences.indexOf(r) >= 0)
+          ).map(userProfile => (
             <GridItem key={userProfile.id}>
               <MemberProfileCard user_profile={userProfile} />
             </GridItem>
