@@ -22,7 +22,7 @@ import {
   FormLabel,
 } from "@chakra-ui/react";
 
-import { getSession, useSession } from "next-auth/react";
+import { getSession, useSession, signIn } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { Session } from 'next-auth'
 import prisma from '../lib/prisma'
@@ -185,16 +185,17 @@ export default function (props) {
                 <Input
                   value={searchText}
                   name='profile_name'
-                  placeholder="Search in name, bio, skill, need ..."
+                  placeholder="Search in name, bio (coming soon ...)"
                   onChange={(e) => onSearchTextChangeHandler(e)}
                 />
               </FormControl>
               <Button
                 colorScheme='blue'
                 type='submit'
-                w={100}
+                disabled={true}
+                w={150}
                 mt={3}
-              >Search</Button>
+              >Coming soon</Button>
             </Flex>
           </form>
         </Center>
@@ -294,7 +295,7 @@ export default function (props) {
               >
                 Revolution
               </Text>{" "}
-              can Happen Faster
+              Happens Faster
             </Heading>
             <Box w="300px">
               <Image src="/profile_example.png" />
@@ -313,13 +314,13 @@ export default function (props) {
                 lineHeight={1.1}
                 fontSize={{ base: "2xl", sm: "3xl", md: "4xl" }}
               >
-                Join the Party
+
                 <Text
                   as={"span"}
                   bgGradient="linear(to-r, red.400,pink.400)"
                   bgClip="text"
                 >
-                  !
+                  Join the Party!
                 </Text>
               </Heading>
               <Text color={"gray.500"} fontSize={{ base: "sm", sm: "md" }}>
@@ -327,24 +328,25 @@ export default function (props) {
                 and connect with an amazing network of the web3 buiders.
               </Text>
             </Stack>
-            <Link
+            {/* <Link
               href={"https://9bk2r1lhrv9.typeform.com/to/cCU2tLnN"}
               isExternal
+            > */}
+            <Button
+              fontFamily={"heading"}
+              mt={3}
+              w={"full"}
+              bgGradient="linear(to-r, red.400,pink.400)"
+              color={"white"}
+              _hover={{
+                bgGradient: "linear(to-r, red.400,pink.400)",
+                boxShadow: "xl",
+              }}
+              onClick={() => signIn()}
             >
-              <Button
-                fontFamily={"heading"}
-                mt={3}
-                w={"full"}
-                bgGradient="linear(to-r, red.400,pink.400)"
-                color={"white"}
-                _hover={{
-                  bgGradient: "linear(to-r, red.400,pink.400)",
-                  boxShadow: "xl",
-                }}
-              >
-                Get Started
-              </Button>
-            </Link>
+              Get Started!
+            </Button>
+            {/* </Link> */}
           </Stack>
         </Container>
       </Box>

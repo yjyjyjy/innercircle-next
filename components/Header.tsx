@@ -100,7 +100,7 @@ const Header: React.FC = (props) => {
                         colorScheme={'blue'}
                         onClick={() => signIn()}
                      >
-                        Sign In
+                        Sign On
                      </Button>
                   )}
                </Box>

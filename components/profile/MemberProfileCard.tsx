@@ -20,7 +20,8 @@ export type UserProfileWithConferences = UserProfile & {
 }
 
 type Props = {
-   user_profile: UserProfileWithConferences
+   user_profile: UserProfileWithConferences,
+   mini?: boolean
 }
 
 export const columnNameToTagTextMapping = {
@@ -58,7 +59,7 @@ export const columnNameToTagTextMapping = {
 }
 
 
-const MemberProfileCard: React.FC<Props> = ({ user_profile }) => {
+const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
 
    const {
       handle,
@@ -126,16 +127,16 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile }) => {
       <Stack
          direction={'column'}
          p={6}
-         maxW={'450px'}
-         maxH={'1100px'}
+         w={mini ? '350px' : '500px'}
+         maxH={'800px'}
          boxShadow={'xl'}
          rounded={'lg'}
       >
-         <ProfilePicture
+         {/* <ProfilePicture
             image_url={
                'https://en.gravatar.com/userimage/67165895/bd41f3f601291d2f313b1d8eec9f8a4d.jpg?size=200'
             }
-         />
+         /> */}
          <Flex direction={'row'} pt={4}>
             <Flex direction={'column'} w="60%" overflow={'hidden'}>
                <Text fontSize={'xl'} fontWeight={'bold'}>
@@ -143,13 +144,15 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile }) => {
                </Text>
                <Text fontSize={'sm'}>@{handle}</Text>
             </Flex>
-            <Tag variant={'outline'}>
-               <TagLeftIcon as={AiOutlineMail} />
-               <TagLabel>Message</TagLabel>
-            </Tag>
+            <Flex direction={'column'}>
+               <Button colorScheme={'blue'} disabled={true} w={'80px'} h={'30px'}>
+                  Connect
+               </Button>
+               <Text>(coming soon...)</Text>
+            </Flex>
          </Flex>
          <Text fontWeight="bold">{bio_short}</Text>
-         <Text>{bio}</Text>
+         <Text noOfLines={mini ? 2 : 6}>{bio}</Text>
          <Box>
             <Text fontWeight={'bold'}>I need:</Text>
             <Flex direction={'row'} wrap={'wrap'}>

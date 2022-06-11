@@ -133,9 +133,13 @@ const MyProfile = ({ user }) => {
    const toast = useToast()
 
    const createOrUpdateUserProfile = async (formData) => {
+      const userProfileToUpload = formData
+      delete userProfileToUpload.user_profile_to_conference_mapping
+      console.log(userProfileToUpload)
+
       const res = await fetch('/api/profile', {
          method: 'POST',
-         body: JSON.stringify(formData),
+         body: JSON.stringify(userProfileToUpload),
       })
       const { message } = await res.json()
       toast({
@@ -599,7 +603,7 @@ const MyProfile = ({ user }) => {
             <Text fontSize={'lg'} fontWeight="bold">
                Profile Preview
             </Text>
-            <MemberProfileCard user_profile={formData} />
+            <MemberProfileCard user_profile={formData} mini={false} />
          </Stack>
       </Stack>
    )
