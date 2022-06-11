@@ -128,7 +128,7 @@ const FormContext = createContext<formikContext>({
 
 const MyProfile = ({ user }) => {
    const { user_profile } = user
-   const conferences = user_profile.user_profile_to_conference_mapping.map(m => m.conference)
+   // const conferences = user_profile?.user_profile_to_conference_mapping.map(m => m.conference)
 
    const toast = useToast()
 
@@ -243,20 +243,20 @@ const MyProfile = ({ user }) => {
 
    const validateFields = (values: UserProfile) => {
       const errors = {}
-      if (!values.handle.match(/^[a-zA-Z0-9_]*$/)) {
+      if (!values.handle?.match(/^[a-zA-Z0-9_]*$/)) {
          errors['handle'] = 'Handle can only contain a-z A-Z 0-9 or _'
       }
-      if (values.handle.length > 20) {
+      if (values.handle?.length > 20) {
          errors['handle'] = 'Handle must be no more than 20 characters'
       }
-      if (values.handle.length < 3) {
+      if (values.handle?.length < 3) {
          errors['handle'] = 'Handle must be at least 3 characters long'
       }
-      if (values.profile_name.length < 3) {
+      if (values.profile_name?.length < 3) {
          errors['profile_name'] =
             'Profile name must be at least 3 characters long'
       }
-      if (values.profile_name.length > 20) {
+      if (values.profile_name?.length > 20) {
          errors['profile_name'] =
             'Profile name must be no more than 20 characters long'
       }
