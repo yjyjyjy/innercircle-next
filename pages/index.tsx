@@ -200,7 +200,7 @@ export default function (props) {
           </form>
         </Center>
 
-        <Flex direction={'row'} wrap={'wrap'} >
+        {/* <Flex direction={'row'} wrap={'wrap'} >
           <Text
             transform="translateY(25%)"
             fontWeight={'bold'}
@@ -210,7 +210,7 @@ export default function (props) {
             conf => filterTag(
               { name: conf.id, label: conf.conference_name, isChecked: filterState.conferences.includes(conf.id) }
             ))}
-        </Flex>
+        </Flex> */}
 
         <Flex direction={'row'} wrap={'wrap'}>
           <Text
