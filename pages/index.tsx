@@ -255,7 +255,11 @@ export default function (props) {
 
         <Grid templateColumns={isLargerThan1280 ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)'} gap={3}>
           {userProfiles.filter(
-            userProfile => filterState.conferences.length === 0 || userProfile.conference_ids.some(r => filterState.conferences.indexOf(r) >= 0)
+            userProfile => (
+              (filterState.conferences.length === 0 || userProfile.conference_ids.some(r => filterState.conferences.indexOf(r) >= 0))
+              && (filterState.skills.length === 0 || filterState.skills.map(k => userProfile[k]).some(v => v === true))
+              && (filterState.labels.length === 0 || filterState.labels.map(k => userProfile[k]).some(v => v === true))
+            )
           ).map(userProfile => (
             <GridItem key={userProfile.id}>
               <MemberProfileCard user_profile={userProfile} />
