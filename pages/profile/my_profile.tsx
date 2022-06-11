@@ -86,16 +86,15 @@ export async function getServerSideProps(context) {
          id: userID,
       },
       include: {
-         user_profile: true
-         // {
-         //    include: {
-         //       user_profile_to_conference_mapping: {
-         //          include: {
-         //             conference: true
-         //          }
-         //       }
-         //    }
-         // },
+         user_profile: {
+            include: {
+               user_profile_to_conference_mapping: {
+                  include: {
+                     conference: true
+                  }
+               }
+            }
+         },
       },
    })
 
