@@ -21,12 +21,16 @@ export default NextAuth({
    secret: process.env.SECRET,
    callbacks: {
       session: async ({ session, token }) => {
+         console.log('🔥🔥🔥🔥🔥🔥🔥')
+         console.log(session)
+         console.log(token)
          if (session?.user) {
             session.userID = token.uid
          }
          return session
       },
       jwt: async ({ user, token }) => {
+         console.log('🔥🔥😈😈😈😈😈')
          if (user) {
             token.uid = user.id
          }

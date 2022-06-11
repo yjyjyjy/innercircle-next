@@ -44,6 +44,7 @@ export interface ESession extends Session {
 
 export async function getServerSideProps(context) {
   const session = (await getSession(context)) as ESession
+  console.log(session)
 
   // If you haven't logged in, you can't use the tool yet.
   if (!session) {
@@ -53,6 +54,8 @@ export async function getServerSideProps(context) {
   }
 
   // If userID doesn't have a userprofile redirect
+
+
   const authUserWithProfile = await prisma.user.findUnique({
     where: { id: session.userID },
     include: { user_profile: true }
