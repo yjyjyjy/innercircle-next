@@ -13,22 +13,19 @@ import {
 import React from 'react'
 import ProfilePicture from './ProfilePicture'
 import { AiOutlineMail } from 'react-icons/ai'
-import { user_profile as UserProfile } from '@prisma/client'
+import { user_profile as UserProfile, user_profile_to_conference_mapping as UserProfileToConferenceMapping, conference as Conference } from '@prisma/client'
 
-export interface Conference {
-   id: number,
-   year: number,
-   conference_name: string,
-   location: string,
-   start_date: Date,
-   end_date: Date
+export type UserProfileWithConferences = UserProfile & {
+   user_profile_to_conference_mapping: UserProfileToConferenceMapping & { conference: Conference }[] | null
 }
 
 type Props = {
-   user_profile: UserProfile
+   user_profile: UserProfileWithConferences
 }
 
 const MemberProfileCard: React.FC<Props> = ({ user_profile }) => {
+   console.log("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥")
+   console.log(user_profile)
    const {
       handle,
       profile_name,

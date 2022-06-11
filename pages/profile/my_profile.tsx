@@ -18,7 +18,7 @@ import {
 import prisma from '../../lib/prisma'
 import { getSession } from 'next-auth/react'
 
-import { User, user_profile as UserProfile } from '@prisma/client'
+import { User, user_profile as UserProfile, user_profile_to_conference_mapping } from '@prisma/client'
 import {
    createContext,
    Dispatch,
@@ -26,9 +26,7 @@ import {
    useContext,
    useState,
 } from 'react'
-import MemberProfileCard, {
-   // UserProfileData,
-} from '../../components/profile/MemberProfileCard'
+import MemberProfileCard, { UserProfileWithConferences } from '../../components/profile/MemberProfileCard'
 import { ESession } from '../index'
 import { Field, Form, Formik } from 'formik'
 
@@ -86,6 +84,7 @@ export async function getServerSideProps(context) {
          id: userID,
       },
       include: {
+         // user_profile:
          user_profile: {
             include: {
                user_profile_to_conference_mapping: {
@@ -127,12 +126,12 @@ const FormContext = createContext<formikContext>({
    values: {} as UserProfile,
 })
 
-const MyProfile = (user) => {
+const MyProfile = ({ user }) => {
    const { user_profile } = user
-
-
+   const conferences = user_profile.user_profile_to_conference_mapping.map(m => m.conference)
 
    const toast = useToast()
+
    const createOrUpdateUserProfile = async (formData) => {
       const res = await fetch('/api/profile', {
          method: 'POST',
@@ -178,64 +177,63 @@ const MyProfile = (user) => {
       )
    }
 
-   const initialValues = (): UserProfile => {
-      return {
-         profile_name: user_profile?.profile_name
-            ? user_profile.profile_name
-            : user.name
-               ? user.name
-               : '',
-         handle: user_profile?.handle,
-         bio_short: user_profile?.bio_short,
-         bio: user_profile?.bio,
-         linkedin: user_profile?.linkedin,
-         twitter: user_profile?.twitter,
-         profile_picture: user_profile?.profile_picture,
+   const initialValues = {
+      profile_name: user_profile?.profile_name
+         ? user_profile.profile_name
+         : user.name
+            ? user.name
+            : '',
+      handle: user_profile?.handle,
+      bio_short: user_profile?.bio_short,
+      bio: user_profile?.bio,
+      linkedin: user_profile?.linkedin,
+      twitter: user_profile?.twitter,
+      profile_picture: user_profile?.profile_picture,
 
-         skill_artist: user_profile?.skill_artist,
-         skill_backend_eng: user_profile?.skill_backend_eng,
-         skill_blockchain_eng: user_profile?.skill_blockchain_eng,
-         skill_business_development: user_profile?.skill_business_development,
-         skill_community_manager: user_profile?.skill_community_manager,
-         skill_data_eng: user_profile?.skill_data_eng,
-         skill_data_science: user_profile?.skill_data_science,
-         skill_dev_ops: user_profile?.skill_dev_ops,
-         skill_developer_relations: user_profile?.skill_developer_relations,
-         skill_founder: user_profile?.skill_founder,
-         skill_frontend_eng: user_profile?.skill_frontend_eng,
-         skill_fullstack_eng: user_profile?.skill_fullstack_eng,
-         skill_game_dev: user_profile?.skill_game_dev,
-         skill_hareware_dev: user_profile?.skill_hareware_dev,
-         skill_i_bring_capital: user_profile?.skill_i_bring_capital,
-         skill_influencer_relations: user_profile?.skill_influencer_relations,
-         skill_investor_relations: user_profile?.skill_investor_relations,
-         skill_marketing_growth: user_profile?.skill_marketing_growth,
-         skill_product_designer: user_profile?.skill_product_designer,
-         skill_product_manager: user_profile?.skill_product_manager,
-         skill_social_media_influencer:
-            user_profile?.skill_social_media_influencer,
-         skill_technical_writer: user_profile?.skill_technical_writer,
-         skill_token_designer: user_profile?.skill_token_designer,
-         skill_web3_domain_expert: user_profile?.skill_web3_domain_expert,
+      skill_artist: user_profile?.skill_artist,
+      skill_backend_eng: user_profile?.skill_backend_eng,
+      skill_blockchain_eng: user_profile?.skill_blockchain_eng,
+      skill_business_development: user_profile?.skill_business_development,
+      skill_community_manager: user_profile?.skill_community_manager,
+      skill_data_eng: user_profile?.skill_data_eng,
+      skill_data_science: user_profile?.skill_data_science,
+      skill_dev_ops: user_profile?.skill_dev_ops,
+      skill_developer_relations: user_profile?.skill_developer_relations,
+      skill_founder: user_profile?.skill_founder,
+      skill_frontend_eng: user_profile?.skill_frontend_eng,
+      skill_fullstack_eng: user_profile?.skill_fullstack_eng,
+      skill_game_dev: user_profile?.skill_game_dev,
+      skill_hareware_dev: user_profile?.skill_hareware_dev,
+      skill_i_bring_capital: user_profile?.skill_i_bring_capital,
+      skill_influencer_relations: user_profile?.skill_influencer_relations,
+      skill_investor_relations: user_profile?.skill_investor_relations,
+      skill_marketing_growth: user_profile?.skill_marketing_growth,
+      skill_product_designer: user_profile?.skill_product_designer,
+      skill_product_manager: user_profile?.skill_product_manager,
+      skill_social_media_influencer:
+         user_profile?.skill_social_media_influencer,
+      skill_technical_writer: user_profile?.skill_technical_writer,
+      skill_token_designer: user_profile?.skill_token_designer,
+      skill_web3_domain_expert: user_profile?.skill_web3_domain_expert,
 
-         label_fundraising: user_profile?.label_fundraising,
-         label_hiring: user_profile?.label_hiring,
-         label_need_product_feedback: user_profile?.label_need_product_feedback,
-         label_on_core_team: user_profile?.label_on_core_team,
-         label_open_to_cofounder_matching:
-            user_profile?.label_open_to_cofounder_matching,
-         label_open_to_discover_new_project:
-            user_profile?.label_open_to_discover_new_project,
-         label_open_to_invest: user_profile?.label_open_to_invest,
-         label_open_to_work: user_profile?.label_open_to_work,
-         label_text_hiring: user_profile?.label_text_hiring,
-         label_text_open_to_discover_new_project:
-            user_profile?.label_text_open_to_discover_new_project,
-         label_text_open_to_work: user_profile?.label_text_open_to_work,
-      } as UserProfile
-   }
+      label_fundraising: user_profile?.label_fundraising,
+      label_hiring: user_profile?.label_hiring,
+      label_need_product_feedback: user_profile?.label_need_product_feedback,
+      label_on_core_team: user_profile?.label_on_core_team,
+      label_open_to_cofounder_matching:
+         user_profile?.label_open_to_cofounder_matching,
+      label_open_to_discover_new_project:
+         user_profile?.label_open_to_discover_new_project,
+      label_open_to_invest: user_profile?.label_open_to_invest,
+      label_open_to_work: user_profile?.label_open_to_work,
+      label_text_hiring: user_profile?.label_text_hiring,
+      label_text_open_to_discover_new_project:
+         user_profile?.label_text_open_to_discover_new_project,
+      label_text_open_to_work: user_profile?.label_text_open_to_work,
+      user_profile_to_conference_mapping: user_profile?.user_profile_to_conference_mapping,
+   } as UserProfileWithConferences
 
-   const [formData, setFormData] = useState<UserProfile>(initialValues())
+   const [formData, setFormData] = useState<UserProfileWithConferences>(initialValues)
 
    const [isLargerThan1280] = useMediaQuery('(min-width: 1290px)')
 
@@ -282,7 +280,7 @@ const MyProfile = (user) => {
                      actions.setSubmitting(false)
                   }, 5000)
                }}
-               initialValues={initialValues()}
+               initialValues={initialValues}
                validate={(values) => {
                   setFormData(values)
                   return validateFields(values)
@@ -610,8 +608,8 @@ const MyProfile = (user) => {
 const SkillCheckBox: React.FC<{
    dataKey: string
    skill_text: string
-   formData: UserProfile
-   setFormData: Dispatch<SetStateAction<UserProfile>>
+   formData: UserProfileWithConferences
+   setFormData: Dispatch<SetStateAction<UserProfileWithConferences>>
 }> = ({ dataKey, skill_text }) => {
    const { setFieldValue, values } = useContext(FormContext)
 
