@@ -86,15 +86,16 @@ export async function getServerSideProps(context) {
          id: userID,
       },
       include: {
-         user_profile: {
-            include: {
-               user_profile_to_conference_mapping: {
-                  include: {
-                     conference: true
-                  }
-               }
-            }
-         },
+         user_profile: true
+         // {
+         //    include: {
+         //       user_profile_to_conference_mapping: {
+         //          include: {
+         //             conference: true
+         //          }
+         //       }
+         //    }
+         // },
       },
    })
 
@@ -105,13 +106,13 @@ export async function getServerSideProps(context) {
    }
 }
 
-type UserJoinUserProfile = User & {
-   user_profile: UserProfile | null & {
-      user_profile_to_conference_mapping: UserProfileToConferenceMapping[] | null & {
-         conference: Conference
-      }
-   }
-}
+// type UserJoinUserProfile = User & {
+//    user_profile: UserProfile | null & {
+//       user_profile_to_conference_mapping: UserProfileToConferenceMapping | null & {
+//          conference: Conference
+//       }
+//    }
+// }
 
 interface formikContext {
    setFieldValue: (
@@ -127,7 +128,7 @@ const FormContext = createContext<formikContext>({
    values: {} as UserProfile,
 })
 
-const MyProfile = ({ user }: { user: UserJoinUserProfile }) => {
+const MyProfile = (user) => {
    const { user_profile } = user
 
 
