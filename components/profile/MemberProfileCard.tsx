@@ -60,6 +60,7 @@ export const columnNameToTagTextMapping = {
 
 
 const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
+   console.log(user_profile)
 
    const {
       handle,

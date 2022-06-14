@@ -44,7 +44,7 @@ export interface ESession extends Session {
 
 export async function getServerSideProps(context) {
   const session = (await getSession(context)) as ESession
-  console.log(session)
+
 
   // If you haven't logged in, you can't use the tool yet.
   if (!session) {
@@ -172,12 +172,10 @@ export default function (props) {
         }
       )
     )
-    console.log(userProfiles)
 
     const skillLabelSelectOptions = Object.keys(columnNameToTagTextMapping).map(dataKey => (
       { value: dataKey, label: columnNameToTagTextMapping[dataKey], color: 'blue' }
     ))
-    console.log(filterState)
 
     return (
       <Flex direction={"column"}>

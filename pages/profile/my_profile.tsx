@@ -134,8 +134,8 @@ const MyProfile = ({ user }) => {
 
    const createOrUpdateUserProfile = async (formData) => {
       const userProfileToUpload = formData
+      // need to delete addtional information before pushing to the backend.
       delete userProfileToUpload.user_profile_to_conference_mapping
-      console.log(userProfileToUpload)
 
       const res = await fetch('/api/profile', {
          method: 'POST',
