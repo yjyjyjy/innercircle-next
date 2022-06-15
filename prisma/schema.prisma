@@ -906,8 +906,8 @@ model user_profile {
   skill_investor_relations                                         Boolean?
   resume                                                           String?                              @db.VarChar
   User                                                             User                                 @relation(fields: [email], references: [email], onDelete: NoAction, onUpdate: NoAction)
-  connection_connection_user_profile_aTouser_profile               connection[]                         @relation("connection_user_profile_aTouser_profile")
-  connection_connection_user_profile_bTouser_profile               connection[]                         @relation("connection_user_profile_bTouser_profile")
+  connection_connection_user_profile_endTouser_profile             connection[]                         @relation("connection_user_profile_endTouser_profile")
+  connection_connection_user_profile_startTouser_profile           connection?                          @relation("connection_user_profile_startTouser_profile")
   connection_request_connection_request_initiator_idTouser_profile connection_request[]                 @relation("connection_request_initiator_idTouser_profile")
   connection_request_connection_request_requested_idTouser_profile connection_request[]                 @relation("connection_request_requested_idTouser_profile")
   user_profile_to_conference_mapping                               user_profile_to_conference_mapping[]
@@ -925,8 +925,8 @@ model user_profile_to_conference_mapping {
 model connection_request {
   initiator_id                                               Int
   requested_id                                               Int
-  created_at                                                 DateTime     @db.Date
-  confirmed_at                                               DateTime?    @db.Date
+  created_at                                                 DateTime     @db.Timestamp(6)
+  confirmed_at                                               DateTime?    @db.Timestamp(6)
   user_profile_connection_request_initiator_idTouser_profile user_profile @relation("connection_request_initiator_idTouser_profile", fields: [initiator_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user_profile_connection_request_requested_idTouser_profile user_profile @relation("connection_request_requested_idTouser_profile", fields: [requested_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
@@ -934,12 +934,11 @@ model connection_request {
 }
 
 model connection {
-  connection_id                                        String       @id @db.VarChar
-  created_at                                           DateTime     @db.Date
-  user_profile_a                                       Int
-  user_profile_b                                       Int
-  user_profile_connection_user_profile_aTouser_profile user_profile @relation("connection_user_profile_aTouser_profile", fields: [user_profile_a], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user_profile_connection_user_profile_bTouser_profile user_profile @relation("connection_user_profile_bTouser_profile", fields: [user_profile_b], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_profile_start                                       Int          @id
+  user_profile_end                                         Int
+  created_at                                               DateTime     @db.Timestamp(6)
+  user_profile_connection_user_profile_endTouser_profile   user_profile @relation("connection_user_profile_endTouser_profile", fields: [user_profile_end], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_profile_connection_user_profile_startTouser_profile user_profile @relation("connection_user_profile_startTouser_profile", fields: [user_profile_start], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@unique([user_profile_a, user_profile_b], map: "connection_idx_user_profiles")
+  @@unique([user_profile_start, user_profile_end], map: "connection_idx_user_profiles")
 }

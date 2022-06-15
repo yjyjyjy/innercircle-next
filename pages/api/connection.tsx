@@ -1,0 +1,135 @@
+import type { NextApiRequest, NextApiResponse } from 'next'
+import prisma from '../../lib/prisma'
+import { getSession } from 'next-auth/react'
+
+export default async (req: NextApiRequest, res: NextApiResponse) => {
+    // make sure user is signed in
+    const session = await getSession({ req })
+
+    if (!session || !session.userID || !session.user?.email) {
+        res.status(500).json({ message: 'Please log in first' })
+        return
+    }
+
+    // use Email to find the authUser's userProfile
+    const authUserEmail: string = session.user.email
+
+    const existingProfileWithEmail = await prisma.user_profile.findUnique({
+        where: {
+            email: authUserEmail,
+        },
+    })
+
+    if (!existingProfileWithEmail?.id) {
+        res.status(500).json({ message: 'User session error. Cannot find your own profile.' })
+        return
+    }
+
+    const authUserProfileId = existingProfileWithEmail.id
+
+    // extract targetUserProfileId
+    let targetUserProfileId
+    let requestedOperation
+    try {
+        const payloadData = JSON.parse(req.body)
+        targetUserProfileId = payloadData.targetUserProfileId
+        requestedOperation = payloadData.requestedOperation
+        if (!targetUserProfileId) {
+            res.status(500).json({ message: 'Invalidate request to connection api. Missing data or wrong format' })
+            return
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Invalidate request to connection api. Missing data or wrong format', error })
+        return
+    }
+
+    // POST -- connection request
+    if (req.method === 'POST') {
+
+        // check if it's connecting your own.
+        if (authUserProfileId === targetUserProfileId) {
+            res.status(500).json({ message: 'Invalidate request to connection api. you cannot request connect to yourself' })
+            return
+        }
+
+        // check if it's already requested.
+        const existingConnectionRequest = await prisma.connection_request.findFirst({
+            where: {
+                initiator_id: authUserProfileId,
+                requested_id: targetUserProfileId,
+            }
+        })
+
+        if (existingConnectionRequest) {
+            res.status(500).json({ message: 'Invalidate request to connection api. Request has already been made' })
+            return
+        }
+
+        // TODO check if there has been too many requests from this person
+
+        // TODO when there is already a request from teh targetedUserProfile
+
+        // add a row in the db
+        const connectionRequest = await prisma.connection_request.create({
+            data: {
+                initiator_id: authUserProfileId,
+                requested_id: targetUserProfileId,
+                created_at: new Date(),
+                confirmed_at: null
+            }
+        })
+
+        console.log(connectionRequest)
+        // TODO send an email
+
+        res.status(200).json({ message: 'Connect Request Sent' })
+        return
+    }
+
+    // PATCH -- when connection request accepted or rejected
+    if (req.method === 'PATCH') {
+        // There should be a pending request
+        const pendingRequest = await prisma.connection_request.findFirst({
+            where: {
+                initiator_id: targetUserProfileId,
+                requested_id: authUserProfileId,
+            }
+        })
+        if (!pendingRequest) {
+            res.status(500).json({ message: 'Invalidate request to connection api. No existing request to accept' })
+            return
+        }
+        // requestedOperation shouldn't be null
+        if (!requestedOperation || !['accept', 'reject'].includes(requestedOperation)) {
+            res.status(500).json({ message: 'Invalidate request to connection api. requestedOperation not specified or is neither accept nor reject' })
+            return
+        }
+
+        if (requestedOperation === 'accept') {
+            // Accept the connection request
+            await prisma.connection_request.updateMany({
+                where: {
+                    initiator_id: targetUserProfileId,
+                    requested_id: authUserProfileId,
+                },
+                data: {
+                    confirmed_at: new Date(),
+                },
+            })
+            res.status(200).json({ message: 'Connect Request Accepted' })
+
+        } else {
+            // Reject the connection request
+            res.status(200).json({ message: 'Connect Request Rejected' })
+        }
+        return
+    }
+
+    // DELETE -- when connection was removed
+    if (req.method === 'DELETE') {
+
+    }
+
+    // Handle any other HTTP method
+    res.status(200).json({ message: 'Nothing happened.' })
+}

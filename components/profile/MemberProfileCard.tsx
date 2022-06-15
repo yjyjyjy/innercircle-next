@@ -9,6 +9,7 @@ import {
    Stack,
    TagLeftIcon,
    TagLabel,
+   useToast,
 } from '@chakra-ui/react'
 import React from 'react'
 import ProfilePicture from './ProfilePicture'
@@ -60,9 +61,9 @@ export const columnNameToTagTextMapping = {
 
 
 const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
-   console.log(user_profile)
 
    const {
+      id,
       handle,
       profile_name,
       profile_picture,
@@ -108,6 +109,8 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
       user_profile_to_conference_mapping,
    } = user_profile
 
+   const toast = useToast()
+
    const ProfileTag: React.FC<{ dataKey: string }> = ({ dataKey }) => (
       <Tag
          size={'lg'}
@@ -123,6 +126,20 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
          <TagLabel>{columnNameToTagTextMapping[dataKey]}</TagLabel>
       </Tag>
    )
+
+   const onConnectRequestHandler = async () => {
+      const res = await fetch('/api/connection', {
+         method: 'POST',
+         body: JSON.stringify({ 'targetUserProfileId': id })
+      })
+      const { message } = await res.json()
+      toast({
+         title: message,
+         status: res.status === 200 ? 'success' : 'error',
+         duration: 4000,
+         isClosable: true,
+      })
+   }
 
    return (
       <Stack
@@ -146,7 +163,12 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
                <Text fontSize={'sm'}>@{handle}</Text>
             </Flex>
             <Flex direction={'column'}>
-               <Button colorScheme={'blue'} disabled={true} w={'80px'} h={'30px'}>
+               <Button
+                  colorScheme={'blue'}
+                  w={'80px'}
+                  h={'30px'}
+                  onClick={onConnectRequestHandler}
+               >
                   Connect
                </Button>
                <Text>(coming soon...)</Text>
