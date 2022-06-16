@@ -52,10 +52,19 @@ export async function getServerSideProps(context) {
       id: userID,
     },
     include: {
-      // user_profile:
       user_profile: {
         include: {
-          connection_request_connection_request_requested_idTouser_profile: true
+          connection_request_connection_request_requested_idTouser_profile: {
+            include: {
+              user_profile_connection_request_requested_idTouser_profile: {
+                select: {
+                  profile_name: true,
+                  bio_short: true,
+                  profile_picture: true,
+                }
+              }
+            }
+          }
         }
       },
     },
@@ -95,7 +104,11 @@ export default function ({ user }) {
   const [isLargerThan1280] = useMediaQuery('(min-width: 1290px)')
 
   return (
-    <></>
+    <Flex direction={'column'}>
+      {user_profile.connection_request_connection_request_requested_idTouser_profile.map(r => (
+        <>{r.initiator_id}</>
+      ))}
+    </Flex>
   )
 }
 

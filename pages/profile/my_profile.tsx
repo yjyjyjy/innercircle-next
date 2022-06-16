@@ -105,14 +105,6 @@ export async function getServerSideProps(context) {
    }
 }
 
-// type UserJoinUserProfile = User & {
-//    user_profile: UserProfile | null & {
-//       user_profile_to_conference_mapping: UserProfileToConferenceMapping | null & {
-//          conference: Conference
-//       }
-//    }
-// }
-
 interface formikContext {
    setFieldValue: (
       field: string,
@@ -130,13 +122,12 @@ const FormContext = createContext<formikContext>({
 const MyProfile = ({ user }) => {
    const { user_profile } = user
    const router = useRouter()
-   // const conferences = user_profile?.user_profile_to_conference_mapping.map(m => m.conference)
 
    const toast = useToast()
 
    const createOrUpdateUserProfile = async (formData) => {
       const userProfileToUpload = formData
-      // need to delete addtional information before pushing to the backend.
+      // delete addtional information before pushing to the backend.
       delete userProfileToUpload.user_profile_to_conference_mapping
 
       const res = await fetch('/api/profile', {
