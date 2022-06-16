@@ -3,15 +3,12 @@ import Link from 'next/link'
 import {
    IconButton,
    Tooltip,
-   useToast,
-   Spinner,
    Box,
    Heading,
    Flex,
    Button,
    Container,
    useMediaQuery,
-   HStack,
    ButtonGroup,
    Avatar
 } from '@chakra-ui/react'
@@ -19,7 +16,6 @@ import { SiDiscord } from 'react-icons/si'
 import { BsPersonFill } from 'react-icons/bs'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { FiMenu } from 'react-icons/fi'
-import Router from 'next/router'
 
 const Header: React.FC = (props) => {
    const { data: session, status } = useSession()
@@ -44,6 +40,7 @@ const Header: React.FC = (props) => {
                </Heading>
                {session ? <ButtonGroup spacing="1" px={isDesktop ? '50px' : '0'} >
                   <Link href={'/'}><Button color='white' colorScheme={'twitter'} fontSize='xl' variant='ghost'>Discover</Button></Link>
+                  <Link href={'/network'}><Button color='white' colorScheme={'twitter'} fontSize='xl' variant='ghost'>Network</Button></Link>
                </ButtonGroup> : undefined}
             </Flex>
             <Flex direction={'row'}>

@@ -927,6 +927,7 @@ model connection_request {
   requested_id                                               Int
   created_at                                                 DateTime     @db.Timestamp(6)
   confirmed_at                                               DateTime?    @db.Timestamp(6)
+  rejected_at                                                DateTime?    @db.Timestamp(6)
   user_profile_connection_request_initiator_idTouser_profile user_profile @relation("connection_request_initiator_idTouser_profile", fields: [initiator_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user_profile_connection_request_requested_idTouser_profile user_profile @relation("connection_request_requested_idTouser_profile", fields: [requested_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 

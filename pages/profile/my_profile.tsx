@@ -29,6 +29,7 @@ import {
 import MemberProfileCard, { UserProfileWithConferences } from '../../components/profile/MemberProfileCard'
 import { ESession } from '../index'
 import { Field, Form, Formik } from 'formik'
+import { useRouter } from 'next/router'
 
 // DB design:
 // user to profile mapping should be many to one. Each log in creates a new user. But multiple users can be tied to the same profile.
@@ -128,6 +129,7 @@ const FormContext = createContext<formikContext>({
 
 const MyProfile = ({ user }) => {
    const { user_profile } = user
+   const router = useRouter()
    // const conferences = user_profile?.user_profile_to_conference_mapping.map(m => m.conference)
 
    const toast = useToast()
@@ -148,6 +150,7 @@ const MyProfile = ({ user }) => {
          duration: 4000,
          isClosable: true,
       })
+      router.push('/')
    }
 
    const OpenToCheckBox: React.FC<{ dataKey: string; text: string }> = ({

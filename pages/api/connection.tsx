@@ -86,6 +86,26 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         return
     }
 
+
+    const acceptConnectionRequest = async () => {
+        await prisma.connection_request.updateMany({
+            where: {
+                initiator_id: targetUserProfileId,
+                requested_id: authUserProfileId,
+            },
+            data: {
+                confirmed_at: new Date(),
+            },
+        })
+        await prisma.connection.createMany({
+            data: [
+                { user_profile_start: authUserProfileId, user_profile_end: targetUserProfileId, created_at: new Date() },
+                { user_profile_start: targetUserProfileId, user_profile_end: authUserProfileId, created_at: new Date() }
+            ]
+        })
+        res.status(200).json({ message: 'Connect Request Accepted' })
+    }
+
     // PATCH -- when connection request accepted or rejected
     if (req.method === 'PATCH') {
         // There should be a pending request
@@ -93,12 +113,33 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             where: {
                 initiator_id: targetUserProfileId,
                 requested_id: authUserProfileId,
+                confirmed_at: null
             }
         })
         if (!pendingRequest) {
             res.status(500).json({ message: 'Invalidate request to connection api. No existing request to accept' })
             return
         }
+        // There should not be records in connection table
+        const existingConnections = await prisma.connection.findMany({
+            where: {
+                OR: [
+                    {
+                        user_profile_start: authUserProfileId,
+                        user_profile_end: targetUserProfileId
+                    },
+                    {
+                        user_profile_start: targetUserProfileId,
+                        user_profile_end: authUserProfileId
+                    }
+                ]
+            }
+        })
+        if (existingConnections.length > 0) {
+            res.status(500).json({ message: 'Invalidate request to connection api. Connections between members already exist' })
+            return
+        }
+
         // requestedOperation shouldn't be null
         if (!requestedOperation || !['accept', 'reject'].includes(requestedOperation)) {
             res.status(500).json({ message: 'Invalidate request to connection api. requestedOperation not specified or is neither accept nor reject' })
@@ -116,10 +157,24 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                     confirmed_at: new Date(),
                 },
             })
+            await prisma.connection.createMany({
+                data: [
+                    { user_profile_start: authUserProfileId, user_profile_end: targetUserProfileId, created_at: new Date() },
+                    { user_profile_start: targetUserProfileId, user_profile_end: authUserProfileId, created_at: new Date() }
+                ]
+            })
             res.status(200).json({ message: 'Connect Request Accepted' })
-
         } else {
             // Reject the connection request
+            await prisma.connection_request.updateMany({
+                where: {
+                    initiator_id: targetUserProfileId,
+                    requested_id: authUserProfileId,
+                },
+                data: {
+                    rejected_at: new Date(),
+                },
+            })
             res.status(200).json({ message: 'Connect Request Rejected' })
         }
         return
