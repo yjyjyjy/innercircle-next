@@ -9,8 +9,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const user_profile = await prisma.user_profile.findUnique({
     where: { handle: (handle as string).toLowerCase() },
   });
-  console.log('🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥')
-  console.log(handle)
   return {
     props: {
       user_profile,

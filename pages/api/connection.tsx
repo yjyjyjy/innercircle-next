@@ -43,8 +43,29 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         return
     }
 
+    const acceptConnectionRequest = async () => {
+        await prisma.connection_request.updateMany({
+            where: {
+                initiator_id: targetUserProfileId,
+                requested_id: authUserProfileId,
+            },
+            data: {
+                confirmed_at: new Date(),
+            },
+        })
+        await prisma.connection.createMany({
+            data: [
+                { user_profile_start: authUserProfileId, user_profile_end: targetUserProfileId, created_at: new Date() },
+                { user_profile_start: targetUserProfileId, user_profile_end: authUserProfileId, created_at: new Date() }
+            ]
+        })
+        res.status(200).json({ message: 'Connect Request Accepted' })
+    }
+
     // POST -- connection request
     if (req.method === 'POST') {
+
+
 
         // check if it's connecting your own.
         if (authUserProfileId === targetUserProfileId) {
@@ -68,7 +89,17 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         // TODO check if there has been too many requests from this person
 
         // TODO when there is already a request from teh targetedUserProfile
+        const existingReverseConnectionRequest = await prisma.connection_request.findFirst({
+            where: {
+                initiator_id: targetUserProfileId,
+                requested_id: authUserProfileId,
+            }
+        })
 
+        if (existingReverseConnectionRequest) {
+            acceptConnectionRequest()
+            return
+        }
         // add a row in the db
         const connectionRequest = await prisma.connection_request.create({
             data: {
@@ -79,34 +110,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             }
         })
 
-        console.log(connectionRequest)
         // TODO send an email
 
         res.status(200).json({ message: 'Connect Request Sent' })
         return
     }
 
-
-    const acceptConnectionRequest = async () => {
-        await prisma.connection_request.updateMany({
-            where: {
-                initiator_id: targetUserProfileId,
-                requested_id: authUserProfileId,
-            },
-            data: {
-                confirmed_at: new Date(),
-            },
-        })
-        await prisma.connection.createMany({
-            data: [
-                { user_profile_start: authUserProfileId, user_profile_end: targetUserProfileId, created_at: new Date() },
-                { user_profile_start: targetUserProfileId, user_profile_end: authUserProfileId, created_at: new Date() }
-            ]
-        })
-        res.status(200).json({ message: 'Connect Request Accepted' })
-    }
-
     // PATCH -- when connection request accepted or rejected
+
     if (req.method === 'PATCH') {
         // There should be a pending request
         const pendingRequest = await prisma.connection_request.findFirst({
@@ -148,22 +159,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
         if (requestedOperation === 'accept') {
             // Accept the connection request
-            await prisma.connection_request.updateMany({
-                where: {
-                    initiator_id: targetUserProfileId,
-                    requested_id: authUserProfileId,
-                },
-                data: {
-                    confirmed_at: new Date(),
-                },
-            })
-            await prisma.connection.createMany({
-                data: [
-                    { user_profile_start: authUserProfileId, user_profile_end: targetUserProfileId, created_at: new Date() },
-                    { user_profile_start: targetUserProfileId, user_profile_end: authUserProfileId, created_at: new Date() }
-                ]
-            })
-            res.status(200).json({ message: 'Connect Request Accepted' })
+            acceptConnectionRequest()
+            return
+
         } else {
             // Reject the connection request
             await prisma.connection_request.updateMany({

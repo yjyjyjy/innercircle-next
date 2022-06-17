@@ -96,13 +96,14 @@ export async function getServerSideProps(context) {
 }
 
 export default function (props) {
-  const { data: session, status } = useSession() // "loading" | "authenticated" | "unauthenticated"
-  const [isLargerThan1280] = useMediaQuery('(min-width: 1290px)')
+  const { data: session, status } = useSession()
+
+  const [isDesktop] = useMediaQuery('(min-width: 1290px)')
 
   const [searchText, setSearchText] = useState('')
   const onSearchTextChangeHandler = (e) => {
     setSearchText(e.target.value)
-    console.log(searchText)
+    // TODO Build the search function
   }
 
   interface IFilterState {
@@ -182,7 +183,7 @@ export default function (props) {
         <Center>
           <form>
             <Flex direction={'row'}>
-              <FormControl isRequired w={'500px'} p={3}>
+              <FormControl isRequired w={isDesktop ? '500px' : '150px'} p={3}>
                 <Input
                   value={searchText}
                   name='profile_name'
@@ -255,7 +256,7 @@ export default function (props) {
           </FormControl>
         </Flex>
 
-        <Grid templateColumns={isLargerThan1280 ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)'} gap={3}>
+        <Grid templateColumns={isDesktop ? 'repeat(3, 1fr)' : 'repeat(1, 1fr)'} gap={3}>
           {userProfiles.filter(
             userProfile => (
               (filterState.conferences.length === 0 || userProfile.conference_ids.some(r => filterState.conferences.indexOf(r) >= 0))

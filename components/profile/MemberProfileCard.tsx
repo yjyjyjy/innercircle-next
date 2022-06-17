@@ -171,7 +171,6 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
                >
                   Connect
                </Button>
-               <Text>(coming soon...)</Text>
             </Flex>
          </Flex>
          <Text fontWeight="bold">{bio_short}</Text>
