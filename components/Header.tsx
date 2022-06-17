@@ -25,6 +25,10 @@ import {
    useColorModeValue,
    useBreakpointValue,
    useDisclosure,
+   Menu,
+   MenuList,
+   MenuItem,
+   MenuButton,
 } from '@chakra-ui/react'
 import { SiDiscord } from 'react-icons/si'
 import { BsPersonFill } from 'react-icons/bs'
@@ -36,107 +40,107 @@ import {
    ChevronDownIcon,
    ChevronRightIcon,
 } from '@chakra-ui/icons';
+import { useRouter } from 'next/router'
 
 
-// const Header: React.FC = (props) => {
-//    const { data: session, status } = useSession()
-//    const [isDesktop] = useMediaQuery('(min-width: 1290px)')
+const HeaderOld: React.FC = (props) => {
+   const { data: session, status } = useSession()
+   const [isDesktop] = useMediaQuery('(min-width: 1290px)')
 
-//    if (status === 'loading') {
-//       return <Flex justifyContent="center" bg='blue.300' color="white" position={'fixed'} w='100%' zIndex={888} left={0} right={0}></Flex>
-//    }
+   if (status === 'loading') {
+      return <Flex justifyContent="center" bg='blue.300' color="white" position={'fixed'} w='100%' zIndex={888} left={0} right={0}></Flex>
+   }
 
 
-//    return (
-//       <Flex justifyContent="center" bg='blue.300' color="white" position={'fixed'} w='100%' zIndex={888} left={0} right={0}>
-//          <Flex
-//             direction={'row'}
-//             justifyContent="space-between"
-//             padding={2}
-//             width={'container.xl'}
-//             {...props}
-//          >
-//             <Flex align="center" mr={5} as="nav">
-//                <Heading as="h1" size="lg" letterSpacing={'tighter'}>
-//                   <Link href={'/'}>innerCircle</Link>
-//                </Heading>
-//                {session ? <ButtonGroup spacing="1" px={isDesktop ? '50px' : '0'} >
-//                   <Link href={'/'}><Button color='white' colorScheme={'twitter'} fontSize='xl' variant='ghost'>Discover</Button></Link>
-//                   <Link href={'/network'}><Button color='white' colorScheme={'twitter'} fontSize='xl' variant='ghost'>Network</Button></Link>
-//                </ButtonGroup> : undefined}
-//             </Flex>
-//             <Flex direction={'row'}>
-//                <Box>
-//                   <Tooltip
-//                      label={
-//                         'Got opinions on what should be built? Join our Discord! Also, token drop in the future!'
-//                      }
-//                   >
-//                      <a
-//                         href={'https://discord.gg/CBr32zf4g7'}
-//                         target={'_blank'}
-//                         rel="noreferrer"
-//                      >
-//                         <IconButton
-//                            mr={3}
-//                            colorScheme='blue.300'
-//                            aria-label={'Discord'}
-//                            icon={<SiDiscord size={25} />}
-//                         />
-//                      </a>
-//                   </Tooltip>
-//                </Box>
-//                {session ? (<Box>
-//                   <Tooltip
-//                      label={
-//                         'My Profile'
-//                      }
-//                   >
-//                      <Link href={'/profile/my_profile'}>
-//                         <IconButton
-//                            mr={3}
-//                            colorScheme='blue.300'
-//                            aria-label={'My Profile'}
-//                            icon={<BsPersonFill size={25} />}
-//                         />
-//                      </Link>
-//                   </Tooltip>
-//                </Box>) : undefined}
-//                <Box>
-//                   {session ? (
-//                      <Button
-//                         mx={3}
-//                         colorScheme={'blue'}
-//                         onClick={() => signOut({
-//                            callbackUrl: `${window.location.origin}`
-//                         })}
-//                      >
-//                         Sign Out
-//                      </Button>
-//                   ) : (
-//                      <Button
-//                         mx={3}
-//                         colorScheme={'blue'}
-//                         onClick={() => signIn()}
-//                      >
-//                         Sign On
-//                      </Button>
-//                   )}
-//                </Box>
-//             </Flex>
-//          </Flex>
-//       </Flex >
-//    )
-// }
+   return (
+      <Flex justifyContent="center" bg='blue.300' color="white" position={'fixed'} w='100%' zIndex={888} left={0} right={0}>
+         <Flex
+            direction={'row'}
+            justifyContent="space-between"
+            padding={2}
+            width={'container.xl'}
+            {...props}
+         >
+            <Flex align="center" mr={5} as="nav">
+               <Heading as="h1" size="lg" letterSpacing={'tighter'}>
+                  <Link href={'/'}>innerCircle</Link>
+               </Heading>
+               {session ? <ButtonGroup spacing="1" px={isDesktop ? '50px' : '0'} >
+                  <Link href={'/'}><Button color='white' colorScheme={'twitter'} fontSize='xl' variant='ghost'>Discover</Button></Link>
+                  <Link href={'/network'}><Button color='white' colorScheme={'twitter'} fontSize='xl' variant='ghost'>Network</Button></Link>
+               </ButtonGroup> : undefined}
+            </Flex>
+            <Flex direction={'row'}>
+               <Box>
+                  <Tooltip
+                     label={
+                        'Got opinions on what should be built? Join our Discord! Also, token drop in the future!'
+                     }
+                  >
+                     <a
+                        href={'https://discord.gg/CBr32zf4g7'}
+                        target={'_blank'}
+                        rel="noreferrer"
+                     >
+                        <IconButton
+                           mr={3}
+                           colorScheme='blue.300'
+                           aria-label={'Discord'}
+                           icon={<SiDiscord size={25} />}
+                        />
+                     </a>
+                  </Tooltip>
+               </Box>
+               {session ? (<Box>
+                  <Tooltip
+                     label={
+                        'My Profile'
+                     }
+                  >
+                     <Link href={'/profile/my_profile'}>
+                        <IconButton
+                           mr={3}
+                           colorScheme='blue.300'
+                           aria-label={'My Profile'}
+                           icon={<BsPersonFill size={25} />}
+                        />
+                     </Link>
+                  </Tooltip>
+               </Box>) : undefined}
+               <Box>
+                  {session ? (
+                     <Button
+                        mx={3}
+                        colorScheme={'blue'}
+                        onClick={() => signOut({
+                           callbackUrl: `${window.location.origin}`
+                        })}
+                     >
+                        Sign Out
+                     </Button>
+                  ) : (
+                     <Button
+                        mx={3}
+                        colorScheme={'blue'}
+                        onClick={() => signIn()}
+                     >
+                        Sign On
+                     </Button>
+                  )}
+               </Box>
+            </Flex>
+         </Flex>
+      </Flex >
+   )
+}
 
-// export default Header
 
 
 
 export default function Header() {
    const { isOpen, onToggle } = useDisclosure();
-
-   // const { data: session, status } = useSession()
+   const rounter = useRouter()
+   const { data: session, status } = useSession()
    // const [isDesktop] = useMediaQuery('(min-width: 1290px)')
 
    // if (status === 'loading') {
@@ -174,12 +178,15 @@ export default function Header() {
                />
             </Flex>
             <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
-               <Text
-                  textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
-                  fontFamily={'heading'}
-                  color={'white'}>
-                  Logo
-               </Text>
+               <Link href='/' _hover={{ textDecoration: 'none' }}>
+                  <Text
+                     textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
+                     fontFamily={'heading'}
+
+                     color={'white'}>
+                     innerCircle
+                  </Text>
+               </Link>
 
                <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
                   <DesktopNav />
@@ -190,42 +197,103 @@ export default function Header() {
                flex={{ base: 1, md: 0 }}
                justify={'flex-end'}
                direction={'row'}
-               spacing={6}>
-               <Button
-                  as={'a'}
-                  fontSize={'sm'}
-                  fontWeight={400}
-                  variant={'link'}
-                  href={'#'}>
-                  Sign In
-               </Button>
-               <Button
-                  display={{ base: 'none', md: 'inline-flex' }}
-                  fontSize={'sm'}
-                  fontWeight={600}
-                  color={'white'}
-                  bg={'blue.300'}
-                  // href={'#'}
-                  _hover={{
-                     bg: 'blue.200',
-                  }}>
-                  Sign Up
-               </Button>
+               spacing={1}>
+               <Tooltip
+                  label={
+                     'Got opinions on what should be built? Join our Discord! Also, token drop in the future!'
+                  }
+               >
+                  <a
+                     href={'https:discord.gg/CBr32zf4g7'}
+                     target={'_blank'}
+                     rel="noreferrer"
+                  >
+                     <IconButton
+                        mr={3}
+                        colorScheme='blue.300'
+                        aria-label={'Discord'}
+                        icon={<SiDiscord size={25} />}
+                     />
+                  </a>
+               </Tooltip>
+               {session ? (
+                  <Menu>
+                     <MenuButton>
+                        <IconButton
+                           mr={3}
+                           colorScheme='blue.300'
+                           aria-label={'Account'}
+                           icon={<BsPersonFill size={25} />}
+                        />
+                     </MenuButton>
+                     <MenuList
+                        bg={'gray.800'}
+                     >
+                        {
+                           [
+                              { label: 'My Profile', onClick: () => { rounter.push('/profile/my_profile') } },
+                              { label: 'Sign Out', onClick: () => { signOut({ callbackUrl: `${window.location.origin}` }) } }
+                           ].map(item =>
+                              <AccountMenuItem onClick={item.onClick} label={item.label} />)
+                        }
+                     </MenuList>
+                  </Menu>
+                  // <Button
+                  //    mx={3}
+                  //    colorScheme={'blue'}
+                  //    onClick={() => signOut({
+                  //       callbackUrl: `${window.location.origin}`
+                  //    })}
+                  // >
+                  //    Sign Out
+                  // </Button>
+               ) : (
+                  <Button
+                     display={{ base: 'none', md: 'inline-flex' }}
+                     fontSize={'sm'}
+                     fontWeight={600}
+                     color={'white'}
+                     bg={'blue.300'}
+                     onClick={() => signIn()}
+                     _hover={{
+                        bg: 'blue.200',
+                     }}>
+                     Sign Up
+                  </Button>
+               )}
+
+
             </Stack>
          </Flex>
 
          <Collapse in={isOpen} animateOpacity>
             <MobileNav />
          </Collapse>
-      </Box>
+      </Box >
    );
 }
 
-const DesktopNav = () => {
-   const linkColor = 'gray.200'; // nav
-   const linkHoverColor = 'white';
-   const popoverContentBgColor = 'gray.800';
+const linkColor = 'gray.200'; // nav
+const linkHoverColor = 'white';
+const popoverContentBgColor = 'gray.800';
 
+const AccountMenuItem = ({ label, onClick }) => {
+   return (
+      <MenuItem
+         bg={popoverContentBgColor}
+         _hover={{
+            color: linkColor,
+            background: 'gray.700'
+         }}
+         onClick={onClick}
+      >
+         {label}
+      </MenuItem>
+   )
+}
+
+
+const DesktopNav = () => {
    return (
       <Stack direction={'row'} spacing={4}>
          {NAV_ITEMS.map((navItem) => (
