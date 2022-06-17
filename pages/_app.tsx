@@ -5,13 +5,6 @@ import Head from "next/head";
 import Script from "next/script";
 import * as gtag from "../lib/gtag";
 import { SessionProvider } from "next-auth/react";
-// import { MultiSelectTheme } from "chakra-multiselect";
-
-// const theme = extendTheme({
-//   components: {
-//     MultiSelect: MultiSelectTheme
-//   }
-// })
 
 const App = ({ Component, pageProps: { session, ...pageProps } }: AppProps) => {
   return (
@@ -20,6 +13,7 @@ const App = ({ Component, pageProps: { session, ...pageProps } }: AppProps) => {
         <Head>
           <title>innerCircle</title>
           <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"></link>
         </Head>
         <Script
           strategy="afterInteractive"

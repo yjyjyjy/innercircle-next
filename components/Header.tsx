@@ -29,6 +29,7 @@ import {
    MenuList,
    MenuItem,
    MenuButton,
+   AvatarBadge,
 } from '@chakra-ui/react'
 import { SiDiscord } from 'react-icons/si'
 import { BsPersonFill } from 'react-icons/bs'
@@ -53,20 +54,22 @@ export default function Header() {
    // }
 
    return (
-      <Box>
+      <Box
+         bg={'gray.800'}
+         position={'fixed'}
+         zIndex={888}
+         w='100%'
+      >
          <Flex
-            bg={'gray.800'}
             color={'white'}
             minH={'60px'}
             py={{ base: 2 }}
-            px={{ base: 4 }}
+            px={{ base: 4, lg: 200 }}
             borderBottom={1}
             borderStyle={'solid'}
             borderColor={'gray.900'}
             align={'center'}
-            position={'fixed'}
-            zIndex={888}
-            w='100%'
+
          >
 
             <Flex
@@ -126,12 +129,9 @@ export default function Header() {
                {session ? (
                   <Menu>
                      <MenuButton>
-                        <IconButton
-                           mr={3}
-                           colorScheme='blue.300'
-                           aria-label={'Account'}
-                           icon={<BsPersonFill size={25} />}
-                        />
+                        <Avatar size={'sm'}>
+                           {/* <AvatarBadge borderColor='papayawhip' bg='tomato' boxSize='1.25em' /> */}
+                        </Avatar>
                      </MenuButton>
                      <MenuList
                         bg={'gray.800'}
@@ -141,19 +141,10 @@ export default function Header() {
                               { label: 'My Profile', onClick: () => { rounter.push('/profile/my_profile') } },
                               { label: 'Sign Out', onClick: () => { signOut({ callbackUrl: `${window.location.origin}` }) } }
                            ].map(item =>
-                              <AccountMenuItem onClick={item.onClick} label={item.label} />)
+                              <AccountMenuItem key={item.label} onClick={item.onClick} label={item.label} />)
                         }
                      </MenuList>
                   </Menu>
-                  // <Button
-                  //    mx={3}
-                  //    colorScheme={'blue'}
-                  //    onClick={() => signOut({
-                  //       callbackUrl: `${window.location.origin}`
-                  //    })}
-                  // >
-                  //    Sign Out
-                  // </Button>
                ) : (
                   <Button
                      display={{ base: 'none', md: 'inline-flex' }}
@@ -246,35 +237,36 @@ const DesktopNav = () => {
 
 const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
    return (
-      <Link
-         href={href}
-         role={'group'}
-         display={'block'}
-         p={2}
-         rounded={'md'}
-         _hover={{ bg: 'gray.900' }}>
-         <Stack direction={'row'} align={'center'}>
-            <Box>
-               <Text
+      <NextLink href={href as string}>
+         <Link
+            role={'group'}
+            display={'block'}
+            p={2}
+            rounded={'md'}
+            _hover={{ bg: 'gray.900' }}>
+            <Stack direction={'row'} align={'center'}>
+               <Box>
+                  <Text
+                     transition={'all .3s ease'}
+                     _groupHover={{ color: 'blue.300' }}
+                     fontWeight={500}>
+                     {label}
+                  </Text>
+                  <Text fontSize={'sm'}>{subLabel}</Text>
+               </Box>
+               <Flex
                   transition={'all .3s ease'}
-                  _groupHover={{ color: 'blue.300' }}
-                  fontWeight={500}>
-                  {label}
-               </Text>
-               <Text fontSize={'sm'}>{subLabel}</Text>
-            </Box>
-            <Flex
-               transition={'all .3s ease'}
-               transform={'translateX(-10px)'}
-               opacity={0}
-               _groupHover={{ opacity: '100%', transform: 'translateX(0)' }}
-               justify={'flex-end'}
-               align={'center'}
-               flex={1}>
-               <Icon color={'blue.300'} w={5} h={5} as={ChevronRightIcon} />
-            </Flex>
-         </Stack>
-      </Link>
+                  transform={'translateX(-10px)'}
+                  opacity={0}
+                  _groupHover={{ opacity: '100%', transform: 'translateX(0)' }}
+                  justify={'flex-end'}
+                  align={'center'}
+                  flex={1}>
+                  <Icon color={'blue.300'} w={5} h={5} as={ChevronRightIcon} />
+               </Flex>
+            </Stack>
+         </Link>
+      </NextLink>
    );
 };
 
@@ -282,8 +274,13 @@ const MobileNav = () => {
    return (
       <Stack
          bg={'gray.800'}
-         p={4}
-         display={{ md: 'none' }}>
+         pt={'75px'}
+         display={{ md: 'none' }}
+
+      // position={'fixed'}
+      // zIndex={100}
+      // w='100%'
+      >
          {NAV_ITEMS.map((navItem) => (
             <MobileNavItem key={navItem.label} {...navItem} />
          ))}
@@ -337,7 +334,8 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
                   ))}
             </Stack>
          </Collapse>
-      </Stack>
+      </Stack >
+
    );
 };
 

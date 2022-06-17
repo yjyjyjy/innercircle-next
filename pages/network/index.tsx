@@ -13,6 +13,7 @@ import {
 } from 'react'
 import { ESession } from '../index'
 import { useRouter } from 'next/router'
+import MemberProfileListItem from '../../components/profile/MemberProfileListItem'
 
 export async function getServerSideProps(context) {
   const session = (await getSession(context)) as ESession
@@ -44,7 +45,7 @@ export async function getServerSideProps(context) {
               rejected_at: null
             },
             include: {
-              user_profile_connection_request_requested_idTouser_profile: {
+              user_profile_connection_request_initiator_idTouser_profile: {
                 select: {
                   id: true,
                   profile_name: true,
@@ -85,11 +86,19 @@ export default function ({ user }) {
   const toast = useToast()
   const router = useRouter()
   const [state, setState] = useState({
-    connectionRequests: user_profile.connection_request_connection_request_requested_idTouser_profile,
-    connections: user_profile.connection_connection_user_profile_startTouser_profile
+    connectionRequesters:
+      user_profile.connection_request_connection_request_requested_idTouser_profile.map(
+        item => item.user_profile_connection_request_initiator_idTouser_profile
+      ),
+    connections: user_profile.connection_connection_user_profile_startTouser_profile.map(item => item.user_profile_connection_user_profile_endTouser_profile)
   })
+  console.log(user_profile)
 
-  const onConnectionRequestDecisionHandler = async (userProfileId: Number, decision: string, connectionRequest) => {
+  const onConnectionRequestDecisionHandler = async (
+    userProfileId: Number,
+    decision: string,
+    profile: { id: Number, profile_name: string, bio_short: string, profile_picture: string }
+  ) => {
     const res = await fetch('/api/connection', {
       method: 'PATCH',
       body: JSON.stringify({
@@ -105,55 +114,53 @@ export default function ({ user }) {
       isClosable: true,
     })
     if (res.status === 200) {
-      setState({ ...state, connectionRequests: state.connectionRequests.filter(r => r.initiator_id !== userProfileId) })
+      // setState twice in a row won't work. below is a workaround: https://typeofnan.dev/why-you-cant-setstate-multiple-times-in-a-row/
+      let newState = {
+        ...state,
+        connectionRequesters: state.connectionRequesters.filter(r => r.id !== userProfileId),
+      }
+      if (decision === 'accept') {
+        newState = {
+          ...newState,
+          connections: [...newState.connections, profile]
+        }
+      }
+      setState(newState)
     }
+
   }
 
-  const ListViewMiniProfile = ({ handle, profile_name, bio_short }) => (
-    <Flex
-      direction={'column'}
-      _hover={{ cursor: 'pointer' }}
-      onClick={
-        () => router.push(`/in/${handle}`)
-      }>
-      <Text>{profile_name}</Text>
-      <Text>{bio_short}</Text>
-    </Flex>
-  )
-
-
-  const [isLargerThan1280] = useMediaQuery('(min-width: 1290px)')
+  const [isLargeScreen] = useMediaQuery('(min-width: 700px)')
+  console.log(state)
   return (
 
     <Flex direction={'column'}>
-      {state.connectionRequests.length > 0 &&
-        <Flex direction={'column'} w={isLargerThan1280 ? '70%' : '100%'} m={'0 auto'}>
-          <Text fontSize={'lg'} fontWeight='bold' py={3}>Connection Requests</Text>
-          {state.connectionRequests.map(r => (
-            <Flex
-              key={r.initiator_id}
-              direction={'row'}
-              justifyContent={'space-between'}
-              bg='gray.50'
-              m={2}
-              p={3}
-              rounded='md'
-            >
-              <ListViewMiniProfile
-                handle={r.user_profile_connection_request_requested_idTouser_profile.handle}
-                profile_name={r.user_profile_connection_request_requested_idTouser_profile.profile_name}
-                bio_short={r.user_profile_connection_request_requested_idTouser_profile.bio_short}
-              />
-              <Flex direction={'row'} transform="translateY(10%)">
-                <Button variant={'ghost'} onClick={() => onConnectionRequestDecisionHandler(r.initiator_id, 'reject', r)}>Ignore</Button>
-                <Button colorScheme={'blue'} rounded={'3xl'} onClick={() => onConnectionRequestDecisionHandler(r.initiator_id, 'accept', r)}>Accept</Button>
-              </Flex>
-            </Flex>
+      {/* Conneciton requests */}
+      {state.connectionRequesters.length > 0 &&
+        <Flex direction={'column'} w={isLargeScreen ? '70%' : '100%'} m={'0 auto'}>
+          <Text fontSize={'xl'} fontWeight='bold' py={3}>Connection Requests</Text>
+          {state.connectionRequesters.map(requester => (
+            <MemberProfileListItem
+              user_profile={requester}
+              primaryLabel={'Accept'}
+              primaryOnClick={() => onConnectionRequestDecisionHandler(requester.id, 'accept', requester)}
+              secondaryLabel={'Ignore'}
+              secondaryOnClick={() => onConnectionRequestDecisionHandler(requester.id, 'reject', requester)} />
           ))}
         </Flex>
       }
-      <Flex direction={'column'}>
-        <Flex>
+
+      {/* Connecitons */}
+      <Flex direction={'column'} w={isLargeScreen ? '70%' : '100%'} m={'0 auto'}>
+        <Text fontSize={'xl'} fontWeight='bold' py={3}>Your Connections</Text>
+        <Flex direction={'column'}>
+          {state.connections.map(con => (
+            <MemberProfileListItem
+              user_profile={con}
+              primaryLabel={'Message'}
+              primaryOnClick={() => { }}
+            />
+          ))}
 
         </Flex>
       </Flex>
