@@ -158,7 +158,12 @@ export default function ({ user }) {
             <MemberProfileListItem
               user_profile={con}
               primaryLabel={'Message'}
-              primaryOnClick={() => { }}
+              primaryOnClick={async () => {
+                const res = await fetch('/api/mail', {
+                  method: 'POST'
+                })
+                console.log(res)
+              }}
             />
           ))}
 
