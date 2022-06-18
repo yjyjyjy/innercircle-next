@@ -1,3 +1,4 @@
+
 import {
    Box,
    Flex,
@@ -10,11 +11,22 @@ import {
    TagLeftIcon,
    TagLabel,
    useToast,
+   useDisclosure,
+   Modal,
+   ModalOverlay,
+   ModalContent,
+   ModalHeader,
+   ModalCloseButton,
+   ModalBody,
+   ModalFooter,
+   Input,
+   Textarea,
 } from '@chakra-ui/react'
-import React from 'react'
+import React, { useState } from 'react'
 import ProfilePicture from './ProfilePicture'
 import { AiOutlineMail } from 'react-icons/ai'
 import { user_profile as UserProfile, user_profile_to_conference_mapping as UserProfileToConferenceMapping, conference as Conference } from '@prisma/client'
+
 
 export type UserProfileWithConferences = UserProfile & {
    user_profile_to_conference_mapping: UserProfileToConferenceMapping & { conference: Conference }[] | null
@@ -127,18 +139,60 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
       </Tag>
    )
 
-   const onConnectRequestHandler = async () => {
-      const res = await fetch('/api/connection', {
-         method: 'POST',
-         body: JSON.stringify({ 'targetUserProfileId': id })
-      })
-      const { message } = await res.json()
-      toast({
-         title: message,
-         status: res.status === 200 ? 'success' : 'error',
-         duration: 4000,
-         isClosable: true,
-      })
+   const { isOpen, onOpen, onClose } = useDisclosure()
+   const initialRef = React.useRef(null)
+
+   const ConnectReqestModal = () => {
+      const [inviteMessage, setInviteMessage] = useState('')
+
+      const onConnectRequestHandler = async () => {
+         const res = await fetch('/api/connection', {
+            method: 'POST',
+            body: JSON.stringify({ 'targetUserProfileId': id, 'inviteMessage': inviteMessage })
+         })
+         const { message } = await res.json()
+         toast({
+            title: message,
+            status: res.status === 200 ? 'success' : 'error',
+            duration: 4000,
+            isClosable: true,
+         })
+         onClose()
+      }
+
+      return (
+         <>
+            <Modal
+               isOpen={isOpen}
+               onClose={onClose}
+               isCentered
+               initialFocusRef={initialRef}
+            >
+               <ModalOverlay />
+               <ModalContent>
+                  <ModalHeader>Connect Request</ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody>
+                     <Textarea
+                        placeholder='(Optional) Include a Short message...'
+                        value={inviteMessage}
+                        onChange={e => {
+
+                           setInviteMessage(e.target.value)
+                        }}
+                        ref={initialRef}
+                     />
+                  </ModalBody>
+                  <ModalFooter>
+                     <Button variant='ghost' onClick={onClose}>Cancel</Button>
+                     <Button colorScheme='blue' ml={3} onClick={onConnectRequestHandler}>
+                        Send
+                     </Button>
+                  </ModalFooter>
+               </ModalContent>
+            </Modal>
+         </>
+      )
    }
 
    return (
@@ -167,11 +221,13 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
                   colorScheme={'blue'}
                   w={'80px'}
                   h={'30px'}
-                  onClick={onConnectRequestHandler}
+                  // onClick={onConnectRequestHandler}
+                  onClick={onOpen}
                >
                   Connect
                </Button>
             </Flex>
+            <ConnectReqestModal />
          </Flex>
          <Text fontWeight="bold">{bio_short}</Text>
          <Text noOfLines={mini ? 2 : 6}>{bio}</Text>
