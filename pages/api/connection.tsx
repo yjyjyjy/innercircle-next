@@ -1,7 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import prisma from '../../lib/prisma'
 import { getSession } from 'next-auth/react'
-import { mailer } from '../../lib/mailer'
+import { mailer, Email } from '../../lib/mailer'
+import { connectRequestEmailTemplate } from '../../lib/email-template/connectRequestEmailTemplate'
+import { defaultProfilePicture } from '../../lib/const'
+import { connectRequestAcceptTemplate } from '../../lib/email-template/connectAcceptedEmailTemplate'
+
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
     // make sure user is signed in
@@ -15,26 +19,30 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     // use Email to find the authUser's userProfile
     const authUserEmail: string = session.user.email
 
-    const existingProfileWithEmail = await prisma.user_profile.findUnique({
+    const authUserProfileWithEmail = await prisma.user_profile.findUnique({
         where: {
             email: authUserEmail,
         },
     })
 
-    if (!existingProfileWithEmail?.id) {
+    if (!authUserProfileWithEmail?.id) {
         res.status(500).json({ message: 'User session error. Cannot find your own profile.' })
         return
     }
 
-    const authUserProfileId = existingProfileWithEmail.id
+    const authUserProfileId = authUserProfileWithEmail.id
 
     // extract targetUserProfileId
     let targetUserProfileId
     let requestedOperation
+    let inviteMessage
+
     try {
         const payloadData = JSON.parse(req.body)
         targetUserProfileId = payloadData.targetUserProfileId
         requestedOperation = payloadData.requestedOperation
+        inviteMessage = payloadData.inviteMessage
+
         if (!targetUserProfileId) {
             res.status(500).json({ message: 'Invalidate request to connection api. Missing data or wrong format' })
             return
@@ -60,13 +68,33 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 { user_profile_start: targetUserProfileId, user_profile_end: authUserProfileId, created_at: new Date() }
             ]
         })
+
+        const targetUserProfile = await prisma.user_profile.findUnique({ where: { id: targetUserProfileId } })
+
+        if (!targetUserProfile?.email) {
+            res.status(500).json({ message: 'Invalidate request to connection api. Requestor email does not exists' })
+            return
+        }
+
+        mailer({
+            to: targetUserProfile.email,
+            subject: `[innerCircle.ooo Notification] new connection with ${authUserProfileWithEmail.profile_name}!`,
+            html: connectRequestAcceptTemplate({
+                recipientName: targetUserProfile.profile_name,
+                userProfileName: authUserProfileWithEmail.profile_name,
+                userProfilePicture: authUserProfileWithEmail.profile_picture || defaultProfilePicture,
+                shortBio: authUserProfileWithEmail.bio_short || '',
+                bio: authUserProfileWithEmail.bio || '',
+                ctaCallbackURL: `https://innercircle.ooo/in/${targetUserProfile.handle}`,
+                ctaLabel: 'See Profile'
+            })
+        })
+
         res.status(200).json({ message: 'Connect Request Accepted' })
     }
 
     // POST -- connection request
     if (req.method === 'POST') {
-
-
 
         // check if it's connecting your own.
         if (authUserProfileId === targetUserProfileId) {
@@ -84,6 +112,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
         if (existingConnectionRequest) {
             res.status(500).json({ message: 'Invalidate request to connection api. Request has already been made' })
+            return
+        }
+
+        // Target user should exist
+        const targetUserProfile = await prisma.user_profile.findUnique({ where: { id: targetUserProfileId } })
+
+        if (!targetUserProfile) {
+            res.status(500).json({ message: 'Invalidate request to connection api. Target user does not exist.' })
             return
         }
 
@@ -113,8 +149,23 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             }
         })
 
-        // TODO send an email
+        // step 2. send an email
+        const html = connectRequestEmailTemplate({
+            recipientName: targetUserProfile.profile_name,
+            userProfileName: authUserProfileWithEmail.profile_name,
+            userProfilePicture: authUserProfileWithEmail.profile_picture || defaultProfilePicture,
+            shortBio: authUserProfileWithEmail.bio_short || '',
+            bio: authUserProfileWithEmail.bio || '',
+            inviteMessage: inviteMessage || '',
+            ctaCallbackURL: 'https://innerCircle.ooo/network'
+        })
+        const msg: Email = {
+            to: targetUserProfile.email,
+            subject: `[innerCircle.ooo Notification] member ${authUserProfileWithEmail.profile_name} requests to connect`,
+            html: html,
+        }
 
+        mailer(msg)
 
         res.status(200).json({ message: 'Connect Request Sent' })
         return
