@@ -10,18 +10,22 @@ type Email =
     }
 
 
-export const mailer = (msg: Email) => {
+export const mailer = async (msg: Email) => {
 
     msg.from = msg.from || 'no-reply@innercircle.ooo'
+    if (!process.env.CURRENT_ENV || process.env.CURRENT_ENV !== 'production') { //'localhost', 'preview', 'development'
+        msg.to = 'innerCircleEmailTest@gmail.com'
+    }
 
-    sgMail
-        .send(msg)
-        .then(() => {
-            console.log('Email sent')
-        })
-        .catch((error) => {
-            console.error(error)
-        })
+    const response = await sgMail.send(msg)
+    console.log('🚀')
+    // .then(() => {
+    //     console.log('Email sent')
+    // })
+    // .catch((error) => {
+    //     console.error(error)
+    // })
+    return response[0]
 }
 
 

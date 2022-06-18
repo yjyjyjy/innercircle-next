@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import prisma from '../../lib/prisma'
 import { getSession } from 'next-auth/react'
+import { mailer } from '../../lib/mailer'
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
     // make sure user is signed in
@@ -88,7 +89,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
         // TODO check if there has been too many requests from this person
 
-        // TODO when there is already a request from teh targetedUserProfile
+        // when there is already a request from teh targetedUserProfile
         const existingReverseConnectionRequest = await prisma.connection_request.findFirst({
             where: {
                 initiator_id: targetUserProfileId,
@@ -100,8 +101,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             acceptConnectionRequest()
             return
         }
-        // add a row in the db
-        const connectionRequest = await prisma.connection_request.create({
+
+        // 🚀 Make a new connection request
+        // step 1. add a row in the db
+        await prisma.connection_request.create({
             data: {
                 initiator_id: authUserProfileId,
                 requested_id: targetUserProfileId,
@@ -111,6 +114,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         })
 
         // TODO send an email
+
 
         res.status(200).json({ message: 'Connect Request Sent' })
         return

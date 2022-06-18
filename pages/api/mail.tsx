@@ -10,12 +10,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     if (req.method === 'POST') {
-        await mailer({
+        const res = await mailer({
             to: 'prowessyang@gmail.com', // Change to your recipient
             from: 'no-reply@innerCircle.ooo', // Change to your verified sender
             subject: 'Sending with SendGrid is Fun',
             html: '<strong>and easy to do anywhere, even with Node.js</strong>',
         });
+        console.log(res)
+        console.log(res.statusCode)
     }
 }
 
