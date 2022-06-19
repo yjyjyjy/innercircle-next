@@ -274,12 +274,8 @@ const MobileNav = () => {
    return (
       <Stack
          bg={'gray.800'}
-         pt={'75px'}
+         // pt={'15px'}
          display={{ md: 'none' }}
-
-      // position={'fixed'}
-      // zIndex={100}
-      // w='100%'
       >
          {NAV_ITEMS.map((navItem) => (
             <MobileNavItem key={navItem.label} {...navItem} />
