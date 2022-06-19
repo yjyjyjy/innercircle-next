@@ -7,7 +7,6 @@ import {
   Button,
   SimpleGrid,
   Image,
-  Link,
   Flex,
   FormControl,
   Input,
@@ -18,35 +17,29 @@ import {
   Tag,
   TagLeftIcon,
   TagLabel,
-  VStack,
-  FormLabel,
 } from "@chakra-ui/react";
 
 import { getSession, useSession, signIn } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Session } from 'next-auth'
 import prisma from '../lib/prisma'
 import MemberProfileCard, { columnNameToTagTextMapping } from "../components/profile/MemberProfileCard";
-import { includes } from "lodash";
 import { AddIcon } from "@chakra-ui/icons";
-import { string } from "prop-types";
 import {
   Select,
-  CreatableSelect,
-  AsyncSelect,
   OptionBase,
   GroupBase
 } from "chakra-react-select";
+import { UserProfileWithMetaData } from "../components/profile/MemberProfileCard";
 
 export interface ESession extends Session {
   userID: string
 }
 
 export async function getServerSideProps(context) {
-  const session = (await getSession(context)) as ESession
-
 
   // If you haven't logged in, you can't use the tool yet.
+  const session = (await getSession(context)) as ESession
   if (!session) {
     return {
       props: {},
@@ -54,8 +47,6 @@ export async function getServerSideProps(context) {
   }
 
   // If userID doesn't have a userprofile redirect
-
-
   const authUserWithProfile = await prisma.user.findUnique({
     where: { id: session.userID },
     include: { user_profile: true }
@@ -71,11 +62,13 @@ export async function getServerSideProps(context) {
     }
   }
 
-  const profiles = await prisma.user_profile.findMany({
+  const profiles: UserProfileWithMetaData[] = await prisma.user_profile.findMany({
     include: {
       user_profile_to_conference_mapping: {
         include: { conference: true }
-      }
+      },
+      connection_connection_user_profile_startTouser_profile: true,
+      connection_request_connection_request_requested_idTouser_profile: true,
     }
   })
 
@@ -87,15 +80,20 @@ export async function getServerSideProps(context) {
     take: 10
   })
 
+  const profilesWithAuthUserProfileId = profiles.map(p => {
+    p['authUserProfileId'] = authUserWithProfile?.user_profile?.id
+    return p
+  })
+
   return {
     props: {
-      userProfiles: JSON.parse(JSON.stringify(profiles)),
+      userProfiles: JSON.parse(JSON.stringify(profilesWithAuthUserProfileId)),
       conferences: JSON.parse(JSON.stringify(conferences)),
     },
   }
 }
 
-export default function (props) {
+export default function ({ userProfiles, conferences }) {
   const { data: session, status } = useSession()
 
   const [isDesktop] = useMediaQuery('(min-width: 1290px)')
@@ -106,10 +104,17 @@ export default function (props) {
     // TODO Build the search function
   }
 
+  //**************************** Manage the user discover filters */
   interface IFilterState {
     conferences: string[],
     skills: string[],
     labels: string[]
+  }
+
+  interface FilterOption extends OptionBase {
+    label: string;
+    value: string;
+    color?: string;
   }
 
   const [filterState, setFilterState] = useState<IFilterState>({
@@ -153,17 +158,10 @@ export default function (props) {
     return <h1>Loading</h1>
   }
 
-  interface FilterOption extends OptionBase {
-    label: string;
-    value: string;
-    color?: string;
-  }
-
-
   // signed in user experience
   if (status === 'authenticated') {
 
-    const userProfiles = props.userProfiles.map(
+    const userProfilesWithConferences = userProfiles.map(
       userProfile => (
         {
           ...userProfile,
@@ -173,6 +171,10 @@ export default function (props) {
         }
       )
     )
+
+    console.log('*******************')
+    console.log(userProfiles)
+    console.log('*******************')
 
     const skillLabelSelectOptions = Object.keys(columnNameToTagTextMapping).map(dataKey => (
       { value: dataKey, label: columnNameToTagTextMapping[dataKey], color: 'blue' }
@@ -208,7 +210,7 @@ export default function (props) {
             fontWeight={'bold'}
             pr={'2'}
           >Filter on conferences: (coming soon...)</Text>
-          {props.conferences.map(
+          {conferences.map(
             conf => filterTag(
               { name: conf.id, label: conf.conference_name, isChecked: filterState.conferences.includes(conf.id) }
             ))}
@@ -256,16 +258,16 @@ export default function (props) {
           </FormControl>
         </Flex>
 
-        <Grid templateColumns={isDesktop ? 'repeat(3, 1fr)' : 'repeat(1, 1fr)'} gap={3}>
-          {userProfiles.filter(
-            userProfile => (
-              (filterState.conferences.length === 0 || userProfile.conference_ids.some(r => filterState.conferences.indexOf(r) >= 0))
-              && (filterState.skills.length === 0 || filterState.skills.map(k => userProfile[k]).some(v => v === true))
-              && (filterState.labels.length === 0 || filterState.labels.map(k => userProfile[k]).some(v => v === true))
+        <Grid templateColumns={['repeat(1, 1fr)', 'repeat(2, 1fr)', 'repeat(3, 1fr)']} gap={3}>
+          {userProfilesWithConferences.filter(
+            p => (
+              (filterState.conferences.length === 0 || p.conference_ids.some(r => filterState.conferences.indexOf(r) >= 0))
+              && (filterState.skills.length === 0 || filterState.skills.map(k => p[k]).some(v => v === true))
+              && (filterState.labels.length === 0 || filterState.labels.map(k => p[k]).some(v => v === true))
             )
           ).map(userProfile => (
             <GridItem key={userProfile.id}>
-              <MemberProfileCard user_profile={userProfile} />
+              <MemberProfileCard userProfile={userProfile} />
             </GridItem>
           ))}
 

@@ -925,6 +925,7 @@ model user_profile_to_conference_mapping {
 model connection_request {
   initiator_id                                               Int
   requested_id                                               Int
+  invitation_message                                         String?      @db.VarChar
   created_at                                                 DateTime     @db.Timestamp(6)
   confirmed_at                                               DateTime?    @db.Timestamp(6)
   rejected_at                                                DateTime?    @db.Timestamp(6)

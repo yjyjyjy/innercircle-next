@@ -3,7 +3,7 @@ import prisma from '../../lib/prisma'
 import { getSession } from 'next-auth/react'
 import { mailer, Email } from '../../lib/mailer'
 import { connectRequestEmailTemplate } from '../../lib/email-template/connectRequestEmailTemplate'
-import { defaultProfilePicture } from '../../lib/const'
+import { defaultProfilePicture, inviteMessageMaxLength } from '../../lib/const'
 import { connectRequestAcceptTemplate } from '../../lib/email-template/connectAcceptedEmailTemplate'
 
 
@@ -41,13 +41,20 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         const payloadData = JSON.parse(req.body)
         targetUserProfileId = payloadData.targetUserProfileId
         requestedOperation = payloadData.requestedOperation
-        inviteMessage = payloadData.inviteMessage
+        inviteMessage = payloadData?.inviteMessage
 
         if (!targetUserProfileId) {
-            res.status(500).json({ message: 'Invalidate request to connection api. Missing data or wrong format' })
+            res.status(500).json({ message: 'Invalidate request to connection api. Missing targetUserProfileId in request body' })
             return
         }
+
+        if (inviteMessage && inviteMessage.length > inviteMessageMaxLength) {
+            res.status(500).json({ message: 'Invalidate request to connection api. Invite message too long' })
+            return
+        }
+
     } catch (error) {
+        console.error(error)
         res.status(500).json({ message: 'Invalidate request to connection api. Missing data or wrong format', error })
         return
     }
@@ -85,7 +92,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 userProfilePicture: authUserProfileWithEmail.profile_picture || defaultProfilePicture,
                 shortBio: authUserProfileWithEmail.bio_short || '',
                 bio: authUserProfileWithEmail.bio || '',
-                ctaCallbackURL: `https://innercircle.ooo/in/${targetUserProfile.handle}`,
+                ctaCallbackURL: `https://innercircle.ooo/in/${authUserProfileWithEmail.handle}`,
                 ctaLabel: 'See Profile'
             })
         })
@@ -144,6 +151,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             data: {
                 initiator_id: authUserProfileId,
                 requested_id: targetUserProfileId,
+                invitation_message: inviteMessage,
                 created_at: new Date(),
                 confirmed_at: null
             }
@@ -159,6 +167,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             inviteMessage: inviteMessage || '',
             ctaCallbackURL: 'https://innerCircle.ooo/network'
         })
+
         const msg: Email = {
             to: targetUserProfile.email,
             subject: `[innerCircle.ooo Notification] member ${authUserProfileWithEmail.profile_name} requests to connect`,

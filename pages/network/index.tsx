@@ -95,14 +95,14 @@ export default function ({ user }) {
   console.log(user_profile)
 
   const onConnectionRequestDecisionHandler = async (
-    userProfileId: Number,
+    targetUserProfileId: Number,
     decision: string,
     profile: { id: Number, profile_name: string, bio_short: string, profile_picture: string }
   ) => {
     const res = await fetch('/api/connection', {
       method: 'PATCH',
       body: JSON.stringify({
-        targetUserProfileId: userProfileId,
+        targetUserProfileId: targetUserProfileId,
         requestedOperation: decision,
       }),
     })
@@ -117,7 +117,7 @@ export default function ({ user }) {
       // setState twice in a row won't work. below is a workaround: https://typeofnan.dev/why-you-cant-setstate-multiple-times-in-a-row/
       let newState = {
         ...state,
-        connectionRequesters: state.connectionRequesters.filter(r => r.id !== userProfileId),
+        connectionRequesters: state.connectionRequesters.filter(r => r.id !== targetUserProfileId),
       }
       if (decision === 'accept') {
         newState = {
@@ -158,15 +158,9 @@ export default function ({ user }) {
             <MemberProfileListItem
               user_profile={con}
               primaryLabel={'Message'}
-              primaryOnClick={async () => {
-                const res = await fetch('/api/mail', {
-                  method: 'POST'
-                })
-                console.log(res)
-              }}
+              primaryOnClick={() => { }}
             />
           ))}
-
         </Flex>
       </Flex>
     </Flex>

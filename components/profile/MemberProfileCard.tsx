@@ -3,12 +3,9 @@ import {
    Box,
    Flex,
    Text,
-   Image,
    Button,
-   IconButton,
    Tag,
    Stack,
-   TagLeftIcon,
    TagLabel,
    useToast,
    useDisclosure,
@@ -19,22 +16,28 @@ import {
    ModalCloseButton,
    ModalBody,
    ModalFooter,
-   Input,
    Textarea,
+   FormControl,
+   FormErrorMessage,
+   FormHelperText,
 } from '@chakra-ui/react'
 import React, { useState } from 'react'
-import ProfilePicture from './ProfilePicture'
-import { AiOutlineMail } from 'react-icons/ai'
-import { user_profile as UserProfile, user_profile_to_conference_mapping as UserProfileToConferenceMapping, conference as Conference } from '@prisma/client'
+import { user_profile, user_profile_to_conference_mapping, conference, connection_request, connection } from '@prisma/client'
+import { useFormik } from 'formik'
+import { inviteMessageMaxLength } from '../../lib/const'
 
 
-export type UserProfileWithConferences = UserProfile & {
-   user_profile_to_conference_mapping: UserProfileToConferenceMapping & { conference: Conference }[] | null
+export type UserProfileWithMetaData = user_profile & {
+   user_profile_to_conference_mapping?: (user_profile_to_conference_mapping & { conference: conference })[],
+   connection_connection_user_profile_startTouser_profile?: connection[],
+   connection_request_connection_request_requested_idTouser_profile?: connection_request[],
+   authUserProfileId?: number,
 }
 
 type Props = {
-   user_profile: UserProfileWithConferences,
-   mini?: boolean
+   userProfile: UserProfileWithMetaData,
+   mini?: boolean,
+   authUserProfileId?: number
 }
 
 export const columnNameToTagTextMapping = {
@@ -72,7 +75,8 @@ export const columnNameToTagTextMapping = {
 }
 
 
-const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
+
+const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
 
    const {
       id,
@@ -119,7 +123,8 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
       skill_influencer_relations,
       skill_investor_relations,
       user_profile_to_conference_mapping,
-   } = user_profile
+      authUserProfileId,
+   } = userProfile
 
    const toast = useToast()
 
@@ -129,8 +134,7 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
          bgGradient={
             dataKey.startsWith('skill_')
                ? 'linear(to-l, #4776E6,  #8E54E9)' // skills
-               // : 'linear(to-l, #d83f91, #ae4bb8)' // needs
-               : 'linear(to-l, #FF512F, #DD2476)' // needs
+               : 'linear(to-l, #FF512F, #DD2476)' // labels
          }
          variant={'solid'}
          m={1}
@@ -139,59 +143,116 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
       </Tag>
    )
 
+   //********************** Managing Connect Button State */
+
+   let connectButtonInitValue = {
+      label: 'Connect',
+      isDisabled: false,
+      shouldRender: true,
+   }
+
+   // if the user is not logged or this is not passed in or authUser is the owner of the profile (oneself). Connect button is not available.
+   if (!authUserProfileId || authUserProfileId === userProfile.id) {
+      connectButtonInitValue['shouldRender'] = false
+   }
+
+   // If auth user has requested connecting with the user profile owner
+   const connectionRequesters = userProfile.connection_request_connection_request_requested_idTouser_profile?.map(req => req.initiator_id)
+   if (authUserProfileId && connectionRequesters && connectionRequesters.includes(authUserProfileId)) {
+      connectButtonInitValue = { label: 'Pending', isDisabled: true, shouldRender: true }
+   }
+
+   // If the user profile owner is connected to auth user
+   const connections = userProfile.connection_connection_user_profile_startTouser_profile?.map(con => con.user_profile_end)
+   if (authUserProfileId && connections && connections.includes(authUserProfileId)) {
+      connectButtonInitValue = { label: 'Message', isDisabled: false, shouldRender: true }
+   }
+
+   const [connectButtonStatus, setConnectButtonStatus] = useState(connectButtonInitValue)
+
+   //*********************** Message Modal */
    const { isOpen, onOpen, onClose } = useDisclosure()
    const initialRef = React.useRef(null)
-
    const ConnectReqestModal = () => {
-      const [inviteMessage, setInviteMessage] = useState('')
+      // const [inviteMessage, setInviteMessage] = useState('')
+      const formik = useFormik({
+         initialValues: {
+            inviteMessage: '',
+         },
+         onSubmit: async values => {
+            const res = await fetch('/api/connection', {
+               method: 'POST',
+               body: JSON.stringify({
+                  'targetUserProfileId': id,
+                  'inviteMessage': values.inviteMessage
+               })
+            })
 
-      const onConnectRequestHandler = async () => {
-         const res = await fetch('/api/connection', {
-            method: 'POST',
-            body: JSON.stringify({ 'targetUserProfileId': id, 'inviteMessage': inviteMessage })
-         })
-         const { message } = await res.json()
-         toast({
-            title: message,
-            status: res.status === 200 ? 'success' : 'error',
-            duration: 4000,
-            isClosable: true,
-         })
-         onClose()
-      }
+            const { message } = await res.json()
+            toast({
+               title: message,
+               status: res.status === 200 ? 'success' : 'error',
+               duration: 4000,
+               isClosable: true,
+            })
+
+            // close the modal
+            onClose()
+            // change the button text and look
+            setConnectButtonStatus({ ...connectButtonStatus, label: 'Pending', isDisabled: true })
+         },
+         validate: values => {
+            const errors = {}
+            if (values.inviteMessage.length > inviteMessageMaxLength) {
+               errors['inviteMessage'] = `The message is too long (max ${inviteMessageMaxLength} char)`
+            }
+            return errors
+         }
+      });
 
       return (
-         <>
-            <Modal
-               isOpen={isOpen}
-               onClose={onClose}
-               isCentered
-               initialFocusRef={initialRef}
-            >
-               <ModalOverlay />
-               <ModalContent>
+         <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            isCentered
+            initialFocusRef={initialRef}
+            size={'lg'}
+         >
+            <ModalOverlay />
+            <ModalContent>
+               <form onSubmit={formik.handleSubmit}>
                   <ModalHeader>Connect Request</ModalHeader>
                   <ModalCloseButton />
                   <ModalBody>
-                     <Textarea
-                        placeholder='(Optional) Include a Short message...'
-                        value={inviteMessage}
-                        onChange={e => {
+                     <FormControl
+                        isInvalid={!!formik.errors.inviteMessage}>
+                        <Textarea
+                           placeholder='(Optional) Include a Short message...'
+                           value={formik.values.inviteMessage}
+                           name={'inviteMessage'}
+                           onChange={formik.handleChange}
+                           ref={initialRef}
+                           rows={7}
 
-                           setInviteMessage(e.target.value)
-                        }}
-                        ref={initialRef}
-                     />
+                        />
+                        {!formik.errors.inviteMessage ? (
+                           <FormHelperText>
+                              {`Max ${inviteMessageMaxLength} characters`}
+                           </FormHelperText>
+                        ) : (
+                           <FormErrorMessage>{formik.errors.inviteMessage}</FormErrorMessage>
+                        )}
+                     </FormControl>
                   </ModalBody>
                   <ModalFooter>
                      <Button variant='ghost' onClick={onClose}>Cancel</Button>
-                     <Button colorScheme='blue' ml={3} onClick={onConnectRequestHandler}>
+                     <Button colorScheme='blue' ml={3} type='submit'>
                         Send
                      </Button>
                   </ModalFooter>
-               </ModalContent>
-            </Modal>
-         </>
+               </form>
+            </ModalContent>
+         </Modal>
       )
    }
 
@@ -216,17 +277,17 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
                </Text>
                <Text fontSize={'sm'}>@{handle}</Text>
             </Flex>
-            <Flex direction={'column'}>
+            {connectButtonStatus.shouldRender &&
                <Button
                   colorScheme={'blue'}
                   w={'80px'}
                   h={'30px'}
-                  // onClick={onConnectRequestHandler}
-                  onClick={onOpen}
-               >
-                  Connect
-               </Button>
-            </Flex>
+                  isDisabled={connectButtonStatus.isDisabled}
+                  onClick={
+                     connectButtonStatus.label === 'Connect' ? onOpen : () => { }
+                  }
+               >{connectButtonStatus.label}</Button>
+            }
             <ConnectReqestModal />
          </Flex>
          <Text fontWeight="bold">{bio_short}</Text>
@@ -237,7 +298,7 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
                {Object.keys(columnNameToTagTextMapping)
                   .filter((dataKey) => dataKey.startsWith('label_'))
                   .map((dataKey) =>
-                     user_profile[dataKey] ? (
+                     userProfile[dataKey] ? (
                         <ProfileTag key={dataKey} dataKey={dataKey} />
                      ) : undefined
                   )}
@@ -248,7 +309,7 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
             {Object.keys(columnNameToTagTextMapping)
                .filter((dataKey) => dataKey.startsWith('skill_'))
                .map((dataKey) =>
-                  user_profile[dataKey] ? (
+                  userProfile[dataKey] ? (
                      <ProfileTag key={dataKey} dataKey={dataKey} />
                   ) : undefined
                )}

@@ -18,7 +18,7 @@ import {
 import prisma from '../../lib/prisma'
 import { getSession } from 'next-auth/react'
 
-import { User, user_profile as UserProfile, user_profile_to_conference_mapping } from '@prisma/client'
+import { user_profile } from '@prisma/client'
 import {
    createContext,
    Dispatch,
@@ -26,7 +26,7 @@ import {
    useContext,
    useState,
 } from 'react'
-import MemberProfileCard, { UserProfileWithConferences } from '../../components/profile/MemberProfileCard'
+import MemberProfileCard, { UserProfileWithMetaData } from '../../components/profile/MemberProfileCard'
 import { ESession } from '../index'
 import { Field, Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
@@ -92,7 +92,9 @@ export async function getServerSideProps(context) {
                   include: {
                      conference: true
                   }
-               }
+               },
+               connection_connection_user_profile_startTouser_profile: true,
+               connection_request_connection_request_requested_idTouser_profile: true,
             }
          },
       },
@@ -111,19 +113,22 @@ interface formikContext {
       value: any,
       shouldValidate?: boolean | undefined
    ) => void
-   values: UserProfile
+   values: user_profile
 }
 
 const FormContext = createContext<formikContext>({
    setFieldValue: () => null,
-   values: {} as UserProfile,
+   values: {} as user_profile,
 })
 
 const MyProfile = ({ user }) => {
    const { user_profile } = user
    const router = useRouter()
-
    const toast = useToast()
+
+   console.log('..................................')
+   console.log(user)
+   console.log('..................................')
 
    const createOrUpdateUserProfile = async (formData) => {
       const userProfileToUpload = formData
@@ -229,13 +234,13 @@ const MyProfile = ({ user }) => {
          user_profile?.label_text_open_to_discover_new_project,
       label_text_open_to_work: user_profile?.label_text_open_to_work,
       user_profile_to_conference_mapping: user_profile?.user_profile_to_conference_mapping,
-   } as UserProfileWithConferences
+   } as UserProfileWithMetaData
 
-   const [formData, setFormData] = useState<UserProfileWithConferences>(initialValues)
+   const [formData, setFormData] = useState<UserProfileWithMetaData>(initialValues)
 
    const [isLargerThan1280] = useMediaQuery('(min-width: 1290px)')
 
-   const validateFields = (values: UserProfile) => {
+   const validateFields = (values: user_profile) => {
       const errors = {}
       if (!values.handle?.match(/^[a-zA-Z0-9_]*$/)) {
          errors['handle'] = 'Handle can only contain a-z A-Z 0-9 or _'
@@ -597,7 +602,7 @@ const MyProfile = ({ user }) => {
             <Text fontSize={'lg'} fontWeight="bold">
                Profile Preview
             </Text>
-            <MemberProfileCard user_profile={formData} mini={false} />
+            <MemberProfileCard userProfile={formData} mini={false} />
          </Stack>
       </Stack>
    )
@@ -607,8 +612,8 @@ const SkillCheckBox: React.FC<{
    dataKey: string
    skill_text: string
    colorTheme?: string
-   formData: UserProfileWithConferences
-   setFormData: Dispatch<SetStateAction<UserProfileWithConferences>>
+   formData: UserProfileWithMetaData
+   setFormData: Dispatch<SetStateAction<UserProfileWithMetaData>>
 }> = ({ dataKey, skill_text, colorTheme = 'blue' }) => {
    const { setFieldValue, values } = useContext(FormContext)
    return (

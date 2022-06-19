@@ -17,13 +17,11 @@ import ProfilePicture from './ProfilePicture'
 import { AiOutlineMail } from 'react-icons/ai'
 import { user_profile as UserProfile, user_profile_to_conference_mapping as UserProfileToConferenceMapping, conference as Conference } from '@prisma/client'
 import { useRouter } from 'next/router'
+import { UserProfileWithMetaData } from './MemberProfileCard'
 
-export type UserProfileWithConferences = UserProfile & {
-   user_profile_to_conference_mapping: UserProfileToConferenceMapping & { conference: Conference }[] | null
-}
 
 type Props = {
-   user_profile: UserProfileWithConferences,
+   user_profile: UserProfileWithMetaData,
    primaryLabel?: string,
    primaryOnClick?: any,
    secondaryLabel?: string,
@@ -137,23 +135,3 @@ const MemberProfileListItem: React.FC<Props> = ({ user_profile, primaryLabel, pr
 }
 
 export default MemberProfileListItem
-
-//    < Flex
-
-// direction = { 'row'}
-// justifyContent = { 'space-between'}
-// bg = 'gray.50'
-// m = { 2}
-// p = { 3}
-// rounded = 'md'
-//    >
-//               <ListViewMiniProfile
-//                 handle={r.user_profile_connection_request_requested_idTouser_profile.handle}
-//                 profile_name={r.user_profile_connection_request_requested_idTouser_profile.profile_name}
-//                 bio_short={r.user_profile_connection_request_requested_idTouser_profile.bio_short}
-//               />
-//               <Flex direction={'row'} transform="translateY(10%)">
-//                 <Button variant={'ghost'} onClick={() => onConnectionRequestDecisionHandler(r.initiator_id, 'reject', r)}>Ignore</Button>
-//                 <Button colorScheme={'blue'} rounded={'3xl'} onClick={() => onConnectionRequestDecisionHandler(r.initiator_id, 'accept', r)}>Accept</Button>
-//               </Flex>
-//             </Flex >
