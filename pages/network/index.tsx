@@ -4,6 +4,7 @@ import {
   Button,
   useMediaQuery,
   useToast,
+  Divider,
 } from '@chakra-ui/react'
 import prisma from '../../lib/prisma'
 import { getSession } from 'next-auth/react'
@@ -42,7 +43,7 @@ export async function getServerSideProps(context) {
           connection_request_connection_request_requested_idTouser_profile: {
             where: {
               confirmed_at: null,
-              rejected_at: null
+              rejected_at: null,
             },
             include: {
               user_profile_connection_request_initiator_idTouser_profile: {
@@ -53,7 +54,7 @@ export async function getServerSideProps(context) {
                   profile_picture: true,
                   handle: true,
                 }
-              }
+              },
             }
           },
           connection_connection_user_profile_startTouser_profile: {
@@ -88,11 +89,15 @@ export default function ({ user }) {
   const [state, setState] = useState({
     connectionRequesters:
       user_profile.connection_request_connection_request_requested_idTouser_profile.map(
-        item => item.user_profile_connection_request_initiator_idTouser_profile
+        item => {
+          let r = item.user_profile_connection_request_initiator_idTouser_profile
+          r['invitationMessage'] = item.invitation_message
+          return r
+        }
       ),
     connections: user_profile.connection_connection_user_profile_startTouser_profile.map(item => item.user_profile_connection_user_profile_endTouser_profile)
   })
-  console.log(user_profile)
+
 
   const onConnectionRequestDecisionHandler = async (
     targetUserProfileId: Number,
@@ -131,7 +136,7 @@ export default function ({ user }) {
   }
 
   const [isLargeScreen] = useMediaQuery('(min-width: 700px)')
-  console.log(state)
+
   return (
 
     <Flex direction={'column'}>
@@ -142,6 +147,7 @@ export default function ({ user }) {
           {state.connectionRequesters.map(requester => (
             <MemberProfileListItem
               user_profile={requester}
+              message={requester.invitationMessage}
               primaryLabel={'Accept'}
               primaryOnClick={() => onConnectionRequestDecisionHandler(requester.id, 'accept', requester)}
               secondaryLabel={'Ignore'}
@@ -153,6 +159,13 @@ export default function ({ user }) {
       {/* Connecitons */}
       <Flex direction={'column'} w={isLargeScreen ? '70%' : '100%'} m={'0 auto'}>
         <Text fontSize={'xl'} fontWeight='bold' py={3}>Your Connections</Text>
+        <Divider />
+        {!state.connections || state.connections.length === 0 &&
+          <Text
+            py={10}
+            align={'center'}
+          >You don't have any connection yet.<br />Find more connection in the Discover section</Text>
+        }
         <Flex direction={'column'}>
           {state.connections.map(con => (
             <MemberProfileListItem

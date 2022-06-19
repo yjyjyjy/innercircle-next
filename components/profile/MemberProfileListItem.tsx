@@ -22,6 +22,7 @@ import { UserProfileWithMetaData } from './MemberProfileCard'
 
 type Props = {
    user_profile: UserProfileWithMetaData,
+   message?: string,
    primaryLabel?: string,
    primaryOnClick?: any,
    secondaryLabel?: string,
@@ -30,7 +31,7 @@ type Props = {
 
 
 
-const MemberProfileListItem: React.FC<Props> = ({ user_profile, primaryLabel, primaryOnClick, secondaryLabel, secondaryOnClick }) => {
+const MemberProfileListItem: React.FC<Props> = ({ user_profile, message, primaryLabel, primaryOnClick, secondaryLabel, secondaryOnClick }) => {
    const router = useRouter()
    const [isDesktop] = useMediaQuery('(min-width: 1290px)')
    const {
@@ -79,9 +80,10 @@ const MemberProfileListItem: React.FC<Props> = ({ user_profile, primaryLabel, pr
       skill_investor_relations,
       user_profile_to_conference_mapping,
    } = user_profile
+
    return (
       <Flex
-         direction={'row'}
+         direction={'column'}
          py={2}
          px={isDesktop ? 4 : 1}
          w={'100%'}
@@ -90,40 +92,57 @@ const MemberProfileListItem: React.FC<Props> = ({ user_profile, primaryLabel, pr
          bg='gray.50'
          justifyContent={'space-between'}
          borderStyle={'solid'}
-         borderColor={'gray.100'}
-         _hover={{ cursor: 'pointer' }}
+         borderColor={'gray.300'}
+
       >
-         <Flex
-            direction={'row'}
-            onClick={
-               () => router.push(`/in/${handle}`)}
-            mr={'7px'}
-            w={'100%'}
-         >
-            <Flex direction={'column'} display={''}>
-               <Text fontWeight={'bold'} noOfLines={1}>
-                  {profile_name}
-               </Text>
-               <Text noOfLines={1}>{bio_short}</Text>
+         <Flex direction={'row'}>
+            <Flex
+               direction={'row'}
+               onClick={
+                  () => router.push(`/in/${handle}`)}
+               mr={'7px'}
+               w={'100%'}
+               _hover={{ cursor: 'pointer' }}
+            >
+               <Flex direction={'column'} display={''}>
+                  <Text fontWeight={'bold'} noOfLines={1}>
+                     {profile_name}
+                  </Text>
+                  <Text noOfLines={1}>{bio_short}</Text>
+               </Flex>
+            </Flex>
+            <Flex direction={'row'} transform={isDesktop ? "translateY(10%)" : "translateY(20%)"}>
+               {secondaryLabel && secondaryOnClick &&
+                  <Button
+                     variant={'ghost'}
+                     size={isDesktop ? 'md' : 'sm'}
+                     onClick={secondaryOnClick}
+                  >{secondaryLabel}</Button>
+               }
+               {primaryLabel && primaryOnClick &&
+                  <Button
+                     colorScheme={'twitter'}
+                     rounded={'3xl'}
+                     size={isDesktop ? 'md' : 'sm'}
+                     onClick={primaryOnClick}
+                  >{primaryLabel}</Button>
+               }
             </Flex>
          </Flex>
-         <Flex direction={'row'} transform={isDesktop ? "translateY(10%)" : "translateY(20%)"}>
-            {secondaryLabel && secondaryOnClick &&
-               <Button
-                  variant={'ghost'}
-                  size={isDesktop ? 'md' : 'sm'}
-                  onClick={secondaryOnClick}
-               >{secondaryLabel}</Button>
-            }
-            {primaryLabel && primaryOnClick &&
-               <Button
-                  colorScheme={'twitter'}
-                  rounded={'3xl'}
-                  size={isDesktop ? 'md' : 'sm'}
-                  onClick={primaryOnClick}
-               >{primaryLabel}</Button>
-            }
-         </Flex>
+         {message &&
+            <Text
+               border={'2px'}
+               borderColor={'gray.300'}
+               borderRadius={'md'}
+               bg={'white'}
+               px={2}
+               my={1}
+               mx={3}
+               maxH={'100px'}
+               overflow={'scroll'}
+            >
+               {message}
+            </Text>}
          {/* <ProfilePicture
             image_url={
                'https://en.gravatar.com/userimage/67165895/bd41f3f601291d2f313b1d8eec9f8a4d.jpg?size=200'
