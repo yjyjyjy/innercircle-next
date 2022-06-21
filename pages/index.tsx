@@ -93,9 +93,12 @@ export async function getServerSideProps(context) {
   }
 }
 
+
+
 export const FilterTag = (
   {
     label,
+    startDate = null,
     isChecked = false,
     colorTheme = 'blue',
     onClick
@@ -111,15 +114,14 @@ export const FilterTag = (
       colorScheme={colorTheme}
       _hover={{ cursor: 'pointer', bg: colorTheme + '.100' }}
     >
-      <TagLeftIcon boxSize='12px' as={AddIcon} />
-      <TagLabel>{label}</TagLabel>
+      {/* <TagLeftIcon boxSize='12px' as={AddIcon} /> */}
+      <TagLabel>{label}{startDate && ' (' + startDate + ')'}</TagLabel>
     </Tag >
   </Box>
 )
 
 export default function ({ userProfiles, conferences }) {
   const { data: session, status } = useSession()
-
   const [isDesktop] = useMediaQuery('(min-width: 1290px)')
 
   const [searchText, setSearchText] = useState('')
@@ -146,9 +148,8 @@ export default function ({ userProfiles, conferences }) {
     skills: [],
     labels: []
   })
+
   const onConferenceFilterClickHandler = ({ id, name }) => {
-    console.log(id, name)
-    console.log(filterState)
     if (filterState.conferences.includes(id))
       setFilterState({ ...filterState, conferences: filterState.conferences.filter(item => item !== id) })
     else {
@@ -209,11 +210,12 @@ export default function ({ userProfiles, conferences }) {
             transform="translateY(25%)"
             fontWeight={'bold'}
             pr={'2'}
-          >Filter on conferences: (coming soon...)</Text>
+          >Filter on conferences:</Text>
           {conferences.map(
             conf => FilterTag(
               {
                 label: conf.conference_name,
+                startDate: conf.start_date.substring(5, 10),
                 isChecked: filterState.conferences.includes(conf.id),
                 onClick: () => onConferenceFilterClickHandler({ id: conf.id, name: conf.conference_name })
               }
