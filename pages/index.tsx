@@ -93,6 +93,32 @@ export async function getServerSideProps(context) {
   }
 }
 
+export const filterTag = (
+  {
+    name,
+    label,
+    isChecked = false,
+    colorTheme = 'blue',
+    onClick
+  }
+) => (
+  <Box
+    p={2}
+    key={name}
+  >
+    <Tag
+      size={'lg'}
+      onClick={onClick}
+      variant={isChecked ? 'solid' : 'outline'}
+      colorScheme={colorTheme}
+      _hover={{ cursor: 'pointer', bg: colorTheme + '.100' }}
+    >
+      <TagLeftIcon boxSize='12px' as={AddIcon} />
+      <TagLabel>{label}</TagLabel>
+    </Tag >
+  </Box>
+)
+
 export default function ({ userProfiles, conferences }) {
   const { data: session, status } = useSession()
 
@@ -122,37 +148,17 @@ export default function ({ userProfiles, conferences }) {
     skills: [],
     labels: []
   })
-  const onConferenceFilterClickHandler = ({ name }) => {
-    if (filterState.conferences.includes(name))
-      setFilterState({ ...filterState, conferences: filterState.conferences.filter(item => item !== name) })
+  const onConferenceFilterClickHandler = ({ id, name }) => {
+    console.log(id, name)
+    console.log(filterState)
+    if (filterState.conferences.includes(id))
+      setFilterState({ ...filterState, conferences: filterState.conferences.filter(item => item !== id) })
     else {
-      setFilterState({ ...filterState, conferences: [...filterState.conferences, name] })
+      setFilterState({ ...filterState, conferences: [...filterState.conferences, id] })
     }
   }
 
-  const filterTag = (
-    {
-      name,
-      label,
-      isChecked = false,
-      colorTheme = 'blue' }
-  ) => (
-    <Box
-      p={2}
-      key={name}
-    >
-      <Tag
-        size={'lg'}
-        onClick={() => onConferenceFilterClickHandler({ name })}
-        variant={isChecked ? 'solid' : 'outline'}
-        colorScheme={colorTheme}
-        _hover={{ cursor: 'pointer', bg: colorTheme + '.100' }}
-      >
-        <TagLeftIcon boxSize='12px' as={AddIcon} />
-        <TagLabel>{label}</TagLabel>
-      </Tag >
-    </Box>
-  )
+
 
   if (status === 'loading') {
     return <h1>Loading</h1>
@@ -171,10 +177,6 @@ export default function ({ userProfiles, conferences }) {
         }
       )
     )
-
-    console.log('*******************')
-    console.log(userProfiles)
-    console.log('*******************')
 
     const skillLabelSelectOptions = Object.keys(columnNameToTagTextMapping).map(dataKey => (
       { value: dataKey, label: columnNameToTagTextMapping[dataKey], color: 'blue' }
@@ -212,7 +214,12 @@ export default function ({ userProfiles, conferences }) {
           >Filter on conferences: (coming soon...)</Text>
           {conferences.map(
             conf => filterTag(
-              { name: conf.id, label: conf.conference_name, isChecked: filterState.conferences.includes(conf.id) }
+              {
+                name: conf.id,
+                label: conf.conference_name,
+                isChecked: filterState.conferences.includes(conf.id),
+                onClick: () => onConferenceFilterClickHandler({ id: conf.id, name: conf.conference_name })
+              }
             ))}
         </Flex>
 

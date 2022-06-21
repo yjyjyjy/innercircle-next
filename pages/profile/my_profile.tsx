@@ -126,10 +126,6 @@ const MyProfile = ({ user }) => {
    const router = useRouter()
    const toast = useToast()
 
-   console.log('..................................')
-   console.log(user)
-   console.log('..................................')
-
    const createOrUpdateUserProfile = async (formData) => {
       const userProfileToUpload = formData
       // delete addtional information before pushing to the backend.
