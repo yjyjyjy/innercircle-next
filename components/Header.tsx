@@ -47,11 +47,6 @@ export default function Header() {
    const { isOpen, onToggle } = useDisclosure();
    const rounter = useRouter()
    const { data: session, status } = useSession()
-   // const [isDesktop] = useMediaQuery('(min-width: 1290px)')
-
-   // if (status === 'loading') {
-   //    return <Flex justifyContent="center" bg='blue.300' color="white" position={'fixed'} w='100%' zIndex={888} left={0} right={0}></Flex>
-   // }
 
    return (
       <Box
@@ -139,6 +134,7 @@ export default function Header() {
                         {
                            [
                               { label: 'My Profile', onClick: () => { rounter.push('/profile/my_profile') } },
+                              { label: 'My Conferences', onClick: () => { rounter.push('/profile/my_conferences') } },
                               { label: 'Sign Out', onClick: () => { signOut({ callbackUrl: `${window.location.origin}` }) } }
                            ].map(item =>
                               <AccountMenuItem key={item.label} onClick={item.onClick} label={item.label} />)

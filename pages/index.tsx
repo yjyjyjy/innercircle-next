@@ -93,9 +93,8 @@ export async function getServerSideProps(context) {
   }
 }
 
-export const filterTag = (
+export const FilterTag = (
   {
-    name,
     label,
     isChecked = false,
     colorTheme = 'blue',
@@ -104,7 +103,6 @@ export const filterTag = (
 ) => (
   <Box
     p={2}
-    key={name}
   >
     <Tag
       size={'lg'}
@@ -213,9 +211,8 @@ export default function ({ userProfiles, conferences }) {
             pr={'2'}
           >Filter on conferences: (coming soon...)</Text>
           {conferences.map(
-            conf => filterTag(
+            conf => FilterTag(
               {
-                name: conf.id,
                 label: conf.conference_name,
                 isChecked: filterState.conferences.includes(conf.id),
                 onClick: () => onConferenceFilterClickHandler({ id: conf.id, name: conf.conference_name })
