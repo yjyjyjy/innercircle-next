@@ -227,7 +227,7 @@ export default function ({ userProfiles, conferences }) {
             transform="translateY(25%)"
             fontWeight={'bold'}
             pr={'2'}
-          >Filter on their skills / experiences:</Text>
+          >Filter on skills / experiences:</Text>
           <FormControl py={3} display={"inline"}>
             <Select<FilterOption, true, GroupBase<FilterOption>>
               isMulti
@@ -248,7 +248,7 @@ export default function ({ userProfiles, conferences }) {
             transform="translateY(25%)"
             fontWeight={'bold'}
             pr={'2'}
-          >Filter on their needs:</Text>
+          >Filter on member needs:</Text>
           <FormControl py={3} display={"inline"}>
             <Select<FilterOption, true, GroupBase<FilterOption>>
               isMulti
