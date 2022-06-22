@@ -361,5 +361,5 @@ const NAV_ITEMS: Array<NavItem> = [
    {
       label: 'Network',
       href: '/network',
-   },
-];
+   }
+]

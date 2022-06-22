@@ -21,7 +21,7 @@ const User = ({ user_profile }) => {
 
   return (
     <Center>
-      {user_profile && <MemberProfileCard userProfile={user_profile} />}
+      {user_profile && <MemberProfileCard userProfile={user_profile} mini={false}/>}
     </Center>
   );
 };
