@@ -1,34 +1,9 @@
-import {
-    Flex,
-    Text,
-    Stack,
-    FormControl,
-    FormLabel,
-    Input,
-    Textarea,
-    Button,
-    Checkbox,
-    Grid,
-    GridItem,
-    Center,
-    useMediaQuery,
-    useToast,
-    FormErrorMessage,
-    Box,
-} from '@chakra-ui/react'
+import { Flex, Button, useToast } from '@chakra-ui/react'
 import prisma from '../../lib/prisma'
 import { getSession } from 'next-auth/react'
-
-import {
-    createContext,
-    Dispatch,
-    SetStateAction,
-    useContext,
-    useState,
-} from 'react'
-import MemberProfileCard, { UserProfileWithMetaData } from '../../components/profile/MemberProfileCard'
-import { ESession, FilterTag } from '../index'
-import { useRouter } from 'next/router'
+import { useState } from 'react'
+import { ESession } from '../index'
+import { FilterTag } from '../../components/FilterTag'
 
 
 export async function getServerSideProps(context) {
@@ -80,7 +55,6 @@ export async function getServerSideProps(context) {
 export default ({ user, conferences }) => {
     const { user_profile: userProfile } = user
     const toast = useToast()
-    const router = useRouter()
 
     // confState is an array of the conferences that the user is going. This is the init value.
     let initConfState = {}
@@ -134,56 +108,5 @@ export default ({ user, conferences }) => {
             </Button>
         </Flex>
     )
-
-    // const createOrUpdateUserProfile = async (formData) => {
-    //     const userProfileToUpload = formData
-    //     // delete addtional information before pushing to the backend.
-    //     delete userProfileToUpload.user_profile_to_conference_mapping
-
-    //     const res = await fetch('/api/profile', {
-    //         method: 'POST',
-    //         body: JSON.stringify(userProfileToUpload),
-    //     })
-    //     const { message } = await res.json()
-    //     toast({
-    //         title: message,
-    //         status: res.status === 200 ? 'success' : 'error',
-    //         duration: 4000,
-    //         isClosable: true,
-    //     })
-    //     router.push('/')
-    // }
-
-    // const OpenToCheckBox: React.FC<{ dataKey: string; text: string }> = ({
-    //     dataKey,
-    //     text,
-    // }) => {
-    //     const { values, setFieldValue } = useContext(FormContext)
-    //     return (
-    //         <Checkbox
-    //             p={1}
-    //             name={dataKey}
-    //             onChange={() => {
-    //                 const selectedLabel = Object.keys(values).filter(
-    //                     (dataKey) =>
-    //                         dataKey.startsWith('label_') &&
-    //                         values[`${dataKey}`] === true
-    //                 )
-    //                 //If trying to add new label
-    //                 if (selectedLabel.length < 5 && !values[`${dataKey}`]) {
-    //                     setFieldValue(dataKey, true)
-    //                 }
-    //                 //If trying to de-select a label
-    //                 else if (values[`${dataKey}`]) {
-    //                     setFieldValue(dataKey, false)
-    //                 }
-    //             }}
-    //             isChecked={values[`${dataKey}`]}
-    //         >
-    //             {text}
-    //         </Checkbox>
-    //     )
-    // }
-
 }
 
