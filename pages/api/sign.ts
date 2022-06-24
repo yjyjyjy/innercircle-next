@@ -10,7 +10,10 @@ export default function signature(req, res) {
    }
 
    // Get the signature using the Node.js SDK method api_sign_request
-   const signature = cloudinary.utils.api_sign_request(opts, 'API_SECRET_HERE')
+   const signature = cloudinary.utils.api_sign_request(
+      opts,
+      'KKkxKl0GexTmL8W1eJD5WWevxwo'
+   )
 
    res.statusCode = 200
    res.json({ signature, timestamp })

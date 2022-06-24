@@ -121,9 +121,6 @@ const FormContext = createContext<formikContext>({
 
 const MyProfile = ({ user }) => {
    const { user_profile } = user
-   // const conferences = user_profile?.user_profile_to_conference_mapping.map(m => m.conference)
-
-   console.log(user_profile)
 
    const toast = useToast()
    const [displayPicture, setDisplayPicture] = useState<File>()
@@ -281,7 +278,7 @@ const MyProfile = ({ user }) => {
       formData.append('file', displayPicture)
       formData.append('signature', signature)
       formData.append('timestamp', timestamp)
-      formData.append('api_key', 'API_KEY_HERE')
+      formData.append('api_key', '454991477517121')
       formData.append('public_id', user_profile.id)
 
       const response = await fetch(url, {
@@ -654,7 +651,7 @@ const MyProfile = ({ user }) => {
                Profile Preview
             </Text>
             <MemberProfileCard
-               user_profile={formData}
+               user_profile={{ ...formData, id: user_profile.id }}
                mini={false}
                profile_picture_file={displayPicture}
             />
@@ -713,12 +710,4 @@ const SkillCheckBox: React.FC<{
       </GridItem>
    )
 }
-
-const getSignature = async () => {
-   const response = await fetch('/api/sign')
-   const data = await response.json()
-   const { signature, timestamp } = data
-   return { signature, timestamp }
-}
-
 export default MyProfile

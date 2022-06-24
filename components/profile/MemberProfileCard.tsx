@@ -1,15 +1,4 @@
-import {
-   Box,
-   Flex,
-   Text,
-   Image,
-   Button,
-   IconButton,
-   Tag,
-   Stack,
-   TagLeftIcon,
-   TagLabel,
-} from '@chakra-ui/react'
+import { Box, Flex, Text, Button, Tag, Stack, TagLabel } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import ProfilePicture from './ProfilePicture'
 import {
@@ -17,10 +6,8 @@ import {
    user_profile_to_conference_mapping as UserProfileToConferenceMapping,
    conference as Conference,
 } from '@prisma/client'
-import { Cloudinary } from 'cloudinary-core'
-import { AdvancedImage, placeholder } from '@cloudinary/react'
 import { CloudinaryImage } from '@cloudinary/url-gen'
-import { v2 as cloudinary } from 'cloudinary'
+import { defaultImage } from '@cloudinary/url-gen/actions/delivery'
 
 export type UserProfileWithConferences = UserProfile & {
    user_profile_to_conference_mapping:
@@ -119,20 +106,21 @@ const MemberProfileCard: React.FC<Props> = ({
       user_profile_to_conference_mapping,
    } = user_profile
 
-   const cld = new Cloudinary({
-      cloud_name: 'innercircle',
-      api_key: '454991477517121',
-      api_secret: 'KKkxKl0GexTmL8W1eJD5WWevxwo',
-   })
-   const myImage = cld.image(user_profile.id.toString())
-   const [imageSrc, setImageSrc] = useState<string>()
+   const cldImg = new CloudinaryImage(
+      user_profile.id ? user_profile.id.toString() : '',
+      {
+         cloudName: 'innercircle',
+      }
+   ).delivery(defaultImage('default.png'))
+
+   const [uploadedImg, setuploadedImg] = useState<string>()
 
    const updateProfilePhoto = (profile_picture_file: File) => {
       const reader = new FileReader()
 
       reader.onload = function (onLoadEvent) {
          if (onLoadEvent?.target?.result) {
-            setImageSrc(onLoadEvent.target.result.toString())
+            setuploadedImg(onLoadEvent.target.result.toString())
          }
       }
 
@@ -168,8 +156,7 @@ const MemberProfileCard: React.FC<Props> = ({
          boxShadow={'xl'}
          rounded={'lg'}
       >
-         <ProfilePicture image_url={myImage.src} />
-         {/* <AdvancedImage cldImg={myImageV2} place /> */}
+         <ProfilePicture img={uploadedImg ? uploadedImg : cldImg} />
          <Flex direction={'row'} pt={4}>
             <Flex direction={'column'} w="60%" overflow={'hidden'}>
                <Text fontSize={'xl'} fontWeight={'bold'}>
