@@ -10,18 +10,28 @@ import {
    TagLeftIcon,
    TagLabel,
 } from '@chakra-ui/react'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import ProfilePicture from './ProfilePicture'
-import { AiOutlineMail } from 'react-icons/ai'
-import { user_profile as UserProfile, user_profile_to_conference_mapping as UserProfileToConferenceMapping, conference as Conference } from '@prisma/client'
+import {
+   user_profile as UserProfile,
+   user_profile_to_conference_mapping as UserProfileToConferenceMapping,
+   conference as Conference,
+} from '@prisma/client'
+import { Cloudinary } from 'cloudinary-core'
+import { AdvancedImage, placeholder } from '@cloudinary/react'
+import { CloudinaryImage } from '@cloudinary/url-gen'
+import { v2 as cloudinary } from 'cloudinary'
 
 export type UserProfileWithConferences = UserProfile & {
-   user_profile_to_conference_mapping: UserProfileToConferenceMapping & { conference: Conference }[] | null
+   user_profile_to_conference_mapping:
+      | (UserProfileToConferenceMapping & { conference: Conference }[])
+      | null
 }
 
 type Props = {
-   user_profile: UserProfileWithConferences,
+   user_profile: UserProfileWithConferences
    mini?: boolean
+   profile_picture_file?: File
 }
 
 export const columnNameToTagTextMapping = {
@@ -58,9 +68,11 @@ export const columnNameToTagTextMapping = {
    skill_investor_relations: 'Investor Relations',
 }
 
-
-const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
-
+const MemberProfileCard: React.FC<Props> = ({
+   user_profile,
+   mini = true,
+   profile_picture_file,
+}) => {
    const {
       handle,
       profile_name,
@@ -107,14 +119,38 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
       user_profile_to_conference_mapping,
    } = user_profile
 
+   const cld = new Cloudinary({
+      cloud_name: 'innercircle',
+      api_key: '454991477517121',
+      api_secret: 'KKkxKl0GexTmL8W1eJD5WWevxwo',
+   })
+   const myImage = cld.image(user_profile.id.toString())
+   const [imageSrc, setImageSrc] = useState<string>()
+
+   const updateProfilePhoto = (profile_picture_file: File) => {
+      const reader = new FileReader()
+
+      reader.onload = function (onLoadEvent) {
+         if (onLoadEvent?.target?.result) {
+            setImageSrc(onLoadEvent.target.result.toString())
+         }
+      }
+
+      reader.readAsDataURL(profile_picture_file)
+   }
+
+   useEffect(() => {
+      if (profile_picture_file) updateProfilePhoto(profile_picture_file)
+   }, [profile_picture_file])
+
    const ProfileTag: React.FC<{ dataKey: string }> = ({ dataKey }) => (
       <Tag
          size={'lg'}
          bgGradient={
             dataKey.startsWith('skill_')
                ? 'linear(to-l, #4776E6,  #8E54E9)' // skills
-               // : 'linear(to-l, #d83f91, #ae4bb8)' // needs
-               : 'linear(to-l, #FF512F, #DD2476)' // needs
+               : // : 'linear(to-l, #d83f91, #ae4bb8)' // needs
+                 'linear(to-l, #FF512F, #DD2476)' // needs
          }
          variant={'solid'}
          m={1}
@@ -132,11 +168,8 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
          boxShadow={'xl'}
          rounded={'lg'}
       >
-         {/* <ProfilePicture
-            image_url={
-               'https://en.gravatar.com/userimage/67165895/bd41f3f601291d2f313b1d8eec9f8a4d.jpg?size=200'
-            }
-         /> */}
+         <ProfilePicture image_url={myImage.src} />
+         {/* <AdvancedImage cldImg={myImageV2} place /> */}
          <Flex direction={'row'} pt={4}>
             <Flex direction={'column'} w="60%" overflow={'hidden'}>
                <Text fontSize={'xl'} fontWeight={'bold'}>
@@ -145,7 +178,12 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
                <Text fontSize={'sm'}>@{handle}</Text>
             </Flex>
             <Flex direction={'column'}>
-               <Button colorScheme={'blue'} disabled={true} w={'80px'} h={'30px'}>
+               <Button
+                  colorScheme={'blue'}
+                  disabled={true}
+                  w={'80px'}
+                  h={'30px'}
+               >
                   Connect
                </Button>
                <Text>(coming soon...)</Text>
@@ -175,27 +213,27 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
                   ) : undefined
                )}
          </Flex>
-         {
-            user_profile_to_conference_mapping && user_profile_to_conference_mapping?.length > 0 && <Box>
-               <Text fontWeight={'bold'}>You may find me at:</Text>
-               <Flex direction={'row'} wrap={'wrap'}>
-                  {user_profile_to_conference_mapping.map(m => (
-                     <Tag
-                        key={m.conference.id}
-                        size={'lg'}
-                        bgGradient={'linear(to-l, #182848, #4b6cb7)'}
-                        variant={'solid'}
-                        m={1}
-                     >
-                        <TagLabel>{m.conference.conference_name}</TagLabel>
-                     </Tag>
-                  ))}
-               </Flex>
-            </Box>
-         }
-      </Stack >
+         {user_profile_to_conference_mapping &&
+            user_profile_to_conference_mapping?.length > 0 && (
+               <Box>
+                  <Text fontWeight={'bold'}>You may find me at:</Text>
+                  <Flex direction={'row'} wrap={'wrap'}>
+                     {user_profile_to_conference_mapping.map((m) => (
+                        <Tag
+                           key={m.conference.id}
+                           size={'lg'}
+                           bgGradient={'linear(to-l, #182848, #4b6cb7)'}
+                           variant={'solid'}
+                           m={1}
+                        >
+                           <TagLabel>{m.conference.conference_name}</TagLabel>
+                        </Tag>
+                     ))}
+                  </Flex>
+               </Box>
+            )}
+      </Stack>
    )
 }
 
 export default MemberProfileCard
-

@@ -17,8 +17,7 @@ import {
 } from '@chakra-ui/react'
 import prisma from '../../lib/prisma'
 import { getSession } from 'next-auth/react'
-
-import { User, user_profile as UserProfile, user_profile_to_conference_mapping } from '@prisma/client'
+import { user_profile as UserProfile } from '@prisma/client'
 import {
    createContext,
    Dispatch,
@@ -26,7 +25,9 @@ import {
    useContext,
    useState,
 } from 'react'
-import MemberProfileCard, { UserProfileWithConferences } from '../../components/profile/MemberProfileCard'
+import MemberProfileCard, {
+   UserProfileWithConferences,
+} from '../../components/profile/MemberProfileCard'
 import { ESession } from '../index'
 import { Field, Form, Formik } from 'formik'
 
@@ -89,10 +90,10 @@ export async function getServerSideProps(context) {
             include: {
                user_profile_to_conference_mapping: {
                   include: {
-                     conference: true
-                  }
-               }
-            }
+                     conference: true,
+                  },
+               },
+            },
          },
       },
    })
@@ -103,14 +104,6 @@ export async function getServerSideProps(context) {
       },
    }
 }
-
-// type UserJoinUserProfile = User & {
-//    user_profile: UserProfile | null & {
-//       user_profile_to_conference_mapping: UserProfileToConferenceMapping | null & {
-//          conference: Conference
-//       }
-//    }
-// }
 
 interface formikContext {
    setFieldValue: (
@@ -130,8 +123,10 @@ const MyProfile = ({ user }) => {
    const { user_profile } = user
    // const conferences = user_profile?.user_profile_to_conference_mapping.map(m => m.conference)
 
-   const toast = useToast()
+   console.log(user_profile)
 
+   const toast = useToast()
+   const [displayPicture, setDisplayPicture] = useState<File>()
    const createOrUpdateUserProfile = async (formData) => {
       const userProfileToUpload = formData
       delete userProfileToUpload.user_profile_to_conference_mapping
@@ -185,8 +180,8 @@ const MyProfile = ({ user }) => {
       profile_name: user_profile?.profile_name
          ? user_profile.profile_name
          : user.name
-            ? user.name
-            : '',
+         ? user.name
+         : '',
       handle: user_profile?.handle,
       bio_short: user_profile?.bio_short,
       bio: user_profile?.bio,
@@ -234,10 +229,12 @@ const MyProfile = ({ user }) => {
       label_text_open_to_discover_new_project:
          user_profile?.label_text_open_to_discover_new_project,
       label_text_open_to_work: user_profile?.label_text_open_to_work,
-      user_profile_to_conference_mapping: user_profile?.user_profile_to_conference_mapping,
+      user_profile_to_conference_mapping:
+         user_profile?.user_profile_to_conference_mapping,
    } as UserProfileWithConferences
 
-   const [formData, setFormData] = useState<UserProfileWithConferences>(initialValues)
+   const [formData, setFormData] =
+      useState<UserProfileWithConferences>(initialValues)
 
    const [isLargerThan1280] = useMediaQuery('(min-width: 1290px)')
 
@@ -270,6 +267,36 @@ const MyProfile = ({ user }) => {
       return errors
    }
 
+   const uploadDisplayPicture = async () => {
+      if (!displayPicture) return
+      const url = `https://api.cloudinary.com/v1_1/innercircle/upload`
+
+      const res = await fetch('/api/sign', {
+         method: 'POST',
+         body: JSON.stringify(user_profile.id),
+      })
+      const { signature, timestamp } = await res.json()
+
+      const formData = new FormData()
+      formData.append('file', displayPicture)
+      formData.append('signature', signature)
+      formData.append('timestamp', timestamp)
+      formData.append('api_key', 'API_KEY_HERE')
+      formData.append('public_id', user_profile.id)
+
+      const response = await fetch(url, {
+         method: 'post',
+         body: formData,
+      })
+      const data = await response.json()
+   }
+
+   const onSubmit = async (values, actions) => {
+      await uploadDisplayPicture()
+      await createOrUpdateUserProfile(values)
+      actions.setSubmitting(false)
+   }
+
    return (
       <Stack direction={isLargerThan1280 ? 'row' : 'column'} maxW={'100%'}>
          <Stack
@@ -279,10 +306,7 @@ const MyProfile = ({ user }) => {
          >
             <Formik
                onSubmit={(values, actions) => {
-                  setTimeout(async () => {
-                     await createOrUpdateUserProfile(values)
-                     actions.setSubmitting(false)
-                  }, 5000)
+                  onSubmit(values, actions)
                }}
                initialValues={initialValues}
                validate={(values) => {
@@ -425,7 +449,8 @@ const MyProfile = ({ user }) => {
                            </Flex>
                            <Flex direction={'column'} py={3}>
                               <Text fontSize={'lg'} fontWeight="bold" py={4}>
-                                 What are your super powers? (Please select up to 5)
+                                 What are your super powers? (Please select up
+                                 to 5)
                               </Text>
                               <Grid
                                  templateColumns={
@@ -579,6 +604,31 @@ const MyProfile = ({ user }) => {
                                  />
                               </Grid>
                            </Flex>
+                           <div className="custom-file">
+                              <input
+                                 id="profile_picture"
+                                 name="profile_picture"
+                                 type="file"
+                                 className="custom-file-input"
+                                 onChange={(event) => {
+                                    if (event.currentTarget.files) {
+                                       setFieldValue(
+                                          'profile_picture_file',
+                                          event.currentTarget.files[0]
+                                       )
+                                       setDisplayPicture(
+                                          event.currentTarget.files[0]
+                                       )
+                                    }
+                                 }}
+                              />
+                              <label
+                                 className="custom-file-label"
+                                 htmlFor="image"
+                              >
+                                 Choose Image
+                              </label>
+                           </div>
                            <Button
                               mt={4}
                               colorScheme="blue"
@@ -603,7 +653,11 @@ const MyProfile = ({ user }) => {
             <Text fontSize={'lg'} fontWeight="bold">
                Profile Preview
             </Text>
-            <MemberProfileCard user_profile={formData} mini={false} />
+            <MemberProfileCard
+               user_profile={formData}
+               mini={false}
+               profile_picture_file={displayPicture}
+            />
          </Stack>
       </Stack>
    )
@@ -639,12 +693,13 @@ const SkillCheckBox: React.FC<{
             borderWidth={'1px'}
             borderRadius="md"
             overflow={'hidden'}
-            borderColor={colorTheme + ".300"}
+            borderColor={colorTheme + '.300'}
             w={'100%'}
             h={'100%'}
             bg={values[`${dataKey}`] ? colorTheme + '.300' : 'white'}
             _hover={{
-               cursor: 'pointer', bg: colorTheme + '.100'
+               cursor: 'pointer',
+               bg: colorTheme + '.100',
             }}
          >
             <Text
@@ -655,8 +710,15 @@ const SkillCheckBox: React.FC<{
                {skill_text}
             </Text>
          </Center>
-      </GridItem >
+      </GridItem>
    )
+}
+
+const getSignature = async () => {
+   const response = await fetch('/api/sign')
+   const data = await response.json()
+   const { signature, timestamp } = data
+   return { signature, timestamp }
 }
 
 export default MyProfile
