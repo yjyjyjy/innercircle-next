@@ -256,99 +256,101 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
    }
 
    return (
-      <Link href={`/in/${handle}`}>
-         <Stack
-            direction={'column'}
-            p={6}
-            w={mini ? '350px' : '500px'}
-            maxH={'800px'}
-            boxShadow={'lg'}
-            rounded={'lg'}
-            _hover={{
-               cursor: mini && 'pointer',
-               boxShadow: mini && '2xl',
-            }}
-            transition="0.3s"
-            borderColor={'#ebebeb'}
-            borderWidth={'thin'}
-         >
-            {/* <ProfilePicture
+
+      <Stack
+         direction={'column'}
+         p={6}
+         w={mini ? '350px' : '500px'}
+         maxH={'800px'}
+         boxShadow={'lg'}
+         rounded={'lg'}
+         _hover={{
+            cursor: mini && 'pointer',
+            boxShadow: mini && '2xl',
+         }}
+         transition="0.3s"
+         borderColor={'#ebebeb'}
+         borderWidth={'thin'}
+      >
+         {/* <ProfilePicture
             image_url={
                'https://en.gravatar.com/userimage/67165895/bd41f3f601291d2f313b1d8eec9f8a4d.jpg?size=200'
             }
          /> */}
 
-            <Flex direction={'row'} pt={4}>
+         <Flex direction={'row'} pt={4}>
+            <Link href={`/in/${handle}`}>
                <Flex direction={'column'} w="60%" overflow={'hidden'}>
                   <Text fontSize={'xl'} fontWeight={'bold'}>
                      {profile_name}
                   </Text>
                   <Text fontSize={'sm'}>@{handle}</Text>
                </Flex>
-               {connectButtonStatus.shouldRender && (
-                  <Button
-                     colorScheme={'blue'}
-                     w={'80px'}
-                     h={'30px'}
-                     isDisabled={connectButtonStatus.isDisabled}
-                     onClick={
-                        connectButtonStatus.label === 'Connect'
-                           ? onOpen
-                           : () => {}
-                     }
-                  >
-                     {connectButtonStatus.label}
-                  </Button>
-               )}
-               <ConnectReqestModal />
-            </Flex>
-            <Text fontWeight="bold">{bio_short}</Text>
-            <Text noOfLines={mini ? 2 : 6}>{bio}</Text>
-            <Box>
-               <Text fontWeight={'bold'}>I need:</Text>
-               <Flex direction={'row'} wrap={'wrap'}>
-                  {Object.keys(columnNameToTagTextMapping)
-                     .filter((dataKey) => dataKey.startsWith('label_'))
-                     .map((dataKey) =>
-                        userProfile[dataKey] ? (
-                           <ProfileTag key={dataKey} dataKey={dataKey} />
-                        ) : undefined
-                     )}
-               </Flex>
-            </Box>
-            <Text fontWeight={'bold'}>I can offer:</Text>
+            </Link>
+            {connectButtonStatus.shouldRender && (
+               <Button
+                  colorScheme={'blue'}
+                  w={'80px'}
+                  h={'30px'}
+                  isDisabled={connectButtonStatus.isDisabled}
+                  onClick={
+                     connectButtonStatus.label === 'Connect'
+                        ? onOpen
+                        : () => { }
+                  }
+               >
+                  {connectButtonStatus.label}
+               </Button>
+            )}
+            <ConnectReqestModal />
+         </Flex>
+         <Text fontWeight="bold">{bio_short}</Text>
+         <Text noOfLines={mini ? 2 : 6}>{bio}</Text>
+         <Box>
+            <Text fontWeight={'bold'}>I need:</Text>
             <Flex direction={'row'} wrap={'wrap'}>
                {Object.keys(columnNameToTagTextMapping)
-                  .filter((dataKey) => dataKey.startsWith('skill_'))
+                  .filter((dataKey) => dataKey.startsWith('label_'))
                   .map((dataKey) =>
                      userProfile[dataKey] ? (
                         <ProfileTag key={dataKey} dataKey={dataKey} />
                      ) : undefined
                   )}
             </Flex>
-            {user_profile_to_conference_mapping &&
-               user_profile_to_conference_mapping?.length > 0 && (
-                  <Box>
-                     <Text fontWeight={'bold'}>You may find me at:</Text>
-                     <Flex direction={'row'} wrap={'wrap'}>
-                        {user_profile_to_conference_mapping.map((m) => (
-                           <Tag
-                              key={m.conference.id}
-                              size={'lg'}
-                              bgGradient={'linear(to-l, #182848, #4b6cb7)'}
-                              variant={'solid'}
-                              m={1}
-                           >
-                              <TagLabel>
-                                 {m.conference.conference_name}
-                              </TagLabel>
-                           </Tag>
-                        ))}
-                     </Flex>
-                  </Box>
+         </Box>
+         <Text fontWeight={'bold'}>I can offer:</Text>
+         <Flex direction={'row'} wrap={'wrap'}>
+            {Object.keys(columnNameToTagTextMapping)
+               .filter((dataKey) => dataKey.startsWith('skill_'))
+               .map((dataKey) =>
+                  userProfile[dataKey] ? (
+                     <ProfileTag key={dataKey} dataKey={dataKey} />
+                  ) : undefined
                )}
-         </Stack>
-      </Link>
+         </Flex>
+         {user_profile_to_conference_mapping &&
+            user_profile_to_conference_mapping?.length > 0 && (
+               <Box>
+                  <Text fontWeight={'bold'}>You may find me at:</Text>
+                  <Flex direction={'row'} wrap={'wrap'}>
+                     {user_profile_to_conference_mapping.map((m) => (
+                        <Tag
+                           key={m.conference.id}
+                           size={'lg'}
+                           bgGradient={'linear(to-l, #182848, #4b6cb7)'}
+                           variant={'solid'}
+                           m={1}
+                        >
+                           <TagLabel>
+                              {m.conference.conference_name}
+                           </TagLabel>
+                        </Tag>
+                     ))}
+                  </Flex>
+               </Box>
+            )}
+      </Stack>
+
    )
 }
 
