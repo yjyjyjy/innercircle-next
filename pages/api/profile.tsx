@@ -4,7 +4,7 @@ import { getSession } from 'next-auth/react'
 
 const regex = /^[a-zA-Z0-9_]*$/
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const Profile = async (req: NextApiRequest, res: NextApiResponse) => {
    const session = await getSession({ req })
 
    if (!session || !session.userID || !session.user?.email) {
@@ -101,3 +101,5 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       res.status(200).json({ message: 'Nothing happened.' })
    }
 }
+
+export default Profile

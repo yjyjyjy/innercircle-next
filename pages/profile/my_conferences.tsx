@@ -52,7 +52,7 @@ export async function getServerSideProps(context) {
     }
 }
 
-export default ({ user, conferences }) => {
+const MyConferences = ({ user, conferences }) => {
     const { user_profile: userProfile } = user
     const toast = useToast()
 
@@ -109,4 +109,6 @@ export default ({ user, conferences }) => {
         </Flex>
     )
 }
+
+export default MyConferences
 

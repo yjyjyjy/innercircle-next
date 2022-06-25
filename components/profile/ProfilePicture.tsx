@@ -16,6 +16,7 @@ const ProfilePicture: React.FC<Props> = ({ image_url }) => {
         width={100}
         height={100}
         filter="drop-shadow(3px 10px 4px #808080)"
+        alt="profile photo"
       />
     </Box>
   );

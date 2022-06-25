@@ -67,7 +67,7 @@ export async function getServerSideProps(context) {
 }
 
 
-export default function ({ userProfiles, conferences }) {
+const Home = async ({ userProfiles, conferences }) => {
   const { status } = useSession()
 
   switch (status) {
@@ -81,3 +81,5 @@ export default function ({ userProfiles, conferences }) {
         return <></>
   }
 }
+
+export default Home

@@ -363,6 +363,7 @@ model conference {
   location                           String?                              @db.VarChar
   start_date                         DateTime?                            @db.Date
   end_date                           DateTime?                            @db.Date
+  website                            String?                              @db.VarChar
   user_profile_to_conference_mapping user_profile_to_conference_mapping[]
 
   @@unique([year, conference_name], map: "conference_idx_conference_name_year")
@@ -944,4 +945,16 @@ model connection {
 
   @@unique([user_profile_start, user_profile_end], map: "connection_idx_user_profiles")
   @@index([user_profile_start], map: "connection_idx_user_profile_start")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model tmp {
+  id              Int?
+  year            Int?
+  conference_name String?   @db.VarChar
+  location        String?   @db.VarChar
+  start_date      DateTime? @db.Date
+  end_date        DateTime? @db.Date
+
+  @@ignore
 }

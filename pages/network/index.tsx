@@ -82,7 +82,7 @@ export async function getServerSideProps(context) {
   }
 }
 
-export default function ({ user }) {
+const Network =  ({ user }) =>{
   const { user_profile } = user
   const toast = useToast()
   const router = useRouter()
@@ -144,8 +144,9 @@ export default function ({ user }) {
       {state.connectionRequesters.length > 0 &&
         <Flex direction={'column'} w={isLargeScreen ? '70%' : '100%'} m={'0 auto'}>
           <Text fontSize={'xl'} fontWeight='bold' py={3}>Connection Requests</Text>
-          {state.connectionRequesters.map(requester => (
+          {state.connectionRequesters.map((requester, idx) => (
             <MemberProfileListItem
+              key={idx}
               user_profile={requester}
               message={requester.invitationMessage}
               primaryLabel={'Accept'}
@@ -164,11 +165,12 @@ export default function ({ user }) {
           <Text
             py={10}
             align={'center'}
-          >You don't have any connection yet.<br />Find more connection in the Discover section</Text>
+          >You don<code>&apos;</code>t have any connection yet.<br />Find more connection in the Discover section</Text>
         }
         <Flex direction={'column'}>
-          {state.connections.map(con => (
+          {state.connections.map((con, idx) => (
             <MemberProfileListItem
+              key={idx}
               user_profile={con}
               primaryLabel={'Message'}
               primaryOnClick={() => { }}
@@ -180,4 +182,5 @@ export default function ({ user }) {
   )
 }
 
+export default Network;
 
