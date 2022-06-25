@@ -8,6 +8,7 @@ import {
 } from '@prisma/client'
 import { CloudinaryImage } from '@cloudinary/url-gen'
 import { defaultImage } from '@cloudinary/url-gen/actions/delivery'
+import { limitFit, scale } from '@cloudinary/url-gen/actions/resize'
 
 export type UserProfileWithConferences = UserProfile & {
    user_profile_to_conference_mapping:
@@ -60,6 +61,7 @@ const MemberProfileCard: React.FC<Props> = ({
    mini = true,
    profile_picture_file,
 }) => {
+   console.log('user_profile: ', user_profile)
    const {
       handle,
       profile_name,
@@ -111,7 +113,9 @@ const MemberProfileCard: React.FC<Props> = ({
       {
          cloudName: 'innercircle',
       }
-   ).delivery(defaultImage('default.png'))
+   )
+      .delivery(defaultImage('default.png'))
+      .resize(scale().height(100).width(100))
 
    const [uploadedImg, setuploadedImg] = useState<string>()
 

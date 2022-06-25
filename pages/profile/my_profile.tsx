@@ -14,6 +14,7 @@ import {
    useMediaQuery,
    useToast,
    FormErrorMessage,
+   IconButton,
 } from '@chakra-ui/react'
 import prisma from '../../lib/prisma'
 import { getSession } from 'next-auth/react'
@@ -23,6 +24,7 @@ import {
    Dispatch,
    SetStateAction,
    useContext,
+   useRef,
    useState,
 } from 'react'
 import MemberProfileCard, {
@@ -30,6 +32,7 @@ import MemberProfileCard, {
 } from '../../components/profile/MemberProfileCard'
 import { ESession } from '../index'
 import { Field, Form, Formik } from 'formik'
+import { AiFillCamera } from 'react-icons/ai'
 
 // DB design:
 // user to profile mapping should be many to one. Each log in creates a new user. But multiple users can be tied to the same profile.
@@ -278,7 +281,7 @@ const MyProfile = ({ user }) => {
       formData.append('file', displayPicture)
       formData.append('signature', signature)
       formData.append('timestamp', timestamp)
-      formData.append('api_key', '454991477517121')
+      formData.append('api_key', process.env.CLOUDINARY_API_KEY!)
       formData.append('public_id', user_profile.id)
 
       const response = await fetch(url, {
@@ -293,6 +296,8 @@ const MyProfile = ({ user }) => {
       await createOrUpdateUserProfile(values)
       actions.setSubmitting(false)
    }
+
+   const inputRef = useRef<HTMLInputElement>(null)
 
    return (
       <Stack direction={isLargerThan1280 ? 'row' : 'column'} maxW={'100%'}>
@@ -365,6 +370,62 @@ const MyProfile = ({ user }) => {
                                  </FormControl>
                               )}
                            </Field>
+                           <FormControl maxW={'450px'} pt={3}>
+                              <FormLabel fontSize={'lg'} fontWeight={'bold'}>
+                                 Upload your profile photo
+                              </FormLabel>
+
+                              <Center
+                                 borderWidth={'1px'}
+                                 borderRadius="md"
+                                 overflow={'hidden'}
+                                 borderColor={'blue' + '.300'}
+                                 w={'50%'}
+                                 h={'100%'}
+                                 bg={'white'}
+                                 _hover={{
+                                    cursor: 'pointer',
+                                    bg: 'blue' + '.100',
+                                 }}
+                                 display="flex"
+                                 justifyContent="center"
+                                 onClick={() => {
+                                    inputRef.current?.click()
+                                 }}
+                              >
+                                 <IconButton
+                                    mr={3}
+                                    colorScheme="blue.300"
+                                    aria-label={'profile_picture_upload'}
+                                    icon={
+                                       <AiFillCamera
+                                          size={25}
+                                          color="#63b3ed"
+                                       />
+                                    }
+                                    outline="none"
+                                    border="none"
+                                    _focus={{
+                                       outline: 'none',
+                                    }}
+                                 />
+                                 <input
+                                    id="profile_picture"
+                                    name="profile_picture"
+                                    type="file"
+                                    onChange={(event) => {
+                                       if (event.currentTarget.files) {
+                                          setDisplayPicture(
+                                             event.currentTarget.files[0]
+                                          )
+                                       }
+                                    }}
+                                    hidden
+                                    ref={inputRef}
+                                    width="100%"
+                                 />
+                              </Center>
+                           </FormControl>
                            <Field name="bio_short">
                               {({ field, form }) => (
                                  <FormControl
@@ -601,31 +662,6 @@ const MyProfile = ({ user }) => {
                                  />
                               </Grid>
                            </Flex>
-                           <div className="custom-file">
-                              <input
-                                 id="profile_picture"
-                                 name="profile_picture"
-                                 type="file"
-                                 className="custom-file-input"
-                                 onChange={(event) => {
-                                    if (event.currentTarget.files) {
-                                       setFieldValue(
-                                          'profile_picture_file',
-                                          event.currentTarget.files[0]
-                                       )
-                                       setDisplayPicture(
-                                          event.currentTarget.files[0]
-                                       )
-                                    }
-                                 }}
-                              />
-                              <label
-                                 className="custom-file-label"
-                                 htmlFor="image"
-                              >
-                                 Choose Image
-                              </label>
-                           </div>
                            <Button
                               mt={4}
                               colorScheme="blue"
