@@ -363,6 +363,7 @@ model conference {
   location                           String?                              @db.VarChar
   start_date                         DateTime?                            @db.Date
   end_date                           DateTime?                            @db.Date
+  website                            String?                              @db.VarChar
   user_profile_to_conference_mapping user_profile_to_conference_mapping[]
 
   @@unique([year, conference_name], map: "conference_idx_conference_name_year")
@@ -860,53 +861,57 @@ model upload_twitter_profile {
 }
 
 model user_profile {
-  id                                      Int                                  @id @default(autoincrement())
-  handle                                  String                               @unique(map: "user_profile_unique_idx_handle") @db.VarChar
-  profile_name                            String                               @db.VarChar
-  profile_picture                         String?                              @db.VarChar
-  email                                   String                               @unique(map: "user_profile_unique_idx_email") @db.VarChar
-  twitter                                 String?                              @db.VarChar
-  linkedin                                String?                              @db.VarChar
-  bio_short                               String?                              @db.VarChar
-  bio                                     String?                              @db.VarChar
-  label_hiring                            Boolean?
-  label_open_to_work                      Boolean?
-  label_open_to_cofounder_matching        Boolean?
-  label_need_product_feedback             Boolean?
-  label_open_to_discover_new_project      Boolean?
-  label_fundraising                       Boolean?
-  label_open_to_invest                    Boolean?
-  label_on_core_team                      Boolean?
-  label_text_hiring                       String?                              @db.VarChar
-  label_text_open_to_work                 String?                              @db.VarChar
-  label_text_open_to_discover_new_project String?                              @db.VarChar
-  skill_founder                           Boolean?
-  skill_web3_domain_expert                Boolean?
-  skill_artist                            Boolean?
-  skill_frontend_eng                      Boolean?
-  skill_backend_eng                       Boolean?
-  skill_fullstack_eng                     Boolean?
-  skill_blockchain_eng                    Boolean?
-  skill_data_eng                          Boolean?
-  skill_data_science                      Boolean?
-  skill_hareware_dev                      Boolean?
-  skill_game_dev                          Boolean?
-  skill_dev_ops                           Boolean?
-  skill_product_manager                   Boolean?
-  skill_product_designer                  Boolean?
-  skill_token_designer                    Boolean?
-  skill_technical_writer                  Boolean?
-  skill_social_media_influencer           Boolean?
-  skill_i_bring_capital                   Boolean?
-  skill_community_manager                 Boolean?
-  skill_marketing_growth                  Boolean?
-  skill_business_development              Boolean?
-  skill_developer_relations               Boolean?
-  skill_influencer_relations              Boolean?
-  skill_investor_relations                Boolean?
-  resume                                  String?                              @db.VarChar
-  User                                    User                                 @relation(fields: [email], references: [email], onDelete: NoAction, onUpdate: NoAction)
-  user_profile_to_conference_mapping      user_profile_to_conference_mapping[]
+  id                                                               Int                                  @id @default(autoincrement())
+  handle                                                           String                               @unique(map: "user_profile_unique_idx_handle") @db.VarChar
+  profile_name                                                     String                               @db.VarChar
+  profile_picture                                                  String?                              @db.VarChar
+  email                                                            String                               @unique(map: "user_profile_unique_idx_email") @db.VarChar
+  twitter                                                          String?                              @db.VarChar
+  linkedin                                                         String?                              @db.VarChar
+  bio_short                                                        String?                              @db.VarChar
+  bio                                                              String?                              @db.VarChar
+  label_hiring                                                     Boolean?
+  label_open_to_work                                               Boolean?
+  label_open_to_cofounder_matching                                 Boolean?
+  label_need_product_feedback                                      Boolean?
+  label_open_to_discover_new_project                               Boolean?
+  label_fundraising                                                Boolean?
+  label_open_to_invest                                             Boolean?
+  label_on_core_team                                               Boolean?
+  label_text_hiring                                                String?                              @db.VarChar
+  label_text_open_to_work                                          String?                              @db.VarChar
+  label_text_open_to_discover_new_project                          String?                              @db.VarChar
+  skill_founder                                                    Boolean?
+  skill_web3_domain_expert                                         Boolean?
+  skill_artist                                                     Boolean?
+  skill_frontend_eng                                               Boolean?
+  skill_backend_eng                                                Boolean?
+  skill_fullstack_eng                                              Boolean?
+  skill_blockchain_eng                                             Boolean?
+  skill_data_eng                                                   Boolean?
+  skill_data_science                                               Boolean?
+  skill_hareware_dev                                               Boolean?
+  skill_game_dev                                                   Boolean?
+  skill_dev_ops                                                    Boolean?
+  skill_product_manager                                            Boolean?
+  skill_product_designer                                           Boolean?
+  skill_token_designer                                             Boolean?
+  skill_technical_writer                                           Boolean?
+  skill_social_media_influencer                                    Boolean?
+  skill_i_bring_capital                                            Boolean?
+  skill_community_manager                                          Boolean?
+  skill_marketing_growth                                           Boolean?
+  skill_business_development                                       Boolean?
+  skill_developer_relations                                        Boolean?
+  skill_influencer_relations                                       Boolean?
+  skill_investor_relations                                         Boolean?
+  resume                                                           String?                              @db.VarChar
+  User                                                             User                                 @relation(fields: [email], references: [email], onDelete: NoAction, onUpdate: NoAction)
+  connection_connection_user_profile_endTouser_profile             connection[]                         @relation("connection_user_profile_endTouser_profile")
+  connection_connection_user_profile_startTouser_profile           connection[]                         @relation("connection_user_profile_startTouser_profile")
+  connection_request_connection_request_initiator_idTouser_profile connection_request[]                 @relation("connection_request_initiator_idTouser_profile")
+  connection_request_connection_request_requested_idTouser_profile connection_request[]                 @relation("connection_request_requested_idTouser_profile")
+  user_profile_to_conference_mapping                               user_profile_to_conference_mapping[]
 }
 
 model user_profile_to_conference_mapping {
@@ -916,4 +921,40 @@ model user_profile_to_conference_mapping {
   user_profile    user_profile @relation(fields: [user_profile_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([user_profile_id, conference_id], map: "user_profile_to_conference_mapping_idx_user_profile_id_conferen")
+}
+
+model connection_request {
+  initiator_id                                               Int
+  requested_id                                               Int
+  invitation_message                                         String?      @db.VarChar
+  created_at                                                 DateTime     @db.Timestamp(6)
+  confirmed_at                                               DateTime?    @db.Timestamp(6)
+  rejected_at                                                DateTime?    @db.Timestamp(6)
+  user_profile_connection_request_initiator_idTouser_profile user_profile @relation("connection_request_initiator_idTouser_profile", fields: [initiator_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_profile_connection_request_requested_idTouser_profile user_profile @relation("connection_request_requested_idTouser_profile", fields: [requested_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([initiator_id, requested_id], map: "connection_request_idx_initiator_id_requested_id")
+}
+
+model connection {
+  user_profile_start                                       Int
+  user_profile_end                                         Int
+  created_at                                               DateTime     @db.Timestamp(6)
+  user_profile_connection_user_profile_endTouser_profile   user_profile @relation("connection_user_profile_endTouser_profile", fields: [user_profile_end], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_profile_connection_user_profile_startTouser_profile user_profile @relation("connection_user_profile_startTouser_profile", fields: [user_profile_start], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([user_profile_start, user_profile_end], map: "connection_idx_user_profiles")
+  @@index([user_profile_start], map: "connection_idx_user_profile_start")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model tmp {
+  id              Int?
+  year            Int?
+  conference_name String?   @db.VarChar
+  location        String?   @db.VarChar
+  start_date      DateTime? @db.Date
+  end_date        DateTime? @db.Date
+
+  @@ignore
 }

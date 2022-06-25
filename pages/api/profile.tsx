@@ -1,18 +1,18 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
-import prisma from '../../lib/prisma'
-import { getSession } from 'next-auth/react'
+import type { NextApiRequest, NextApiResponse } from "next"
+import prisma from "../../lib/prisma"
+import { getSession } from "next-auth/react"
 
 const regex = /^[a-zA-Z0-9_]*$/
 
-const postProfile = async (req: NextApiRequest, res: NextApiResponse) => {
+const Profile = async (req: NextApiRequest, res: NextApiResponse) => {
     const session = await getSession({ req })
 
     if (!session || !session.userID || !session.user?.email) {
-        res.status(500).json({ message: 'Please log in first' })
+        res.status(500).json({ message: "Please log in first" })
         return
     }
 
-    if (req.method === 'POST') {
+    if (req.method === "POST") {
         // adding email so the database constraint is satisfied
         const authUserEmail: string = session.user.email
 
@@ -30,35 +30,35 @@ const postProfile = async (req: NextApiRequest, res: NextApiResponse) => {
         // clean up the payloadData handle
         payloadData = {
             ...payloadData,
-            handle: payloadData.handle.replace(/\s/g, ''),
+            handle: payloadData.handle.replace(/\s/g, ""),
         }
 
         if (!payloadData.handle.match(regex)) {
             res.status(500).json({
-                message: 'Handle can only contain a-z A-Z 0-9 or _',
+                message: "Handle can only contain a-z A-Z 0-9 or _",
             })
             return
         }
 
         const skills = Object.keys(payloadData).filter(
             (datakey) =>
-                payloadData[`${datakey}`] && datakey.startsWith('skill_')
+                payloadData[`${datakey}`] && datakey.startsWith("skill_")
         )
         const labels = Object.keys(payloadData).filter(
             (datakey) =>
-                payloadData[`${datakey}`] && datakey.startsWith('label_')
+                payloadData[`${datakey}`] && datakey.startsWith("label_")
         )
 
         if (skills.length > 5) {
             res.status(500).json({
-                message: 'Can only select up to 5 skills',
+                message: "Can only select up to 5 skills",
             })
             return
         }
 
         if (labels.length > 5) {
             res.status(500).json({
-                message: 'Can only select up to 5 labels',
+                message: "Can only select up to 5 labels",
             })
             return
         }
@@ -77,7 +77,7 @@ const postProfile = async (req: NextApiRequest, res: NextApiResponse) => {
         ) {
             res.status(500).json({
                 message:
-                    'Profile handle has been taken. Please choose a different one.',
+                    "Profile handle has been taken. Please choose a different one.",
             })
             return
         }
@@ -88,7 +88,7 @@ const postProfile = async (req: NextApiRequest, res: NextApiResponse) => {
             await prisma.user_profile.create({
                 data: payloadData,
             })
-            res.status(200).json({ message: 'Profile successfully created!' })
+            res.status(200).json({ message: "Profile successfully created!" })
         } else {
             await prisma.user_profile.update({
                 where: {
@@ -96,12 +96,12 @@ const postProfile = async (req: NextApiRequest, res: NextApiResponse) => {
                 },
                 data: payloadData,
             })
-            res.status(200).json({ message: 'Profile successfully updated!' })
+            res.status(200).json({ message: "Profile successfully updated!" })
         }
     } else {
         // Handle any other HTTP method
-        res.status(200).json({ message: 'Nothing happened.' })
+        res.status(200).json({ message: "Nothing happened." })
     }
 }
 
-export default postProfile
+export default Profile

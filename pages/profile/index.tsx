@@ -1,9 +1,9 @@
-import { Flex, Text, Stack, Heading } from '@chakra-ui/react'
-import prisma from '../../lib/prisma'
-import ProfilePicture from '../../components/profile/ProfilePicture'
-import { CloudinaryImage } from '@cloudinary/url-gen'
-import { defaultImage } from '@cloudinary/url-gen/actions/delivery'
-import { scale } from '@cloudinary/url-gen/actions/resize'
+import { Flex, Text, Stack, Heading } from "@chakra-ui/react"
+import prisma from "../../lib/prisma"
+import ProfilePicture from "../../components/profile/ProfilePicture"
+import { CloudinaryImage } from "@cloudinary/url-gen"
+import { defaultImage } from "@cloudinary/url-gen/actions/delivery"
+import { scale } from "@cloudinary/url-gen/actions/resize"
 
 // server side data fetch
 export async function getServerSideProps(context) {
@@ -35,18 +35,18 @@ const User = (user) => {
         resume,
     } = user
 
-    const cldImg = new CloudinaryImage(id ? id.toString() : '', {
-        cloudName: 'innercircle',
+    const cldImg = new CloudinaryImage(id ? id.toString() : "", {
+        cloudName: "innercircle",
     })
-        .delivery(defaultImage('default.png'))
+        .delivery(defaultImage("default.png"))
         .resize(scale().height(100).width(100))
 
     return (
-        <Stack direction={'column'} maxW={'100%'}>
-            <Flex h="120px" w="100%" direction={'row'} p={5}>
+        <Stack direction={"column"} maxW={"100%"}>
+            <Flex h="120px" w="100%" direction={"row"} p={5}>
                 <ProfilePicture img={cldImg} />
                 <Flex ml={3} direction="column">
-                    <Heading as={'h2'}>
+                    <Heading as={"h2"}>
                         {profile_name} ({handle})
                     </Heading>
                     <Text fontSize={15} pt={2}>
