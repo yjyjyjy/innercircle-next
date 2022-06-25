@@ -15,23 +15,31 @@ import {
 import React from 'react'
 import ProfilePicture from './ProfilePicture'
 import { AiOutlineMail } from 'react-icons/ai'
-import { user_profile as UserProfile, user_profile_to_conference_mapping as UserProfileToConferenceMapping, conference as Conference } from '@prisma/client'
+import {
+   user_profile as UserProfile,
+   user_profile_to_conference_mapping as UserProfileToConferenceMapping,
+   conference as Conference,
+} from '@prisma/client'
 import { useRouter } from 'next/router'
 import { UserProfileWithMetaData } from './MemberProfileCard'
 
-
 type Props = {
-   user_profile: UserProfileWithMetaData,
-   message?: string,
-   primaryLabel?: string,
-   primaryOnClick?: any,
-   secondaryLabel?: string,
-   secondaryOnClick?: any,
+   user_profile: UserProfileWithMetaData
+   message?: string
+   primaryLabel?: string
+   primaryOnClick?: any
+   secondaryLabel?: string
+   secondaryOnClick?: any
 }
 
-
-
-const MemberProfileListItem: React.FC<Props> = ({ user_profile, message, primaryLabel, primaryOnClick, secondaryLabel, secondaryOnClick }) => {
+const MemberProfileListItem: React.FC<Props> = ({
+   user_profile,
+   message,
+   primaryLabel,
+   primaryOnClick,
+   secondaryLabel,
+   secondaryOnClick,
+}) => {
    const router = useRouter()
    const [isDesktop] = useMediaQuery('(min-width: 1290px)')
    const {
@@ -89,17 +97,15 @@ const MemberProfileListItem: React.FC<Props> = ({ user_profile, message, primary
          w={'100%'}
          maxH={'800px'}
          borderTop={1}
-         bg='gray.50'
+         bg="gray.50"
          justifyContent={'space-between'}
          borderStyle={'solid'}
          borderColor={'gray.300'}
-
       >
          <Flex direction={'row'}>
             <Flex
                direction={'row'}
-               onClick={
-                  () => router.push(`/in/${handle}`)}
+               onClick={() => router.push(`/in/${handle}`)}
                mr={'7px'}
                w={'100%'}
                _hover={{ cursor: 'pointer' }}
@@ -111,25 +117,32 @@ const MemberProfileListItem: React.FC<Props> = ({ user_profile, message, primary
                   <Text noOfLines={1}>{bio_short}</Text>
                </Flex>
             </Flex>
-            <Flex direction={'row'} transform={isDesktop ? "translateY(10%)" : "translateY(20%)"}>
-               {secondaryLabel && secondaryOnClick &&
+            <Flex
+               direction={'row'}
+               transform={isDesktop ? 'translateY(10%)' : 'translateY(20%)'}
+            >
+               {secondaryLabel && secondaryOnClick && (
                   <Button
                      variant={'ghost'}
                      size={isDesktop ? 'md' : 'sm'}
                      onClick={secondaryOnClick}
-                  >{secondaryLabel}</Button>
-               }
-               {primaryLabel && primaryOnClick &&
+                  >
+                     {secondaryLabel}
+                  </Button>
+               )}
+               {primaryLabel && primaryOnClick && (
                   <Button
                      colorScheme={'twitter'}
                      rounded={'3xl'}
                      size={isDesktop ? 'md' : 'sm'}
                      onClick={primaryOnClick}
-                  >{primaryLabel}</Button>
-               }
+                  >
+                     {primaryLabel}
+                  </Button>
+               )}
             </Flex>
          </Flex>
-         {message &&
+         {message && (
             <Text
                border={'2px'}
                borderColor={'gray.300'}
@@ -142,14 +155,14 @@ const MemberProfileListItem: React.FC<Props> = ({ user_profile, message, primary
                overflow={'scroll'}
             >
                {message}
-            </Text>}
+            </Text>
+         )}
          {/* <ProfilePicture
             image_url={
                'https://en.gravatar.com/userimage/67165895/bd41f3f601291d2f313b1d8eec9f8a4d.jpg?size=200'
             }
          /> */}
-      </Flex >
-
+      </Flex>
    )
 }
 

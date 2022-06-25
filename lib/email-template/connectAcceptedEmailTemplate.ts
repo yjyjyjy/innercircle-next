@@ -1,30 +1,26 @@
-import { logoNameNoBackground } from "../const"
+import { logoNameNoBackground } from '../const'
 
+export const connectRequestAcceptTemplate = (connectRequestAcceptedEmailInput: {
+   recipientName: string
+   userProfileName: string
+   userProfilePicture: string
+   shortBio: string
+   bio: string
+   ctaCallbackURL: string
+   ctaLabel?: string
+}) => {
+   const {
+      recipientName,
+      userProfileName,
+      userProfilePicture,
+      shortBio,
+      bio,
+      ctaCallbackURL,
+   } = connectRequestAcceptedEmailInput
 
-export const connectRequestAcceptTemplate = (
-  connectRequestAcceptedEmailInput: {
-    recipientName: string,
-    userProfileName: string,
-    userProfilePicture: string,
-    shortBio: string,
-    bio: string,
-    ctaCallbackURL: string,
-    ctaLabel?: string,
-  }
-) => {
-  const {
-    recipientName,
-    userProfileName,
-    userProfilePicture,
-    shortBio,
-    bio,
-    ctaCallbackURL
-  } = connectRequestAcceptedEmailInput
+   const ctaLabel = connectRequestAcceptedEmailInput.ctaLabel || 'See Profile'
 
-  const ctaLabel = connectRequestAcceptedEmailInput.ctaLabel || 'See Profile';
-
-  return (
-    `
+   return `
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 
@@ -297,5 +293,4 @@ export const connectRequestAcceptTemplate = (
 
     </html>
 `
-  )
 }

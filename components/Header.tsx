@@ -13,12 +13,9 @@ import {
    Avatar,
    Link,
    Text,
-
-
    Stack,
    Collapse,
    Icon,
-
    Popover,
    PopoverTrigger,
    PopoverContent,
@@ -40,21 +37,16 @@ import {
    CloseIcon,
    ChevronDownIcon,
    ChevronRightIcon,
-} from '@chakra-ui/icons';
+} from '@chakra-ui/icons'
 import { useRouter } from 'next/router'
 
 export default function Header() {
-   const { isOpen, onToggle } = useDisclosure();
+   const { isOpen, onToggle } = useDisclosure()
    const rounter = useRouter()
    const { data: session, status } = useSession()
 
    return (
-      <Box
-         bg={'gray.800'}
-         position={'fixed'}
-         zIndex={888}
-         w='100%'
-      >
+      <Box bg={'gray.800'} position={'fixed'} zIndex={888} w="100%">
          <Flex
             color={'white'}
             minH={'60px'}
@@ -64,30 +56,36 @@ export default function Header() {
             borderStyle={'solid'}
             borderColor={'gray.900'}
             align={'center'}
-
          >
-
             <Flex
                flex={{ base: 1, md: 'auto' }}
                ml={{ base: -2 }}
-               display={{ base: 'flex', md: 'none' }}>
+               display={{ base: 'flex', md: 'none' }}
+            >
                <IconButton
                   onClick={onToggle}
                   icon={
-                     isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={5} h={5} />
+                     isOpen ? (
+                        <CloseIcon w={3} h={3} />
+                     ) : (
+                        <HamburgerIcon w={5} h={5} />
+                     )
                   }
                   variant={'ghost'}
                   aria-label={'Toggle Navigation'}
                />
             </Flex>
             <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
-               <NextLink href='/' >
-                  <Link _hover={{ textDecoration: 'none', }}>
+               <NextLink href="/">
+                  <Link _hover={{ textDecoration: 'none' }}>
                      <Text
-                        textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
+                        textAlign={useBreakpointValue({
+                           base: 'center',
+                           md: 'left',
+                        })}
                         fontFamily={'heading'}
-
-                        color={'white'}>
+                        color={'white'}
+                     >
                         innerCircle
                      </Text>
                   </Link>
@@ -102,7 +100,8 @@ export default function Header() {
                flex={{ base: 1, md: 0 }}
                justify={'flex-end'}
                direction={'row'}
-               spacing={1}>
+               spacing={1}
+            >
                <Tooltip
                   label={
                      'Got opinions on what should be built? Join our Discord! Also, token drop in the future!'
@@ -115,7 +114,7 @@ export default function Header() {
                   >
                      <IconButton
                         mr={3}
-                        colorScheme='blue.300'
+                        colorScheme="blue.300"
                         aria-label={'Discord'}
                         icon={<SiDiscord size={25} />}
                      />
@@ -128,17 +127,35 @@ export default function Header() {
                            {/* <AvatarBadge borderColor='papayawhip' bg='tomato' boxSize='1.25em' /> */}
                         </Avatar>
                      </MenuButton>
-                     <MenuList
-                        bg={'gray.800'}
-                     >
-                        {
-                           [
-                              { label: 'My Profile', onClick: () => { rounter.push('/profile/my_profile') } },
-                              { label: 'My Conferences', onClick: () => { rounter.push('/profile/my_conferences') } },
-                              { label: 'Sign Out', onClick: () => { signOut({ callbackUrl: `${window.location.origin}` }) } }
-                           ].map(item =>
-                              <AccountMenuItem key={item.label} onClick={item.onClick} label={item.label} />)
-                        }
+                     <MenuList bg={'gray.800'}>
+                        {[
+                           {
+                              label: 'My Profile',
+                              onClick: () => {
+                                 rounter.push('/profile/my_profile')
+                              },
+                           },
+                           {
+                              label: 'My Conferences',
+                              onClick: () => {
+                                 rounter.push('/profile/my_conferences')
+                              },
+                           },
+                           {
+                              label: 'Sign Out',
+                              onClick: () => {
+                                 signOut({
+                                    callbackUrl: `${window.location.origin}`,
+                                 })
+                              },
+                           },
+                        ].map((item) => (
+                           <AccountMenuItem
+                              key={item.label}
+                              onClick={item.onClick}
+                              label={item.label}
+                           />
+                        ))}
                      </MenuList>
                   </Menu>
                ) : (
@@ -151,25 +168,24 @@ export default function Header() {
                      onClick={() => signIn()}
                      _hover={{
                         bg: 'blue.200',
-                     }}>
+                     }}
+                  >
                      Sign Up
                   </Button>
                )}
-
-
             </Stack>
          </Flex>
 
          <Collapse in={isOpen} animateOpacity>
             <MobileNav />
          </Collapse>
-      </Box >
-   );
+      </Box>
+   )
 }
 
-const linkColor = 'gray.200'; // nav
-const linkHoverColor = 'white';
-const popoverContentBgColor = 'gray.800';
+const linkColor = 'gray.200' // nav
+const linkHoverColor = 'white'
+const popoverContentBgColor = 'gray.800'
 
 const AccountMenuItem = ({ label, onClick }) => {
    return (
@@ -177,7 +193,7 @@ const AccountMenuItem = ({ label, onClick }) => {
          bg={popoverContentBgColor}
          _focus={{
             color: linkColor,
-            background: 'gray.700'
+            background: 'gray.700',
          }}
          onClick={onClick}
       >
@@ -185,7 +201,6 @@ const AccountMenuItem = ({ label, onClick }) => {
       </MenuItem>
    )
 }
-
 
 const DesktopNav = () => {
    return (
@@ -203,7 +218,8 @@ const DesktopNav = () => {
                            _hover={{
                               textDecoration: 'none',
                               color: linkHoverColor,
-                           }}>
+                           }}
+                        >
                            {navItem.label}
                         </Link>
                      </NextLink>
@@ -216,7 +232,8 @@ const DesktopNav = () => {
                         bg={popoverContentBgColor}
                         p={4}
                         rounded={'xl'}
-                        minW={'sm'}>
+                        minW={'sm'}
+                     >
                         <Stack>
                            {navItem.children.map((child) => (
                               <DesktopSubNav key={child.label} {...child} />
@@ -228,8 +245,8 @@ const DesktopNav = () => {
             </Box>
          ))}
       </Stack>
-   );
-};
+   )
+}
 
 const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
    return (
@@ -239,13 +256,15 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
             display={'block'}
             p={2}
             rounded={'md'}
-            _hover={{ bg: 'gray.900' }}>
+            _hover={{ bg: 'gray.900' }}
+         >
             <Stack direction={'row'} align={'center'}>
                <Box>
                   <Text
                      transition={'all .3s ease'}
                      _groupHover={{ color: 'blue.300' }}
-                     fontWeight={500}>
+                     fontWeight={500}
+                  >
                      {label}
                   </Text>
                   <Text fontSize={'sm'}>{subLabel}</Text>
@@ -257,14 +276,15 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
                   _groupHover={{ opacity: '100%', transform: 'translateX(0)' }}
                   justify={'flex-end'}
                   align={'center'}
-                  flex={1}>
+                  flex={1}
+               >
                   <Icon color={'blue.300'} w={5} h={5} as={ChevronRightIcon} />
                </Flex>
             </Stack>
          </Link>
       </NextLink>
-   );
-};
+   )
+}
 
 const MobileNav = () => {
    return (
@@ -277,11 +297,11 @@ const MobileNav = () => {
             <MobileNavItem key={navItem.label} {...navItem} />
          ))}
       </Stack>
-   );
-};
+   )
+}
 
 const MobileNavItem = ({ label, children, href }: NavItem) => {
-   const { isOpen, onToggle } = useDisclosure();
+   const { isOpen, onToggle } = useDisclosure()
 
    return (
       <Stack spacing={4} onClick={children && onToggle}>
@@ -293,10 +313,9 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
             align={'center'}
             _hover={{
                textDecoration: 'none',
-            }}>
-            <Text
-               fontWeight={600}
-               color={'gray.200'}>
+            }}
+         >
+            <Text fontWeight={600} color={'gray.200'}>
                {label}
             </Text>
             {children && (
@@ -310,14 +329,19 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
             )}
          </Flex>
 
-         <Collapse in={isOpen} animateOpacity style={{ marginTop: '0!important' }}>
+         <Collapse
+            in={isOpen}
+            animateOpacity
+            style={{ marginTop: '0!important' }}
+         >
             <Stack
                mt={2}
                pl={4}
                borderLeft={1}
                borderStyle={'solid'}
                borderColor={'gray.700'}
-               align={'start'}>
+               align={'start'}
+            >
                {children &&
                   children.map((child) => (
                      <Link key={child.label} py={2} href={child.href}>
@@ -326,16 +350,15 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
                   ))}
             </Stack>
          </Collapse>
-      </Stack >
-
-   );
-};
+      </Stack>
+   )
+}
 
 interface NavItem {
-   label: string;
-   subLabel?: string;
-   children?: Array<NavItem>;
-   href?: string;
+   label: string
+   subLabel?: string
+   children?: Array<NavItem>
+   href?: string
 }
 
 const NAV_ITEMS: Array<NavItem> = [
@@ -361,5 +384,5 @@ const NAV_ITEMS: Array<NavItem> = [
    {
       label: 'Network',
       href: '/network',
-   }
+   },
 ]
