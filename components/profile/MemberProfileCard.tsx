@@ -2,26 +2,49 @@ import {
    Box,
    Flex,
    Text,
-   Image,
    Button,
-   IconButton,
    Tag,
    Stack,
-   TagLeftIcon,
    TagLabel,
+   useToast,
+   useDisclosure,
+   Modal,
+   ModalOverlay,
+   ModalContent,
+   ModalHeader,
+   ModalCloseButton,
+   ModalBody,
+   ModalFooter,
+   Textarea,
+   FormControl,
+   FormErrorMessage,
+   FormHelperText,
 } from '@chakra-ui/react'
-import React from 'react'
-import ProfilePicture from './ProfilePicture'
-import { AiOutlineMail } from 'react-icons/ai'
-import { user_profile as UserProfile, user_profile_to_conference_mapping as UserProfileToConferenceMapping, conference as Conference } from '@prisma/client'
+import React, { useState } from 'react'
+import {
+   user_profile,
+   user_profile_to_conference_mapping,
+   conference,
+   connection_request,
+   connection,
+} from '@prisma/client'
+import { useFormik } from 'formik'
+import { inviteMessageMaxLength } from '../../lib/const'
+import Link from 'next/link'
 
-export type UserProfileWithConferences = UserProfile & {
-   user_profile_to_conference_mapping: UserProfileToConferenceMapping & { conference: Conference }[] | null
+export type UserProfileWithMetaData = user_profile & {
+   user_profile_to_conference_mapping?: (user_profile_to_conference_mapping & {
+      conference: conference
+   })[]
+   connection_connection_user_profile_startTouser_profile?: connection[]
+   connection_request_connection_request_requested_idTouser_profile?: connection_request[]
+   authUserProfileId?: number
 }
 
 type Props = {
-   user_profile: UserProfileWithConferences,
+   userProfile: UserProfileWithMetaData
    mini?: boolean
+   authUserProfileId?: number
 }
 
 export const columnNameToTagTextMapping = {
@@ -58,10 +81,9 @@ export const columnNameToTagTextMapping = {
    skill_investor_relations: 'Investor Relations',
 }
 
-
-const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
-
+const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
    const {
+      id,
       handle,
       profile_name,
       profile_picture,
@@ -105,7 +127,10 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
       skill_influencer_relations,
       skill_investor_relations,
       user_profile_to_conference_mapping,
-   } = user_profile
+      authUserProfileId,
+   } = userProfile
+
+   const toast = useToast()
 
    const ProfileTag: React.FC<{ dataKey: string }> = ({ dataKey }) => (
       <Tag
@@ -113,8 +138,7 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
          bgGradient={
             dataKey.startsWith('skill_')
                ? 'linear(to-l, #4776E6,  #8E54E9)' // skills
-               // : 'linear(to-l, #d83f91, #ae4bb8)' // needs
-               : 'linear(to-l, #FF512F, #DD2476)' // needs
+               : 'linear(to-l, #FF512F, #DD2476)' // labels
          }
          variant={'solid'}
          m={1}
@@ -123,33 +147,196 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
       </Tag>
    )
 
+   //********************** Managing Connect Button State */
+
+   let connectButtonInitValue = {
+      label: 'Connect',
+      isDisabled: false,
+      shouldRender: true,
+   }
+
+   // if the user is not logged or this is not passed in or authUser is the owner of the profile (oneself). Connect button is not available.
+   if (!authUserProfileId || authUserProfileId === userProfile.id) {
+      connectButtonInitValue['shouldRender'] = false
+   }
+
+   // If auth user has requested connecting with the user profile owner
+   const connectionRequesters =
+      userProfile.connection_request_connection_request_requested_idTouser_profile?.map(
+         (req) => req.initiator_id
+      )
+   if (
+      authUserProfileId &&
+      connectionRequesters &&
+      connectionRequesters.includes(authUserProfileId)
+   ) {
+      connectButtonInitValue = {
+         label: 'Pending',
+         isDisabled: true,
+         shouldRender: true,
+      }
+   }
+
+   // If the user profile owner is connected to auth user
+   const connections =
+      userProfile.connection_connection_user_profile_startTouser_profile?.map(
+         (con) => con.user_profile_end
+      )
+   if (
+      authUserProfileId &&
+      connections &&
+      connections.includes(authUserProfileId)
+   ) {
+      connectButtonInitValue = {
+         label: 'Message',
+         isDisabled: false,
+         shouldRender: true,
+      }
+   }
+
+   const [connectButtonStatus, setConnectButtonStatus] = useState(
+      connectButtonInitValue
+   )
+
+   //*********************** Message Modal */
+   const { isOpen, onOpen, onClose } = useDisclosure()
+   const initialRef = React.useRef(null)
+   const ConnectReqestModal = () => {
+      // const [inviteMessage, setInviteMessage] = useState('')
+      const formik = useFormik({
+         initialValues: {
+            inviteMessage: '',
+         },
+         onSubmit: async (values) => {
+            const res = await fetch('/api/connection', {
+               method: 'POST',
+               body: JSON.stringify({
+                  targetUserProfileId: id,
+                  inviteMessage: values.inviteMessage,
+               }),
+            })
+
+            const { message } = await res.json()
+            toast({
+               title: message,
+               status: res.status === 200 ? 'success' : 'error',
+               duration: 4000,
+               isClosable: true,
+            })
+
+            // close the modal
+            onClose()
+            // change the button text and look
+            setConnectButtonStatus({
+               ...connectButtonStatus,
+               label: 'Pending',
+               isDisabled: true,
+            })
+         },
+         validate: (values) => {
+            const errors = {}
+            if (values.inviteMessage.length > inviteMessageMaxLength) {
+               errors[
+                  'inviteMessage'
+               ] = `The message is too long (max ${inviteMessageMaxLength} char)`
+            }
+            return errors
+         },
+      })
+
+      return (
+         <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            isCentered
+            initialFocusRef={initialRef}
+            size={'lg'}
+         >
+            <ModalOverlay />
+            <ModalContent>
+               <form onSubmit={formik.handleSubmit}>
+                  <ModalHeader>Connect Request</ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody>
+                     <FormControl isInvalid={!!formik.errors.inviteMessage}>
+                        <Textarea
+                           placeholder="(Optional) Include a Short message..."
+                           value={formik.values.inviteMessage}
+                           name={'inviteMessage'}
+                           onChange={formik.handleChange}
+                           ref={initialRef}
+                           rows={7}
+                        />
+                        {!formik.errors.inviteMessage ? (
+                           <FormHelperText>
+                              {`Max ${inviteMessageMaxLength} characters`}
+                           </FormHelperText>
+                        ) : (
+                           <FormErrorMessage>
+                              {formik.errors.inviteMessage}
+                           </FormErrorMessage>
+                        )}
+                     </FormControl>
+                  </ModalBody>
+                  <ModalFooter>
+                     <Button variant="ghost" onClick={onClose}>
+                        Cancel
+                     </Button>
+                     <Button colorScheme="blue" ml={3} type="submit">
+                        Send
+                     </Button>
+                  </ModalFooter>
+               </form>
+            </ModalContent>
+         </Modal>
+      )
+   }
+
    return (
       <Stack
          direction={'column'}
          p={6}
          w={mini ? '350px' : '500px'}
          maxH={'800px'}
-         boxShadow={'xl'}
+         boxShadow={'lg'}
          rounded={'lg'}
+         _hover={{
+            cursor: mini && 'pointer',
+            boxShadow: mini && '2xl',
+         }}
+         transition="0.3s"
+         borderColor={'#ebebeb'}
+         borderWidth={'thin'}
       >
          {/* <ProfilePicture
             image_url={
                'https://en.gravatar.com/userimage/67165895/bd41f3f601291d2f313b1d8eec9f8a4d.jpg?size=200'
             }
          /> */}
+
          <Flex direction={'row'} pt={4}>
-            <Flex direction={'column'} w="60%" overflow={'hidden'}>
-               <Text fontSize={'xl'} fontWeight={'bold'}>
-                  {profile_name}
-               </Text>
-               <Text fontSize={'sm'}>@{handle}</Text>
-            </Flex>
-            <Flex direction={'column'}>
-               <Button colorScheme={'blue'} disabled={true} w={'80px'} h={'30px'}>
-                  Connect
+            <Link href={`/in/${handle}`}>
+               <Flex direction={'column'} w="60%" overflow={'hidden'}>
+                  <Text fontSize={'xl'} fontWeight={'bold'}>
+                     {profile_name}
+                  </Text>
+                  <Text fontSize={'sm'}>@{handle}</Text>
+               </Flex>
+            </Link>
+            {connectButtonStatus.shouldRender && (
+               <Button
+                  colorScheme={'blue'}
+                  w={'80px'}
+                  h={'30px'}
+                  isDisabled={connectButtonStatus.isDisabled}
+                  onClick={
+                     connectButtonStatus.label === 'Connect' ? onOpen : () => {}
+                  }
+               >
+                  {connectButtonStatus.label}
                </Button>
-               <Text>(coming soon...)</Text>
-            </Flex>
+            )}
+            <ConnectReqestModal />
          </Flex>
          <Text fontWeight="bold">{bio_short}</Text>
          <Text noOfLines={mini ? 2 : 6}>{bio}</Text>
@@ -159,7 +346,7 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
                {Object.keys(columnNameToTagTextMapping)
                   .filter((dataKey) => dataKey.startsWith('label_'))
                   .map((dataKey) =>
-                     user_profile[dataKey] ? (
+                     userProfile[dataKey] ? (
                         <ProfileTag key={dataKey} dataKey={dataKey} />
                      ) : undefined
                   )}
@@ -170,32 +357,32 @@ const MemberProfileCard: React.FC<Props> = ({ user_profile, mini = true }) => {
             {Object.keys(columnNameToTagTextMapping)
                .filter((dataKey) => dataKey.startsWith('skill_'))
                .map((dataKey) =>
-                  user_profile[dataKey] ? (
+                  userProfile[dataKey] ? (
                      <ProfileTag key={dataKey} dataKey={dataKey} />
                   ) : undefined
                )}
          </Flex>
-         {
-            user_profile_to_conference_mapping && user_profile_to_conference_mapping?.length > 0 && <Box>
-               <Text fontWeight={'bold'}>You may find me at:</Text>
-               <Flex direction={'row'} wrap={'wrap'}>
-                  {user_profile_to_conference_mapping.map(m => (
-                     <Tag
-                        key={m.conference.id}
-                        size={'lg'}
-                        bgGradient={'linear(to-l, #182848, #4b6cb7)'}
-                        variant={'solid'}
-                        m={1}
-                     >
-                        <TagLabel>{m.conference.conference_name}</TagLabel>
-                     </Tag>
-                  ))}
-               </Flex>
-            </Box>
-         }
-      </Stack >
+         {user_profile_to_conference_mapping &&
+            user_profile_to_conference_mapping?.length > 0 && (
+               <Box>
+                  <Text fontWeight={'bold'}>You may find me at:</Text>
+                  <Flex direction={'row'} wrap={'wrap'}>
+                     {user_profile_to_conference_mapping.map((m) => (
+                        <Tag
+                           key={m.conference.id}
+                           size={'lg'}
+                           bgGradient={'linear(to-l, #182848, #4b6cb7)'}
+                           variant={'solid'}
+                           m={1}
+                        >
+                           <TagLabel>{m.conference.conference_name}</TagLabel>
+                        </Tag>
+                     ))}
+                  </Flex>
+               </Box>
+            )}
+      </Stack>
    )
 }
 
 export default MemberProfileCard
-
