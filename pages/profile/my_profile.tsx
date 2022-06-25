@@ -26,7 +26,9 @@ import {
    useContext,
    useState,
 } from 'react'
-import MemberProfileCard, { UserProfileWithMetaData } from '../../components/profile/MemberProfileCard'
+import MemberProfileCard, {
+   UserProfileWithMetaData,
+} from '../../components/profile/MemberProfileCard'
 import { ESession } from '../index'
 import { Field, Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
@@ -90,12 +92,13 @@ export async function getServerSideProps(context) {
             include: {
                user_profile_to_conference_mapping: {
                   include: {
-                     conference: true
-                  }
+                     conference: true,
+                  },
                },
                connection_connection_user_profile_startTouser_profile: true,
-               connection_request_connection_request_requested_idTouser_profile: true,
-            }
+               connection_request_connection_request_requested_idTouser_profile:
+                  true,
+            },
          },
       },
    })
@@ -180,8 +183,8 @@ const MyProfile = ({ user }) => {
       profile_name: user_profile?.profile_name
          ? user_profile.profile_name
          : user.name
-            ? user.name
-            : '',
+         ? user.name
+         : '',
       handle: user_profile?.handle,
       bio_short: user_profile?.bio_short,
       bio: user_profile?.bio,
@@ -229,10 +232,12 @@ const MyProfile = ({ user }) => {
       label_text_open_to_discover_new_project:
          user_profile?.label_text_open_to_discover_new_project,
       label_text_open_to_work: user_profile?.label_text_open_to_work,
-      user_profile_to_conference_mapping: user_profile?.user_profile_to_conference_mapping,
+      user_profile_to_conference_mapping:
+         user_profile?.user_profile_to_conference_mapping,
    } as UserProfileWithMetaData
 
-   const [formData, setFormData] = useState<UserProfileWithMetaData>(initialValues)
+   const [formData, setFormData] =
+      useState<UserProfileWithMetaData>(initialValues)
 
    const [isLargerThan1280] = useMediaQuery('(min-width: 1290px)')
 
@@ -420,7 +425,8 @@ const MyProfile = ({ user }) => {
                            </Flex>
                            <Flex direction={'column'} py={3}>
                               <Text fontSize={'lg'} fontWeight="bold" py={4}>
-                                 What are your super powers? (Please select up to 5)
+                                 What are your super powers? (Please select up
+                                 to 5)
                               </Text>
                               <Grid
                                  templateColumns={
@@ -634,12 +640,13 @@ const SkillCheckBox: React.FC<{
             borderWidth={'1px'}
             borderRadius="md"
             overflow={'hidden'}
-            borderColor={colorTheme + ".300"}
+            borderColor={colorTheme + '.300'}
             w={'100%'}
             h={'100%'}
             bg={values[`${dataKey}`] ? colorTheme + '.300' : 'white'}
             _hover={{
-               cursor: 'pointer', bg: colorTheme + '.100'
+               cursor: 'pointer',
+               bg: colorTheme + '.100',
             }}
          >
             <Text
@@ -650,7 +657,7 @@ const SkillCheckBox: React.FC<{
                {skill_text}
             </Text>
          </Center>
-      </GridItem >
+      </GridItem>
    )
 }
 
