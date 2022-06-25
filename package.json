@@ -42,7 +42,10 @@
       "react-icons": "^4.3.1",
       "react-markdown": "^8.0.0",
       "recharts": "^2.1.10",
-      "superjson": "^1.8.1"
+      "superjson": "^1.8.1",
+      "@web3-react/core": "^6.1.9",
+      "@web3-react/injected-connector": "^6.0.7",
+      "ethers": "^5.5.1"
    },
    "devDependencies": {
       "@types/node": "17.0.14",

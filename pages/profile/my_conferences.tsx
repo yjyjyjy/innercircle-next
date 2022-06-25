@@ -1,12 +1,14 @@
-import { Flex, Button, useToast } from '@chakra-ui/react'
+import { Flex, Button, Text, useToast } from '@chakra-ui/react'
 import prisma from '../../lib/prisma'
 import { getSession } from 'next-auth/react'
 import { useState } from 'react'
 import { ESession } from '../index'
 import { FilterTag } from '../../components/FilterTag'
+import { useAppContext } from '../AppContext'
 
 export async function getServerSideProps(context) {
    const session = (await getSession(context)) as ESession
+
 
    //If you haven't logged in, you can't view your profile
    if (!session) {
@@ -54,6 +56,8 @@ export async function getServerSideProps(context) {
 const MyConferences = ({ user, conferences }) => {
    const { user_profile: userProfile } = user
    const toast = useToast()
+   const { isConnected } = useAppContext();
+   console.log(isConnected)
 
    // confState is an array of the conferences that the user is going. This is the init value.
    let initConfState = {}
@@ -66,7 +70,7 @@ const MyConferences = ({ user, conferences }) => {
 
    // confState is an array of the conferences that the user is going
    const [confState, setConfState] = useState(initConfState)
-   console.log(confState)
+
 
    const onSaveHandler = async () => {
       const res = await fetch('/api/my_conferences', {
@@ -101,7 +105,11 @@ const MyConferences = ({ user, conferences }) => {
                />
             ))}
          </Flex>
-         <Button onClick={onSaveHandler}>Save</Button>
+         <Button
+            width={'100px'}
+            colorScheme='twitter'
+            onClick={onSaveHandler}
+         >Save</Button>
       </Flex>
    )
 }
