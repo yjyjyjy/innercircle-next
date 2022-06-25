@@ -69,7 +69,7 @@ export async function getServerSideProps(context) {
    }
 }
 
-const Home = async ({ userProfiles, conferences }) => {
+const Home = ({ userProfiles, conferences }) => {
    const { status } = useSession()
 
    switch (status) {
