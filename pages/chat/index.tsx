@@ -13,7 +13,7 @@ const MessageFormSocial = dynamic(() =>
    import('react-chat-engine').then((module) => module.MessageFormSocial)
 )
 
-const ChatEngine = () => {
+const ChatEngineSession = () => {
    //   const { username, secret } = useContext(Context);
    const [showChat, setShowChat] = useState(false)
    const router = useRouter()
@@ -50,4 +50,4 @@ const ChatEngine = () => {
    )
 }
 
-export default ChatEngine
+export default ChatEngineSession
