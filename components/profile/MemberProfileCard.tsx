@@ -20,7 +20,7 @@ import {
    FormErrorMessage,
    FormHelperText,
 } from '@chakra-ui/react'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
    user_profile,
    user_profile_to_conference_mapping,
@@ -28,7 +28,7 @@ import {
    connection_request,
    connection,
 } from '@prisma/client'
-import { Field, useFormik, useFormikContext } from 'formik'
+import { useFormik, useFormikContext } from 'formik'
 import { contractABI, contractAddress, inviteMessageMaxLength } from '../../lib/const'
 import Link from 'next/link'
 import { useContractWrite } from 'wagmi'
@@ -201,40 +201,19 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
 
    //*********************** Message Modal */
    const { isOpen, onOpen, onClose } = useDisclosure()
-   const [paidState, setPaidState] = useState(false)
-   const [inviteFormData, setInviteFormData] = useState({
-      inviteMessage: '',
-   })
    const initialRef = React.useRef(null)
    const ConnectReqestModal = () => {
-      // const formik = useFormik({
-      //    initialValues: {
-      //       inviteMessage: '',
-      //    },
-      //    onSubmit: async (values) => {
-
-      //    },
-      //    validate: (values) => {
-
-      //       setInviteFormData(values)
-
-      //       const errors = {}
-      //       if (values.inviteMessage.length > inviteMessageMaxLength) {
-      //          errors[
-      //             'inviteMessage'
-      //          ] = `The message is too long (max ${inviteMessageMaxLength} char)`
-      //       }
-      //       return errors
-      //    },
-      // })
-
-      const handleConnectRequestSent = async () => {
-         if (paidState) {
+      // const [inviteMessage, setInviteMessage] = useState('')
+      const formik = useFormik({
+         initialValues: {
+            inviteMessage: '',
+         },
+         onSubmit: async (values) => {
             const res = await fetch('/api/connection', {
                method: 'POST',
                body: JSON.stringify({
                   targetUserProfileId: id,
-                  inviteMessage: inviteFormData.inviteMessage,
+                  inviteMessage: values.inviteMessage,
                }),
             })
 
@@ -254,23 +233,17 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
                label: 'Pending',
                isDisabled: true,
             })
-         }
-      }
-      const handleChange = (e) => {
-         setInviteFormData({ inviteMessage: e.target.value })
-      }
-
-      const handleSubmit = (e) => {
-         // alert('A name was submitted: ' + this.state.value);
-         e.preventDefault();
-      }
-
-      useEffect(() => {
-         if (paidState) {
-            handleConnectRequestSent()
-            setPaidState(false)
-         }
-      }, [paidState])
+         },
+         validate: (values) => {
+            const errors = {}
+            if (values.inviteMessage.length > inviteMessageMaxLength) {
+               errors[
+                  'inviteMessage'
+               ] = `The message is too long (max ${inviteMessageMaxLength} char)`
+            }
+            return errors
+         },
+      })
 
       const { data, isError, isLoading, write } = useContractWrite(
          {
@@ -282,17 +255,17 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
             args: ['0x352ce1105E18F35b16bd7FdA2FdD5C187d2595dB', 123333],
             onSettled(data) {
                console.log('Settled', data)
-               setPaidState(true)
             },
          }
       )
 
 
       const PayButton = () => {
+         const { values, submitForm } = useFormikContext();
          const onPayHandler = () => {
-            write()
+            // write()
 
-            // console.log('values')
+            console.log(values)
 
          }
          return <Button onClick={onPayHandler}>Pay</Button>
@@ -308,29 +281,20 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
          >
             <ModalOverlay />
             <ModalContent>
-               {/* <form onSubmit={handleSubmit}>
-                  <label>
-                     Name:
-                     <input type="text" value={this.state.value} onChange={this.handleChange} />
-                  </label>
-                  <input type="submit" value="Submit" />
-               </form> */}
-
-               <form onSubmit={handleSubmit}>
+               <form onSubmit={formik.handleSubmit}>
                   <ModalHeader>Connect Request</ModalHeader>
                   <ModalCloseButton />
                   <ModalBody>
-                     {/* <FormControl isInvalid={false}> */}
-                     <Textarea
-                        placeholder="(Optional) Include a Short message..."
-                        value={inviteFormData.inviteMessage}
-                        name={'inviteMessage'}
-                        onChange={handleChange}
-                        ref={initialRef}
-                        rows={7}
-                     // {...field}
-                     />
-                     {/* {!formik.errors.inviteMessage ? (
+                     <FormControl isInvalid={!!formik.errors.inviteMessage}>
+                        <Textarea
+                           placeholder="(Optional) Include a Short message..."
+                           value={formik.values.inviteMessage}
+                           name={'inviteMessage'}
+                           onChange={formik.handleChange}
+                           ref={initialRef}
+                           rows={7}
+                        />
+                        {!formik.errors.inviteMessage ? (
                            <FormHelperText>
                               {`Max ${inviteMessageMaxLength} characters`}
                            </FormHelperText>
@@ -338,8 +302,8 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
                            <FormErrorMessage>
                               {formik.errors.inviteMessage}
                            </FormErrorMessage>
-                        )} */}
-                     {/* </FormControl> */}
+                        )}
+                     </FormControl>
                   </ModalBody>
                   <ModalFooter>
                      <Button variant="ghost" onClick={onClose}>
