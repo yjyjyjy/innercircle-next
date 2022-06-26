@@ -7,35 +7,38 @@ import * as gtag from '../lib/gtag'
 import { SessionProvider } from 'next-auth/react'
 import { AppContextProvider } from './AppContext';
 import { ethers } from 'ethers';
+import { WagmiConfig, createClient } from 'wagmi'
 
+const client = createClient()
 
 const App = ({ Component, pageProps: { session, ...pageProps } }: AppProps) => {
    return (
       <AppContextProvider>
-         <SessionProvider session={session}>
-            <ChakraProvider>
-               <Head>
-                  <title>innerCircle</title>
-                  <meta
-                     name="viewport"
-                     content="width=device-width, initial-scale=1"
+         <WagmiConfig client={client}>
+            <SessionProvider session={session}>
+               <ChakraProvider>
+                  <Head>
+                     <title>innerCircle</title>
+                     <meta
+                        name="viewport"
+                        content="width=device-width, initial-scale=1"
+                     />
+                     <link
+                        rel="icon"
+                        type="image/png"
+                        sizes="32x32"
+                        href="/favicon-32x32.png"
+                     ></link>
+                  </Head>
+                  <Script
+                     strategy="afterInteractive"
+                     src={`https://www.googletagmanager.com/gtag/js?id=${gtag.GA_TRACKING_ID}`}
                   />
-                  <link
-                     rel="icon"
-                     type="image/png"
-                     sizes="32x32"
-                     href="/favicon-32x32.png"
-                  ></link>
-               </Head>
-               <Script
-                  strategy="afterInteractive"
-                  src={`https://www.googletagmanager.com/gtag/js?id=${gtag.GA_TRACKING_ID}`}
-               />
-               <Script
-                  id="gtag-init"
-                  strategy="afterInteractive"
-                  dangerouslySetInnerHTML={{
-                     __html: `
+                  <Script
+                     id="gtag-init"
+                     strategy="afterInteractive"
+                     dangerouslySetInnerHTML={{
+                        __html: `
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
@@ -43,13 +46,14 @@ const App = ({ Component, pageProps: { session, ...pageProps } }: AppProps) => {
               page_path: window.location.pathname,
             });
           `,
-                  }}
-               />
-               <Layout>
-                  <Component {...pageProps} />
-               </Layout>
-            </ChakraProvider>
-         </SessionProvider>
+                     }}
+                  />
+                  <Layout>
+                     <Component {...pageProps} />
+                  </Layout>
+               </ChakraProvider>
+            </SessionProvider>
+         </WagmiConfig>
       </AppContextProvider>
    )
 }
