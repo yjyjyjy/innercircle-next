@@ -17,8 +17,6 @@ import {
    ModalFooter,
    Textarea,
    FormControl,
-   FormErrorMessage,
-   FormHelperText,
 } from '@chakra-ui/react'
 import React, { useState } from 'react'
 import {
@@ -28,8 +26,8 @@ import {
    connection_request,
    connection,
 } from '@prisma/client'
-import { useFormik } from 'formik'
-import { contractABI, contractAddress, inviteMessageMaxLength } from '../../lib/const'
+import { Field, Form, Formik, useFormik } from 'formik'
+import { contractABI, contractAddress } from '../../lib/const'
 import Link from 'next/link'
 import { useContractWrite } from 'wagmi'
 
@@ -203,49 +201,7 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
    const { isOpen, onOpen, onClose } = useDisclosure()
    const initialRef = React.useRef(null)
    const ConnectReqestModal = () => {
-      // const [inviteMessage, setInviteMessage] = useState('')
-      const formik = useFormik({
-         initialValues: {
-            inviteMessage: '',
-         },
-         onSubmit: async (values) => {
-            const res = await fetch('/api/connection', {
-               method: 'POST',
-               body: JSON.stringify({
-                  targetUserProfileId: id,
-                  inviteMessage: values.inviteMessage,
-               }),
-            })
-
-            const { message } = await res.json()
-            toast({
-               title: message,
-               status: res.status === 200 ? 'success' : 'error',
-               duration: 4000,
-               isClosable: true,
-            })
-
-            // close the modal
-            onClose()
-            // change the button text and look
-            setConnectButtonStatus({
-               ...connectButtonStatus,
-               label: 'Pending',
-               isDisabled: true,
-            })
-         },
-         validate: (values) => {
-            const errors = {}
-            if (values.inviteMessage.length > inviteMessageMaxLength) {
-               errors[
-                  'inviteMessage'
-               ] = `The message is too long (max ${inviteMessageMaxLength} char)`
-            }
-            return errors
-         },
-      })
-
-      const { data, isError, isLoading, write } = useContractWrite(
+      const { writeAsync } = useContractWrite(
          {
             addressOrName: contractAddress,
             contractInterface: contractABI,
@@ -253,11 +209,48 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
          'transfer',
          {
             args: ['0x352ce1105E18F35b16bd7FdA2FdD5C187d2595dB', 123333],
-            onSettled(data) {
-               console.log('Settled', data)
+            onSettled(data, _, vars) {
+               console.log('Confirmed: ', data)
             },
          }
       )
+
+      const handleSubmit = async (values, actions) => {
+         // Send Transaction
+         await writeAsync()
+
+         console.log('Values: ', values)
+
+         // Send form
+         const res = await fetch('/api/connection', {
+            method: 'POST',
+            body: JSON.stringify({
+               targetUserProfileId: id,
+               inviteMessage: values.inviteMessage,
+            }),
+         })
+         const { message } = await res.json()
+
+         toast({
+            title: message,
+            status: res.status === 200 ? 'success' : 'error',
+            duration: 4000,
+            isClosable: true,
+         })
+
+         // close the modal
+         onClose()
+
+         // change the button text and look
+         setConnectButtonStatus({
+            ...connectButtonStatus,
+            label: 'Pending',
+            isDisabled: true,
+         })
+
+         // Finied submitting
+         actions.setSubmitting(false)
+      }
 
       return (
          <Modal
@@ -269,39 +262,49 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
          >
             <ModalOverlay />
             <ModalContent>
-               <form onSubmit={formik.handleSubmit}>
-                  <ModalHeader>Connect Request</ModalHeader>
-                  <ModalCloseButton />
-                  <ModalBody>
-                     <FormControl isInvalid={!!formik.errors.inviteMessage}>
-                        <Textarea
-                           placeholder="(Optional) Include a Short message..."
-                           value={formik.values.inviteMessage}
-                           name={'inviteMessage'}
-                           onChange={formik.handleChange}
-                           ref={initialRef}
-                           rows={7}
-                        />
-                        {!formik.errors.inviteMessage ? (
-                           <FormHelperText>
-                              {`Max ${inviteMessageMaxLength} characters`}
-                           </FormHelperText>
-                        ) : (
-                           <FormErrorMessage>
-                              {formik.errors.inviteMessage}
-                           </FormErrorMessage>
-                        )}
-                     </FormControl>
-                  </ModalBody>
-                  <ModalFooter>
-                     <Button variant="ghost" onClick={onClose}>
-                        Cancel
-                     </Button>
-                     <Button colorScheme="blue" ml={3} type="submit">
-                        Send
-                     </Button>
-                  </ModalFooter>
-               </form>
+               <ModalHeader>Connect Request</ModalHeader>
+               <ModalCloseButton />
+               <Formik
+                  onSubmit={(values, actions) => {
+                     setTimeout(async () => {
+                        await handleSubmit(values, actions)
+                     }, 1000)
+                  }}
+                  initialValues={{
+                     inviteMessage: '',
+                  }}
+               >
+                  {({ isSubmitting }) => (
+                     <Form>
+                        <ModalBody>
+                           <Field name="inviteMessage">
+                              {({ field, form }) => (
+                                 <FormControl>
+                                    <Textarea
+                                       placeholder="(Optional) Include a Short message..."
+                                       {...field}
+                                       rows={7}
+                                    />
+                                 </FormControl>
+                              )}
+                           </Field>
+                        </ModalBody>
+                        <ModalFooter>
+                           <Button variant="ghost" onClick={onClose}>
+                              Cancel
+                           </Button>
+                           <Button
+                              colorScheme="blue"
+                              ml={3}
+                              type="submit"
+                              isLoading={isSubmitting}
+                           >
+                              Send
+                           </Button>
+                        </ModalFooter>
+                     </Form>
+                  )}
+               </Formik>
             </ModalContent>
          </Modal>
       )
@@ -345,7 +348,7 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
                   h={'30px'}
                   isDisabled={connectButtonStatus.isDisabled}
                   onClick={
-                     connectButtonStatus.label === 'Connect' ? onOpen : () => { }
+                     connectButtonStatus.label === 'Connect' ? onOpen : () => {}
                   }
                >
                   {connectButtonStatus.label}

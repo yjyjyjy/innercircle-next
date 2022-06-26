@@ -282,7 +282,7 @@ const MyProfile = ({ user }) => {
                   setTimeout(async () => {
                      await createOrUpdateUserProfile(values)
                      actions.setSubmitting(false)
-                  }, 5000)
+                  }, 1000)
                }}
                initialValues={initialValues}
                validate={(values) => {
