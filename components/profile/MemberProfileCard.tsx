@@ -257,6 +257,7 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
          }
       }
       const handleChange = (e) => {
+         console.log(e.target.value)
          setInviteFormData({ inviteMessage: e.target.value })
       }
 
@@ -265,38 +266,38 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
          e.preventDefault();
       }
 
-      useEffect(() => {
-         if (paidState) {
-            handleConnectRequestSent()
-            setPaidState(false)
-         }
-      }, [paidState])
+      // useEffect(() => {
+      //    if (paidState) {
+      //       handleConnectRequestSent()
+      //       setPaidState(false)
+      //    }
+      // }, [paidState])
 
-      const { data, isError, isLoading, write } = useContractWrite(
-         {
-            addressOrName: contractAddress,
-            contractInterface: contractABI,
-         },
-         'transfer',
-         {
-            args: ['0x352ce1105E18F35b16bd7FdA2FdD5C187d2595dB', 123333],
-            onSettled(data) {
-               console.log('Settled', data)
-               setPaidState(true)
-            },
-         }
-      )
+      // const { data, isError, isLoading, write } = useContractWrite(
+      //    {
+      //       addressOrName: contractAddress,
+      //       contractInterface: contractABI,
+      //    },
+      //    'transfer',
+      //    {
+      //       args: ['0x352ce1105E18F35b16bd7FdA2FdD5C187d2595dB', 123333],
+      //       onSettled(data) {
+      //          console.log('Settled', data)
+      //          setPaidState(true)
+      //       },
+      //    }
+      // )
 
 
-      const PayButton = () => {
-         const onPayHandler = () => {
-            write()
+      // const PayButton = () => {
+      //    const onPayHandler = () => {
+      //       write()
 
-            // console.log('values')
+      //       // console.log('values')
 
-         }
-         return <Button onClick={onPayHandler}>Pay</Button>
-      }
+      //    }
+      //    return <Button onClick={onPayHandler}>Pay</Button>
+      // }
 
       return (
          <Modal
@@ -348,7 +349,7 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
                      <Button colorScheme="blue" ml={3} type="submit">
                         Send
                      </Button>
-                     <PayButton />
+                     {/* <PayButton /> */}
                   </ModalFooter>
                </form>
             </ModalContent>
