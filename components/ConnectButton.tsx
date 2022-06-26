@@ -60,11 +60,11 @@ const ConnectButton = () => {
    return (
       <>
          {wagmiData ?
-            <Box>
-               Connected to {wagmiData.address}
-               <Button onClick={() => disconnect()}>Disconnect</Button>
-            </Box>
-            : <Button onClick={() => connect()}>Connect Wallet</Button>
+            <Flex direction={'row'}>
+               Connected to {wagmiData.address?.substring(0, 4)}...{wagmiData.address?.substring(wagmiData.address?.length - 4, wagmiData.address?.length)}
+               <Button onClick={() => disconnect()} colorScheme='blue' px={8}>Disconnect</Button>
+            </Flex>
+            : <Button onClick={() => connect()} colorScheme='blue'>Connect Wallet</Button>
          }
       </>
    )
