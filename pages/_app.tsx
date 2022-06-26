@@ -8,13 +8,14 @@ import { SessionProvider } from 'next-auth/react'
 import { AppContextProvider } from './AppContext';
 import { ethers } from 'ethers';
 import { WagmiConfig, createClient } from 'wagmi'
+import wagmiClient from '../lib/wagmi'
 
-const client = createClient()
+
 
 const App = ({ Component, pageProps: { session, ...pageProps } }: AppProps) => {
    return (
-      <AppContextProvider>
-         <WagmiConfig client={client}>
+      <WagmiConfig client={wagmiClient}>
+         <AppContextProvider>
             <SessionProvider session={session}>
                <ChakraProvider>
                   <Head>
@@ -52,9 +53,11 @@ const App = ({ Component, pageProps: { session, ...pageProps } }: AppProps) => {
                      <Component {...pageProps} />
                   </Layout>
                </ChakraProvider>
+
             </SessionProvider>
-         </WagmiConfig>
-      </AppContextProvider>
+
+         </AppContextProvider>
+      </WagmiConfig>
    )
 }
 

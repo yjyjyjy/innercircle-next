@@ -40,8 +40,17 @@ import {
 } from '@chakra-ui/icons'
 import { useRouter } from 'next/router'
 
+import dynamic from 'next/dynamic'
+
+
+// import ConnectButton from './ConnectButton'
+const ConnectButton = dynamic(() => import('../components/ConnectButton'), {
+   ssr: false
+})
+
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
+
 
 export default function Header() {
    const { isOpen, onToggle } = useDisclosure()
@@ -53,6 +62,21 @@ export default function Header() {
       connector: new InjectedConnector(),
    })
    const { disconnect } = useDisconnect()
+
+   // const ConnectButton = () => {
+   //    return (
+   //       <>
+   //          {wagmiData ?
+   //             <Box>
+   //                Connected to {wagmiData.address}
+   //                <Button onClick={() => disconnect()}>Disconnect</Button>
+   //             </Box>
+   //             : <Button onClick={() => connect()}>Connect Wallet</Button>
+   //          }
+   //       </>
+   //    )
+   // }
+
 
 
    return (
@@ -112,13 +136,7 @@ export default function Header() {
                direction={'row'}
                spacing={1}
             >
-               {wagmiData ?
-                  <Box>
-                     Connected to {wagmiData.address}
-                     <Button onClick={() => disconnect()}>Disconnect</Button>
-                  </Box>
-                  : <Button onClick={() => connect()}>Connect Wallet</Button>
-               }
+               <ConnectButton />
                <Tooltip
                   label={
                      'Got opinions on what should be built? Join our Discord! Also, token drop in the future!'

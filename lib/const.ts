@@ -6,7 +6,7 @@ export const logoNameNoBackground =
    'https://storage.googleapis.com/innercircle_public_image_server/website_resource/logo_no_bg_w_name.png'
 
 export const inviteMessageMaxLength = 250
-export const contractAddress = 0x3dcB8D010ab88B53d4DEF04c0158FB0169c1C49E
+export const contractAddress = '0x3dcB8D010ab88B53d4DEF04c0158FB0169c1C49E'
 export const contractABI = [
    {
       "inputs": [

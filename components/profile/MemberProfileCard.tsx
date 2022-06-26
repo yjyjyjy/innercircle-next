@@ -32,6 +32,7 @@ import { useFormik } from 'formik'
 import { inviteMessageMaxLength } from '../../lib/const'
 import Link from 'next/link'
 
+
 export type UserProfileWithMetaData = user_profile & {
    user_profile_to_conference_mapping?: (user_profile_to_conference_mapping & {
       conference: conference
@@ -330,7 +331,7 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
                   h={'30px'}
                   isDisabled={connectButtonStatus.isDisabled}
                   onClick={
-                     connectButtonStatus.label === 'Connect' ? onOpen : () => {}
+                     connectButtonStatus.label === 'Connect' ? onOpen : () => { }
                   }
                >
                   {connectButtonStatus.label}
