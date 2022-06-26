@@ -39,24 +39,24 @@ export async function getServerSideProps(context) {
          user_profile: {
             include: {
                connection_request_connection_request_requested_idTouser_profile:
-                  {
-                     where: {
-                        confirmed_at: null,
-                        rejected_at: null,
-                     },
-                     include: {
-                        user_profile_connection_request_initiator_idTouser_profile:
-                           {
-                              select: {
-                                 id: true,
-                                 profile_name: true,
-                                 bio_short: true,
-                                 profile_picture: true,
-                                 handle: true,
-                              },
-                           },
+               {
+                  where: {
+                     confirmed_at: null,
+                     rejected_at: null,
+                  },
+                  include: {
+                     user_profile_connection_request_initiator_idTouser_profile:
+                     {
+                        select: {
+                           id: true,
+                           profile_name: true,
+                           bio_short: true,
+                           profile_picture: true,
+                           handle: true,
+                        },
                      },
                   },
+               },
                connection_connection_user_profile_startTouser_profile: {
                   include: {
                      user_profile_connection_user_profile_endTouser_profile: {
@@ -147,8 +147,18 @@ const Network = ({ user }) => {
 
    const [isLargeScreen] = useMediaQuery('(min-width: 700px)')
 
+   const testButtonHandler = async () => {
+      const res = await fetch('/api/test', {
+         method: 'PUT',
+
+      })
+   }
+
    return (
       <Flex direction={'column'}>
+         <Button
+            onClick={testButtonHandler}
+         >Test</Button>
          {/* Conneciton requests */}
          {state.connectionRequesters.length > 0 && (
             <Flex
@@ -209,7 +219,7 @@ const Network = ({ user }) => {
                      key={idx}
                      user_profile={con}
                      primaryLabel={'Message'}
-                     primaryOnClick={() => {}}
+                     primaryOnClick={() => { }}
                   />
                ))}
             </Flex>

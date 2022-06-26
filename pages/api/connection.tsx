@@ -6,6 +6,43 @@ import { connectRequestEmailTemplate } from '../../lib/email-template/connectReq
 import { defaultProfilePicture, inviteMessageMaxLength } from '../../lib/const'
 import { connectRequestAcceptTemplate } from '../../lib/email-template/connectAcceptedEmailTemplate'
 
+const Web3 = require("web3");
+import { contractABI, contractAddress, skaleConnectionString } from '../../lib/const'
+
+
+
+const HDWalletProvider = require("@truffle/hdwallet-provider");
+
+
+// No 0x prefix
+
+
+const myPrivateKeyHex = process.env.WALLET_PRIVATE_KEY
+// const infuraProjectId = "123123123";
+
+const provider = new Web3.providers.HttpProvider(skaleConnectionString);
+console.log(provider)
+
+// Create web3.js middleware that signs transactions locally
+const localKeyProvider = new HDWalletProvider({
+   privateKeys: [myPrivateKeyHex],
+   providerOrUrl: skaleConnectionString// provider,
+});
+console.log(localKeyProvider)
+
+
+const web3 = new Web3(localKeyProvider);
+console.log(web3)
+
+const myAccount = web3.eth.accounts.privateKeyToAccount(myPrivateKeyHex);
+console.log(myAccount)
+// Interact with existing, already deployed, smart contract on Ethereum mainnet
+
+console.log('address', contractAddress)
+const myContract = new web3.eth.Contract(contractABI as any, contractAddress);
+
+
+
 const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
    // make sure user is signed in
    const session = await getSession({ req })
@@ -69,6 +106,11 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
       return
    }
 
+   const transferFunds = async () => {
+      const receipt = await myContract.methods.transfer('0x3dcB8D010ab88B53d4DEF04c0158FB0169c1C49E', 1000).send({ from: myAccount.address })
+      console.log('TX receipt', receipt);
+   }
+
    const acceptConnectionRequest = async () => {
       await prisma.connection_request.updateMany({
          where: {
@@ -105,6 +147,8 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
          })
          return
       }
+
+
 
       mailer({
          to: targetUserProfile.email,
@@ -274,6 +318,7 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
       if (requestedOperation === 'accept') {
          // Accept the connection request
          acceptConnectionRequest()
+         await transferFunds()
          return
       } else {
          // Reject the connection request
@@ -286,6 +331,7 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
                rejected_at: new Date(),
             },
          })
+         await transferFunds()
          res.status(200).json({ message: 'Connect Request Rejected' })
       }
       return
@@ -293,6 +339,7 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
 
    // DELETE -- when connection was removed
    if (req.method === 'DELETE') {
+      console.log('TESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTEST')
    }
 
    // Handle any other HTTP method
