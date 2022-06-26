@@ -35,6 +35,7 @@ import { ESession } from "../index"
 import { Field, Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { AiFillCamera } from "react-icons/ai"
+import axios from "axios"
 
 // DB design:
 // user to profile mapping should be many to one. Each log in creates a new user. But multiple users can be tied to the same profile.
@@ -275,31 +276,68 @@ const MyProfile = ({ user }) => {
     }
 
     const uploadDisplayPicture = async () => {
+        console.log("ATTEMPTING TO UPLoaD")
         if (!displayPicture) return
-        const url = `https://api.cloudinary.com/v1_1/innercircle/upload`
-
-        const res = await fetch("/api/sign", {
-            method: "POST",
-            body: JSON.stringify(user_profile.id),
-        })
-        const { signature, timestamp } = await res.json()
+        // const url = `https://api.cloudinary.com/v1_1/innercircle/upload`
 
         const formData = new FormData()
+        // const res = await fetch("/api/sign", {
+        //     method: "POST",
+        // })
+        // const { signature, timestamp } = await res.json()
+        // formData.append("signature", signature)
+        // formData.append("timestamp", timestamp)
+        formData.append("public_id", user_profile.id)
         formData.append("file", displayPicture)
-        formData.append("signature", signature)
-        formData.append("timestamp", timestamp)
-        formData.append("api_key", "454991477517121")
+        // formData.append("public_id", user_profile.id)
+
+        const config = {
+            headers: {
+                "content-type": "multipart/form-data",
+            },
+        }
+        return axios.post("/api/cloudinaryV2", formData, config)
+
+        // const formData = new FormData()
+        // formData.append("file", displayPicture)
         formData.append("public_id", user_profile.id)
 
-        const response = await fetch(url, {
-            method: "post",
-            body: formData,
-        })
-        const data = await response.json()
+        // const config = {
+        //     headers: {
+        //         "content-type": "multipart/form-data",
+        //     },
+        // }
+        // return post(url, formData, config)
+
+        // const res = await fetch("/api/cloudinaryV2", {
+        //     method: "POST",
+        //     body: formData,
+        //     headers: {
+        //         "content-type": "multipart/form-data",
+        //     },
+        // })
+
+        // const { signature, timestamp } = await res.json()
+
+        // const formData = new FormData()
+        // formData.append("file", displayPicture)
+        // formData.append("signature", signature)
+        // formData.append("timestamp", timestamp)
+        // formData.append("api_key", "454991477517121")
+        // formData.append("public_id", user_profile.id)
+
+        // const response = await fetch(url, {
+        //     method: "post",
+        //     body: formData,
+        // })
+        // const data = await response.json()
     }
 
     const onSubmit = async (values, actions) => {
-        await uploadDisplayPicture()
+        console.log("Attemping to submit")
+        if (displayPicture) {
+            await uploadDisplayPicture()
+        }
         await createOrUpdateUserProfile(values)
         actions.setSubmitting(false)
     }
@@ -728,7 +766,10 @@ const MyProfile = ({ user }) => {
                     Profile Preview
                 </Text>
                 <MemberProfileCard
-                    userProfile={{ ...formData, id: user_profile.id }}
+                    userProfile={{
+                        ...formData,
+                        id: user_profile?.id ? user_profile.id : "-1",
+                    }}
                     mini={false}
                     profilePictureFile={displayPicture}
                 />
