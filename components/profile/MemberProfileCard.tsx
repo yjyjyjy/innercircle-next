@@ -28,10 +28,10 @@ import {
    connection_request,
    connection,
 } from '@prisma/client'
-import { useFormik } from 'formik'
-import { inviteMessageMaxLength } from '../../lib/const'
+import { useFormik, useFormikContext } from 'formik'
+import { contractABI, contractAddress, inviteMessageMaxLength } from '../../lib/const'
 import Link from 'next/link'
-
+import { useContractWrite } from 'wagmi'
 
 export type UserProfileWithMetaData = user_profile & {
    user_profile_to_conference_mapping?: (user_profile_to_conference_mapping & {
@@ -245,6 +245,32 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
          },
       })
 
+      const { data, isError, isLoading, write } = useContractWrite(
+         {
+            addressOrName: contractAddress,
+            contractInterface: contractABI,
+         },
+         'transfer',
+         {
+            args: ['0x352ce1105E18F35b16bd7FdA2FdD5C187d2595dB', 123333],
+            onSettled(data) {
+               console.log('Settled', data)
+            },
+         }
+      )
+
+
+      const PayButton = () => {
+         const { values, submitForm } = useFormikContext();
+         const onPayHandler = () => {
+            // write()
+
+            console.log(values)
+
+         }
+         return <Button onClick={onPayHandler}>Pay</Button>
+      }
+
       return (
          <Modal
             isOpen={isOpen}
@@ -286,6 +312,7 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
                      <Button colorScheme="blue" ml={3} type="submit">
                         Send
                      </Button>
+                     <PayButton />
                   </ModalFooter>
                </form>
             </ModalContent>
