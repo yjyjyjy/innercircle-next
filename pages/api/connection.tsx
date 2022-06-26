@@ -3,7 +3,7 @@ import prisma from '../../lib/prisma'
 import { getSession } from 'next-auth/react'
 import { mailer, Email } from '../../lib/mailer'
 import { connectRequestEmailTemplate } from '../../lib/email-template/connectRequestEmailTemplate'
-import { defaultProfilePicture, inviteMessageMaxLength } from '../../lib/const'
+import { defaultProfilePicture, dmPrice, inviteMessageMaxLength } from '../../lib/const'
 import { connectRequestAcceptTemplate } from '../../lib/email-template/connectAcceptedEmailTemplate'
 
 const Web3 = require("web3");
@@ -107,7 +107,7 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
    }
 
    const transferFunds = async () => {
-      const receipt = await myContract.methods.transfer('0x3dcB8D010ab88B53d4DEF04c0158FB0169c1C49E', 1000).send({ from: myAccount.address })
+      const receipt = await myContract.methods.transfer('0x3DFf1Ad208A32eB09817fE673956B34480a39E59', dmPrice * 0.9).send({ from: myAccount.address })
       console.log('TX receipt', receipt);
    }
 

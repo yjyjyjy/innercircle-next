@@ -156,9 +156,6 @@ const Network = ({ user }) => {
 
    return (
       <Flex direction={'column'}>
-         <Button
-            onClick={testButtonHandler}
-         >Test</Button>
          {/* Conneciton requests */}
          {state.connectionRequesters.length > 0 && (
             <Flex

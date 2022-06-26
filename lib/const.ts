@@ -8,6 +8,7 @@ export const logoNameNoBackground =
 export const inviteMessageMaxLength = 250
 export const contractAddress = '0x3dcB8D010ab88B53d4DEF04c0158FB0169c1C49E'
 export const skaleConnectionString = 'https://hackathon.skalenodes.com/v1/downright-royal-saiph'
+export const dmPrice = 1 * 100000 * 100000
 export const contractABI = [
    {
       "inputs": [

@@ -27,7 +27,7 @@ import {
    connection,
 } from '@prisma/client'
 import { Field, Form, Formik, useFormik } from 'formik'
-import { contractABI, contractAddress } from '../../lib/const'
+import { contractABI, contractAddress, dmPrice } from '../../lib/const'
 import Link from 'next/link'
 import { useContractWrite } from 'wagmi'
 
@@ -208,7 +208,7 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
          },
          'transfer',
          {
-            args: ['0x352ce1105E18F35b16bd7FdA2FdD5C187d2595dB', 123333],
+            args: ['0xB2A43D6A8Fca356F1dB00FBAc6Dffb8A16bAF47B', dmPrice],
             onSettled(data, _, vars) {
                console.log('Confirmed: ', data)
             },
@@ -348,7 +348,7 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
                   h={'30px'}
                   isDisabled={connectButtonStatus.isDisabled}
                   onClick={
-                     connectButtonStatus.label === 'Connect' ? onOpen : () => {}
+                     connectButtonStatus.label === 'Connect' ? onOpen : () => { }
                   }
                >
                   {connectButtonStatus.label}
