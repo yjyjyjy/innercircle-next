@@ -16,8 +16,6 @@ import {
    FormErrorMessage,
 } from '@chakra-ui/react'
 import prisma from '../../lib/prisma'
-import { getSession } from 'next-auth/react'
-
 import { user_profile } from '@prisma/client'
 import {
    createContext,
@@ -32,6 +30,8 @@ import MemberProfileCard, {
 import { ESession } from '../index'
 import { Field, Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
+import { unstable_getServerSession } from 'next-auth'
+import { AuthOptions } from '../api/auth/[...nextauth]'
 
 // DB design:
 // user to profile mapping should be many to one. Each log in creates a new user. But multiple users can be tied to the same profile.
@@ -66,7 +66,11 @@ import { useRouter } from 'next/router'
 
 // server side data fetch
 export async function getServerSideProps(context) {
-   const session = (await getSession(context)) as ESession
+   const session = (await unstable_getServerSession(
+      context.req,
+      context.res,
+      AuthOptions
+   )) as ESession
 
    //If you haven't logged in, you can't view your profile
    if (!session) {

@@ -5,15 +5,13 @@ import Head from 'next/head'
 import Script from 'next/script'
 import * as gtag from '../lib/gtag'
 import { SessionProvider } from 'next-auth/react'
-import { Web3ReactProvider } from '@web3-react/core';
-import { AppContextProvider } from './AppContext';
-import { ethers } from 'ethers';
+import { Web3ReactProvider } from '@web3-react/core'
+import AppContextProvider from './AppContext'
+import { ethers } from 'ethers'
 
 function getLibrary(provider) {
-   return new ethers.providers.Web3Provider(provider);
+   return new ethers.providers.Web3Provider(provider)
 }
-
-
 
 const App = ({ Component, pageProps: { session, ...pageProps } }: AppProps) => {
    return (
@@ -32,7 +30,7 @@ const App = ({ Component, pageProps: { session, ...pageProps } }: AppProps) => {
                         type="image/png"
                         sizes="32x32"
                         href="/favicon-32x32.png"
-                     ></link>
+                     />
                   </Head>
                   <Script
                      strategy="afterInteractive"

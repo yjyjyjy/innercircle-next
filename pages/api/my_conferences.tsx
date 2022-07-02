@@ -1,10 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import prisma from '../../lib/prisma'
-import { getSession } from 'next-auth/react'
+import { unstable_getServerSession } from 'next-auth'
+import { AuthOptions } from './auth/[...nextauth]'
 
 const MyConferences = async (req: NextApiRequest, res: NextApiResponse) => {
    // make sure user is signed in
-   const session = await getSession({ req })
+   const session = await unstable_getServerSession(req, res, AuthOptions)
 
    if (!session || !session.userID || !session.user?.email) {
       res.status(500).json({ message: 'Please log in first' })

@@ -7,15 +7,19 @@ import {
    Divider,
 } from '@chakra-ui/react'
 import prisma from '../../lib/prisma'
-import { getSession } from 'next-auth/react'
-
 import { useState } from 'react'
 import { ESession } from '../index'
 import { useRouter } from 'next/router'
 import MemberProfileListItem from '../../components/profile/MemberProfileListItem'
+import { unstable_getServerSession } from 'next-auth'
+import { AuthOptions } from '../api/auth/[...nextauth]'
 
 export async function getServerSideProps(context) {
-   const session = (await getSession(context)) as ESession
+   const session = (await unstable_getServerSession(
+      context.req,
+      context.res,
+      AuthOptions
+   )) as ESession
 
    //If you haven't logged in, you can't view your profile
    if (!session) {
