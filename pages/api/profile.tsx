@@ -1,12 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { unstable_getServerSession } from 'next-auth'
+import { getSession } from 'next-auth/react'
 import prisma from '../../lib/prisma'
-import { AuthOptions } from './auth/[...nextauth]'
 
 const regex = /^[a-zA-Z0-9_]*$/
 
 const Profile = async (req: NextApiRequest, res: NextApiResponse) => {
-   const session = await unstable_getServerSession(req, res, AuthOptions)
+   const session = await getSession({ req })
 
    if (!session || !session.userID || !session.user?.email) {
       res.status(500).json({ message: 'Please log in first' })
@@ -72,7 +71,7 @@ const Profile = async (req: NextApiRequest, res: NextApiResponse) => {
       if (
          existingProfileWithHandle &&
          existingProfileWithHandle.email.toLowerCase() !==
-            payloadData.email.toLowerCase()
+         payloadData.email.toLowerCase()
       ) {
          res.status(500).json({
             message:

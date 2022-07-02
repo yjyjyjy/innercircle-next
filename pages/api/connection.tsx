@@ -4,12 +4,11 @@ import { mailer, Email } from '../../lib/mailer'
 import { connectRequestEmailTemplate } from '../../lib/email-template/connectRequestEmailTemplate'
 import { defaultProfilePicture, inviteMessageMaxLength } from '../../lib/const'
 import { connectRequestAcceptTemplate } from '../../lib/email-template/connectAcceptedEmailTemplate'
-import { unstable_getServerSession } from 'next-auth'
-import { AuthOptions } from './auth/[...nextauth]'
+import { getSession } from 'next-auth/react'
 
 const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
    // make sure user is signed in
-   const session = await unstable_getServerSession(req, res, AuthOptions)
+   const session = await getSession({ req })
 
    if (!session || !session.userID || !session.user?.email) {
       res.status(500).json({ message: 'Please log in first' })

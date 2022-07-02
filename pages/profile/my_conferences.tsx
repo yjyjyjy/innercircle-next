@@ -4,15 +4,10 @@ import { useState } from 'react'
 import { ESession } from '../index'
 import { FilterTag } from '../../components/FilterTag'
 import { useAppContext } from '../AppContext'
-import { unstable_getServerSession } from 'next-auth'
-import { AuthOptions } from '../api/auth/[...nextauth]'
+import { getSession } from 'next-auth/react'
 
 export async function getServerSideProps(context) {
-   const session = (await unstable_getServerSession(
-      context.req,
-      context.res,
-      AuthOptions
-   )) as ESession
+   const session = (await getSession(context)) as ESession
 
    //If you haven't logged in, you can't view your profile
    if (!session) {

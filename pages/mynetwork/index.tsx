@@ -1,7 +1,6 @@
 import {
    Flex,
    Text,
-   Button,
    useMediaQuery,
    useToast,
    Divider,
@@ -11,15 +10,10 @@ import { useState } from 'react'
 import { ESession } from '../index'
 import { useRouter } from 'next/router'
 import MemberProfileListItem from '../../components/profile/MemberProfileListItem'
-import { unstable_getServerSession } from 'next-auth'
-import { AuthOptions } from '../api/auth/[...nextauth]'
+import { getSession } from 'next-auth/react'
 
 export async function getServerSideProps(context) {
-   const session = (await unstable_getServerSession(
-      context.req,
-      context.res,
-      AuthOptions
-   )) as ESession
+   const session = (await getSession(context)) as ESession
 
    //If you haven't logged in, you can't view your profile
    if (!session) {
@@ -43,24 +37,24 @@ export async function getServerSideProps(context) {
          user_profile: {
             include: {
                connection_request_connection_request_requested_idTouser_profile:
-                  {
-                     where: {
-                        confirmed_at: null,
-                        rejected_at: null,
-                     },
-                     include: {
-                        user_profile_connection_request_initiator_idTouser_profile:
-                           {
-                              select: {
-                                 id: true,
-                                 profile_name: true,
-                                 bio_short: true,
-                                 profile_picture: true,
-                                 handle: true,
-                              },
-                           },
+               {
+                  where: {
+                     confirmed_at: null,
+                     rejected_at: null,
+                  },
+                  include: {
+                     user_profile_connection_request_initiator_idTouser_profile:
+                     {
+                        select: {
+                           id: true,
+                           profile_name: true,
+                           bio_short: true,
+                           profile_picture: true,
+                           handle: true,
+                        },
                      },
                   },
+               },
                connection_connection_user_profile_startTouser_profile: {
                   include: {
                      user_profile_connection_user_profile_endTouser_profile: {
@@ -213,7 +207,7 @@ const Network = ({ user }) => {
                      key={idx}
                      user_profile={con}
                      primaryLabel={'Message'}
-                     primaryOnClick={() => {}}
+                     primaryOnClick={() => { }}
                   />
                ))}
             </Flex>

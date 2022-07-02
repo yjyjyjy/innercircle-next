@@ -30,8 +30,7 @@ import MemberProfileCard, {
 import { ESession } from '../index'
 import { Field, Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
-import { unstable_getServerSession } from 'next-auth'
-import { AuthOptions } from '../api/auth/[...nextauth]'
+import { getSession } from 'next-auth/react'
 
 // DB design:
 // user to profile mapping should be many to one. Each log in creates a new user. But multiple users can be tied to the same profile.
@@ -66,11 +65,7 @@ import { AuthOptions } from '../api/auth/[...nextauth]'
 
 // server side data fetch
 export async function getServerSideProps(context) {
-   const session = (await unstable_getServerSession(
-      context.req,
-      context.res,
-      AuthOptions
-   )) as ESession
+   const session = (await getSession(context)) as ESession
 
    //If you haven't logged in, you can't view your profile
    if (!session) {
@@ -187,8 +182,8 @@ const MyProfile = ({ user }) => {
       profile_name: user_profile?.profile_name
          ? user_profile.profile_name
          : user.name
-         ? user.name
-         : '',
+            ? user.name
+            : '',
       handle: user_profile?.handle,
       bio_short: user_profile?.bio_short,
       bio: user_profile?.bio,

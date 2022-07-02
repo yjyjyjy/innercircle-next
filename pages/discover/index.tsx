@@ -1,10 +1,8 @@
-import { Session, unstable_getServerSession } from 'next-auth'
+import { Session } from 'next-auth'
 import prisma from '../../lib/prisma'
-import { useSession } from 'next-auth/react'
+import { getSession, useSession } from 'next-auth/react'
 import AuthenticatedUser from '../../components/AuthenticatedUser'
-import UnauthenticatedUser from '../../components/UnauthenticatedUser'
 import { UserProfileWithMetaData } from '../../components/profile/MemberProfileCard'
-import { AuthOptions } from '../api/auth/[...nextauth]'
 
 export interface ESession extends Session {
    userID: string
@@ -13,11 +11,8 @@ export interface ESession extends Session {
 export async function getServerSideProps(context) {
    // If you haven't logged in, you can't use the tool yet.
    // TODO can look to use getSession on client side instead, as its not intended for server time. Its known to be slow
-   const session = (await unstable_getServerSession(
-      context.req,
-      context.res,
-      AuthOptions
-   )) as ESession
+   const session = (await getSession(context)) as ESession
+
    if (!session) {
       return {
          redirect: {
