@@ -1,36 +1,23 @@
-import { Session, unstable_getServerSession } from 'next-auth'
+import { Session } from 'next-auth'
 import UnauthenticatedUser from '../components/UnauthenticatedUser'
-import { GetServerSidePropsContext } from 'next'
-import { AuthOptions } from './api/auth/[...nextauth]'
-import { getSession, useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
+import Router from 'next/router'
 import { useEffect } from 'react'
 
 export interface ESession extends Session {
    userID: string
 }
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-   // If you haven't logged in, you can't use the tool yet.
-   const session = await unstable_getServerSession(
-      context.req,
-      context.res,
-      AuthOptions
-   )
-   if (!session) {
-      return { props: {} }
-   }
-
-   return {
-      redirect: {
-         permanent: false,
-         destination: '/discover/',
-      },
-      props: {},
-   }
+const Entry = () => {
+   const session = useSession()
+   useEffect(() => {
+      if (session.status === 'authenticated') {
+         Router.push('/discover')
+      } else if (session.status === 'unauthenticated') {
+         Router.push('/unauthenticated')
+      }
+   }, [session.status])
+   return <h1>Loading</h1>
 }
 
-const Home = () => {
-   return <UnauthenticatedUser />
-}
-
-export default Home
+export default Entry
