@@ -2,6 +2,8 @@ import { Session, unstable_getServerSession } from 'next-auth'
 import UnauthenticatedUser from '../components/UnauthenticatedUser'
 import { GetServerSidePropsContext } from 'next'
 import { AuthOptions } from './api/auth/[...nextauth]'
+import { getSession, useSession } from 'next-auth/react'
+import { useEffect } from 'react'
 
 export interface ESession extends Session {
    userID: string

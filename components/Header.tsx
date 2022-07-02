@@ -76,7 +76,7 @@ export default function Header() {
                />
             </Flex>
             <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
-               <NextLink href="/">
+               <NextLink href="/" prefetch={false}>
                   <Link _hover={{ textDecoration: 'none' }}>
                      <Text
                         textAlign={useBreakpointValue({
@@ -209,7 +209,7 @@ const DesktopNav = () => {
             <Box key={navItem.label}>
                <Popover trigger={'hover'} placement={'bottom-start'}>
                   <PopoverTrigger>
-                     <NextLink href={navItem.href ?? '#'}>
+                     <NextLink href={navItem.href ?? '#'} prefetch={false}>
                         <Link
                            p={2}
                            fontSize={'sm'}
@@ -250,7 +250,7 @@ const DesktopNav = () => {
 
 const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
    return (
-      <NextLink href={href as string}>
+      <NextLink href={href as string} prefetch={false}>
          <Link
             role={'group'}
             display={'block'}
