@@ -76,7 +76,7 @@ export default function Header() {
                />
             </Flex>
             <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
-               <NextLink href="/">
+               <NextLink href="/" prefetch={false}>
                   <Link _hover={{ textDecoration: 'none' }}>
                      <Text
                         textAlign={useBreakpointValue({
@@ -165,7 +165,11 @@ export default function Header() {
                      fontWeight={600}
                      color={'white'}
                      bg={'blue.300'}
-                     onClick={() => signIn()}
+                     onClick={() =>
+                        signIn(undefined, {
+                           callbackUrl: '/discover',
+                        })
+                     }
                      _hover={{
                         bg: 'blue.200',
                      }}
@@ -209,7 +213,7 @@ const DesktopNav = () => {
             <Box key={navItem.label}>
                <Popover trigger={'hover'} placement={'bottom-start'}>
                   <PopoverTrigger>
-                     <NextLink href={navItem.href ?? '#'}>
+                     <NextLink href={navItem.href ?? '#'} prefetch={false}>
                         <Link
                            p={2}
                            fontSize={'sm'}
@@ -250,7 +254,7 @@ const DesktopNav = () => {
 
 const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
    return (
-      <NextLink href={href as string}>
+      <NextLink href={href as string} prefetch={false}>
          <Link
             role={'group'}
             display={'block'}
@@ -362,27 +366,12 @@ interface NavItem {
 }
 
 const NAV_ITEMS: Array<NavItem> = [
-   // {
-   //    label: 'Inspiration',
-   //    children: [
-   //       {
-   //          label: 'Explore Design Work',
-   //          subLabel: 'Trending Design to inspire you',
-   //          href: '#',
-   //       },
-   //       {
-   //          label: 'New & Noteworthy',
-   //          subLabel: 'Up-and-coming Designers',
-   //          href: '#',
-   //       },
-   //    ],
-   // },
    {
       label: 'Discover',
-      href: '/',
+      href: '/discover/',
    },
    {
-      label: 'Network',
-      href: '/network',
+      label: 'My Network',
+      href: '/mynetwork/',
    },
 ]

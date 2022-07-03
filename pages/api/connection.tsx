@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import prisma from '../../lib/prisma'
-import { getSession } from 'next-auth/react'
 import { mailer, Email } from '../../lib/mailer'
 import { connectRequestEmailTemplate } from '../../lib/email-template/connectRequestEmailTemplate'
 import { defaultProfilePicture, inviteMessageMaxLength } from '../../lib/const'
 import { connectRequestAcceptTemplate } from '../../lib/email-template/connectAcceptedEmailTemplate'
+import { getSession } from 'next-auth/react'
 
 const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
    // make sure user is signed in
