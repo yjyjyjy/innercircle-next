@@ -108,7 +108,7 @@ export default function Header() {
                   }
                >
                   <a
-                     href={'https:discord.gg/CBr32zf4g7'}
+                     href={'https://discord.gg/CBr32zf4g7'}
                      target={'_blank'}
                      rel="noreferrer"
                   >
