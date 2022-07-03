@@ -3,6 +3,7 @@ import prisma from '../../lib/prisma'
 import { getSession, useSession } from 'next-auth/react'
 import AuthenticatedUser from '../../components/AuthenticatedUser'
 import { UserProfileWithMetaData } from '../../components/profile/MemberProfileCard'
+import Spinner from '../../components/Spinner'
 
 export interface ESession extends Session {
    userID: string
@@ -80,7 +81,7 @@ const Home = ({ userProfiles, conferences }) => {
 
    switch (status) {
       case 'loading':
-         return <h1>Loading</h1>
+         return <Spinner />
       case 'authenticated':
          return (
             <AuthenticatedUser
