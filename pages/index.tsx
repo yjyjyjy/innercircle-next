@@ -8,8 +8,15 @@ export interface ESession extends Session {
    userID: string
 }
 
+export async function getStaticProps() {
+   return {
+      props: {}, // will be passed to the page component as props
+   }
+}
+
 const Entry = () => {
    const session = useSession()
+   console.log('Session: ', session)
    useEffect(() => {
       if (session.status === 'authenticated') {
          Router.push('/discover')

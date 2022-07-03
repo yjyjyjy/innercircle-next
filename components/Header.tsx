@@ -165,7 +165,11 @@ export default function Header() {
                      fontWeight={600}
                      color={'white'}
                      bg={'blue.300'}
-                     onClick={() => signIn()}
+                     onClick={() =>
+                        signIn(undefined, {
+                           callbackUrl: '/discover',
+                        })
+                     }
                      _hover={{
                         bg: 'blue.200',
                      }}
