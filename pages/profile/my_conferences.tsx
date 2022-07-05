@@ -5,6 +5,8 @@ import { ESession } from '../index'
 import { FilterTag } from '../../components/FilterTag'
 import { useAppContext } from '../AppContext'
 import { getSession } from 'next-auth/react'
+import { ConferenceListItem } from '../../components/conference/ConferenceListItem'
+
 
 export async function getServerSideProps(context) {
    const session = (await getSession(context)) as ESession
@@ -89,18 +91,19 @@ const MyConferences = ({ user, conferences }) => {
       <Flex direction={'column'}>
          <Flex direction={'row'}>
             {conferences.map((conf) => (
-               <FilterTag
-                  key={conf.id}
-                  label={conf.conference_name}
-                  isChecked={confState[conf.id]}
-                  onClick={() => {
-                     setConfState((prevState) => {
-                        let newState = { ...prevState }
-                        newState[conf.id] = !newState[conf.id]
-                        return newState
-                     })
-                  }}
-               />
+               <ConferenceListItem key={conf.id} conference={conf} />
+               // <FilterTag
+               //    key={conf.id}
+               //    label={conf.conference_name}
+               //    isChecked={confState[conf.id]}
+               //    onClick={() => {
+               //       setConfState((prevState) => {
+               //          let newState = { ...prevState }
+               //          newState[conf.id] = !newState[conf.id]
+               //          return newState
+               //       })
+               //    }}
+               // />
             ))}
          </Flex>
          <Button width={'100px'} colorScheme="twitter" onClick={onSaveHandler}>
