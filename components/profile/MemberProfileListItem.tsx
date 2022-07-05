@@ -11,10 +11,10 @@ import {
    TagLabel,
    useToast,
    useMediaQuery,
+   useDisclosure,
 } from '@chakra-ui/react'
 import React from 'react'
 import ProfilePicture from './ProfilePicture'
-import { AiOutlineMail } from 'react-icons/ai'
 import {
    user_profile as UserProfile,
    user_profile_to_conference_mapping as UserProfileToConferenceMapping,
@@ -22,6 +22,7 @@ import {
 } from '@prisma/client'
 import { useRouter } from 'next/router'
 import { UserProfileWithMetaData } from './MemberProfileCard'
+import MessengerModal from '../messenger/MessengerModal'
 
 type Props = {
    user_profile: UserProfileWithMetaData
@@ -89,6 +90,8 @@ const MemberProfileListItem: React.FC<Props> = ({
       user_profile_to_conference_mapping,
    } = user_profile
 
+   const { isOpen, onOpen, onClose } = useDisclosure()
+
    return (
       <Flex
          direction={'column'}
@@ -135,11 +138,16 @@ const MemberProfileListItem: React.FC<Props> = ({
                      colorScheme={'twitter'}
                      rounded={'3xl'}
                      size={isDesktop ? 'md' : 'sm'}
-                     onClick={primaryOnClick}
+                     onClick={onOpen} // hack: this is hard coded to open MessengerModel. Instead, this should be more extendable
                   >
                      {primaryLabel}
                   </Button>
                )}
+               <MessengerModal
+                  targetUserProfileId={id}
+                  isOpen={isOpen}
+                  onClose={onClose}
+               />
             </Flex>
          </Flex>
          {message && (

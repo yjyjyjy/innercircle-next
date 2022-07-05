@@ -10,7 +10,7 @@ export type Email = {
 }
 
 export const mailer = async (msg: Email) => {
-   msg.from = msg.from || 'no-reply@innercircle.ooo'
+   msg.from = msg.from || 'notification@innercircle.ooo'
 
    // To protect the customer's email list from accidental emails by developers, all emails will be sent to the test inbox if not in production environment.
    if (!process.env.CURRENT_ENV || process.env.CURRENT_ENV !== 'production') {
