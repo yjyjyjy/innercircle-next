@@ -111,6 +111,11 @@ const MyConferences = ({ user, conferences }) => {
 
    return (
       <Flex direction={'column'}>
+         <Text
+            fontSize={'xl'}
+            pb={'10px'}
+            fontWeight={'bold'}
+         >Mark the conferences you will go</Text>
          <TableContainer
             overflowX={'auto'}
          >
