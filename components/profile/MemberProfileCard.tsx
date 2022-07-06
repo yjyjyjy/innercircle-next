@@ -31,6 +31,8 @@ import {
 import { useFormik } from 'formik'
 import { inviteMessageMaxLength } from '../../lib/const'
 import Link from 'next/link'
+import { signIn } from 'next-auth/react'
+import MessengerModal from '../messenger/MessengerModal'
 
 export type UserProfileWithMetaData = user_profile & {
    user_profile_to_conference_mapping?: (user_profile_to_conference_mapping & {
@@ -155,8 +157,8 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
       shouldRender: true,
    }
 
-   // if the user is not logged or this is not passed in or authUser is the owner of the profile (oneself). Connect button is not available.
-   if (!authUserProfileId || authUserProfileId === userProfile.id) {
+   // if the authUser is the owner of the profile (oneself). Connect button is not available.
+   if (authUserProfileId === userProfile.id) {
       connectButtonInitValue['shouldRender'] = false
    }
 
@@ -165,6 +167,7 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
       userProfile.connection_request_connection_request_requested_idTouser_profile?.map(
          (req) => req.initiator_id
       )
+
    if (
       authUserProfileId &&
       connectionRequesters &&
@@ -199,7 +202,8 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
    )
 
    //*********************** Message Modal */
-   const { isOpen, onOpen, onClose } = useDisclosure()
+   const { isOpen: isOpenConnect, onOpen: onOpenConnect, onClose: onCloseConnect } = useDisclosure()
+   const { isOpen: isOpenMessenger, onOpen: onOpenMessenger, onClose: onCloseMessenger } = useDisclosure()
    const initialRef = React.useRef(null)
    const ConnectReqestModal = () => {
       // const [inviteMessage, setInviteMessage] = useState('')
@@ -224,8 +228,8 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
                isClosable: true,
             })
 
-            // close the modal
-            onClose()
+            // close the connect modal
+            onCloseConnect()
             // change the button text and look
             setConnectButtonStatus({
                ...connectButtonStatus,
@@ -246,8 +250,8 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
 
       return (
          <Modal
-            isOpen={isOpen}
-            onClose={onClose}
+            isOpen={isOpenConnect}
+            onClose={onCloseConnect}
             isCentered
             initialFocusRef={initialRef}
             size={'lg'}
@@ -279,7 +283,7 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
                      </FormControl>
                   </ModalBody>
                   <ModalFooter>
-                     <Button variant="ghost" onClick={onClose}>
+                     <Button variant="ghost" onClick={onCloseConnect}>
                         Cancel
                      </Button>
                      <Button colorScheme="blue" ml={3} type="submit">
@@ -330,13 +334,30 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
                   h={'30px'}
                   isDisabled={connectButtonStatus.isDisabled}
                   onClick={
-                     connectButtonStatus.label === 'Connect' ? onOpen : () => { }
+                     () => {
+                        if (connectButtonStatus.label === 'Connect') {
+                           if (authUserProfileId) {
+                              onOpenConnect()
+                           } else {
+                              signIn()
+                           }
+                        } else {
+                           if (connectButtonStatus.label === 'Message') {
+                              onOpenMessenger()
+                           }
+                        }
+                     }
                   }
                >
                   {connectButtonStatus.label}
                </Button>
             )}
             <ConnectReqestModal />
+            <MessengerModal
+               targetUserProfileId={id}
+               isOpen={isOpenMessenger}
+               onClose={onCloseMessenger}
+            />
          </Flex>
          <Text fontWeight="bold">{bio_short}</Text>
          <Text noOfLines={mini ? 2 : 6}>{bio}</Text>

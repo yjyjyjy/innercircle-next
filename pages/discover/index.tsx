@@ -14,20 +14,23 @@ export async function getServerSideProps(context) {
    // TODO can look to use getSession on client side instead, as its not intended for server time. Its known to be slow
    const session = (await getSession(context)) as ESession
 
-   if (!session) {
-      return {
-         redirect: {
-            permanent: false,
-            destination: '/',
-         },
-      }
-   }
+   // if (!session) {
+   //    return {
+   //       redirect: {
+   //          permanent: false,
+   //          destination: '/',
+   //       },
+   //    }
+   // }
 
    // If userID doesn't have a userprofile redirect
-   const authUserWithProfile = await prisma.user.findUnique({
-      where: { id: session.userID },
-      include: { user_profile: true },
-   })
+   let authUserWithProfile
+   if (session) {
+      authUserWithProfile = await prisma.user.findUnique({
+         where: { id: session.userID },
+         include: { user_profile: true },
+      })
+   }
 
    if (authUserWithProfile?.id && !authUserWithProfile.user_profile?.handle) {
       return {
@@ -82,15 +85,13 @@ const Home = ({ userProfiles, conferences }) => {
    switch (status) {
       case 'loading':
          return <Spinner />
-      case 'authenticated':
+      default:
          return (
             <AuthenticatedUser
                conferences={conferences}
                userProfiles={userProfiles}
             />
          )
-      default:
-         return <></>
    }
 }
 

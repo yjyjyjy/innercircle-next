@@ -1,4 +1,4 @@
-import { Button, FormHelperText, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Textarea, useToast } from '@chakra-ui/react'
+import { Button, FormControl, FormHelperText, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Textarea, useToast } from '@chakra-ui/react'
 import React, { useState } from 'react'
 
 
@@ -40,14 +40,16 @@ function MessengerModal({ targetUserProfileId, isOpen, onClose }) {
                     <ModalHeader>Send a Message via Email</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        <Textarea
-                            placeholder="Your message will be sent as an email. In App Message coming soon..."
-                            value={messageContent}
-                            name={'messageContent'}
-                            onChange={(e) => { setMessageContent(e.target.value) }}
-                            ref={initialRef}
-                            rows={7}
-                        />
+                        <FormControl>
+                            <Textarea
+                                placeholder="Your message will be sent as an email. In App Message coming soon..."
+                                value={messageContent}
+                                name={'messageContent'}
+                                onChange={(e) => { setMessageContent(e.target.value) }}
+                                ref={initialRef}
+                                rows={7}
+                            />
+                        </FormControl>
                         <FormHelperText>
                             {"This will send the other user an email. Please be thoughtful about others inbox."}
                         </FormHelperText>
