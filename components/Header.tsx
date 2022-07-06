@@ -294,7 +294,6 @@ const MobileNav = () => {
    return (
       <Stack
          bg={'gray.800'}
-         // pt={'15px'}
          display={{ md: 'none' }}
       >
          {NAV_ITEMS.map((navItem) => (
@@ -373,5 +372,9 @@ const NAV_ITEMS: Array<NavItem> = [
    {
       label: 'My Network',
       href: '/mynetwork/',
+   },
+   {
+      label: 'Conferences',
+      href: '/profile/my_conferences/',
    },
 ]

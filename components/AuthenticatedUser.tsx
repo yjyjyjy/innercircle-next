@@ -80,7 +80,7 @@ const AuthenticatedUser = ({
 
    return (
       <Flex direction={'column'}>
-         <Center>
+         {/* <Center>
             <form>
                <Flex direction={'row'}>
                   <FormControl
@@ -106,12 +106,30 @@ const AuthenticatedUser = ({
                   </Button>
                </Flex>
             </form>
-         </Center>
+         </Center> */}
 
          <Flex direction={'row'} wrap={'wrap'}>
             <Text transform="translateY(25%)" fontWeight={'bold'} pr={'2'}>
                Filter on conferences:
             </Text>
+            {/* <FormControl py={3} display={'inline'}>
+               <Select<FilterOption, true, GroupBase<FilterOption>>
+                  isMulti
+                  name="colors"
+                  colorScheme="purple"
+                  options={conferences.map(conf => {
+                     return conf.conference_name
+                  })}
+                  placeholder="Select the conferences they go ..."
+                  closeMenuOnSelect={false}
+                  onChange={(e) => {
+                     setFilterState({
+                        ...filterState,
+                        skills: e.map((item) => item.value) || [],
+                     })
+                  }}
+               />
+            </FormControl> */}
             {conferences.map((conf) =>
                FilterTag({
                   label: conf.conference_name,

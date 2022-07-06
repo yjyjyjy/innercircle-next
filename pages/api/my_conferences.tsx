@@ -53,7 +53,7 @@ const MyConferences = async (req: NextApiRequest, res: NextApiResponse) => {
       res.status(500).json({ message: error })
    }
 
-   res.status(200).json({ message: 'Connect Request Sent' })
+   res.status(200).json({ message: 'Conference plan updated' })
    return
 }
 
