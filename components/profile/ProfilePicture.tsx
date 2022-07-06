@@ -9,6 +9,7 @@ type Props = {
 }
 
 const ProfilePicture: React.FC<Props> = ({ img }) => {
+    console.log("Generating image")
     console.log(img)
     return (
         <Box dropShadow="3px 10px 4px #808080">

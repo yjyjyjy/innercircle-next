@@ -22,8 +22,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             const file = Array.isArray(files.file) ? files.file[0] : files.file
             submitForm.append("public_id", fields["public_id"])
             submitForm.append("api_key", process.env.CLOUDINARY_KEY)
+
+            console.log("file: ", file)
+            console.log("file: ", file.path)
+            console.log("file: ", file.filepath)
+
             // @ts-ignore
-            submitForm.append("file", fs.createReadStream(file.path))
+            // submitForm.append("file", fs.createReadStream(file.path))
+            submitForm.append("file", fs.createReadStream(file.filepath))
 
             const timestamp = Math.round(new Date().getTime() / 1000)
 
@@ -38,6 +44,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             )
             submitForm.append("signature", signature)
             submitForm.append("timestamp", timestamp)
+            console.log("Form")
             console.log(submitForm)
 
             const response = await fetch(
@@ -48,6 +55,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                     body: submitForm,
                 }
             )
+
+            console.log("Response")
+            console.log(response)
+
             res.status(200).json(response)
         })
     } catch (error) {

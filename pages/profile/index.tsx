@@ -35,7 +35,9 @@ const User = (user) => {
         resume,
     } = user
 
-    const cldImg = new CloudinaryImage(id ? id.toString() : "", {
+    console.log("email ", email)
+
+    const cldImg = new CloudinaryImage(email ? email.toString() : "", {
         cloudName: "innercircle",
     })
         .delivery(defaultImage("default.png"))

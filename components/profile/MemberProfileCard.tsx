@@ -137,18 +137,16 @@ const MemberProfileCard: React.FC<Props> = ({
         skill_investor_relations,
         user_profile_to_conference_mapping,
         authUserProfileId,
+        email,
     } = userProfile
 
     const toast = useToast()
 
-    console.log("ID: ", userProfile.id)
+    console.log("email: ", email)
 
-    const cldImg = new CloudinaryImage(
-        userProfile.id ? userProfile.id.toString() : "",
-        {
-            cloudName: "innercircle",
-        }
-    )
+    const cldImg = new CloudinaryImage(email ? email : "default.png", {
+        cloudName: "innercircle",
+    })
         .delivery(defaultImage("default.png"))
         .resize(scale().height(100).width(100))
 

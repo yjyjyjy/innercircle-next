@@ -4,25 +4,32 @@ import {
     IconButton,
     Tooltip,
     Box,
+    Heading,
     Flex,
     Button,
+    Container,
+    useMediaQuery,
+    ButtonGroup,
+    Avatar,
     Link,
     Text,
+    Stack,
     Collapse,
     Icon,
     Popover,
     PopoverTrigger,
     PopoverContent,
-    Menu,
-    MenuButton,
-    useDisclosure,
-    Avatar,
-    MenuList,
-    Stack,
-    MenuItem,
+    useColorModeValue,
     useBreakpointValue,
+    useDisclosure,
+    Menu,
+    MenuList,
+    MenuItem,
+    MenuButton,
+    AvatarBadge,
 } from "@chakra-ui/react"
 import { SiDiscord } from "react-icons/si"
+import { BsPersonFill } from "react-icons/bs"
 import { useSession, signIn, signOut } from "next-auth/react"
 
 import {
@@ -36,7 +43,7 @@ import { useRouter } from "next/router"
 export default function Header() {
     const { isOpen, onToggle } = useDisclosure()
     const rounter = useRouter()
-    const { data: session } = useSession()
+    const { data: session, status } = useSession()
 
     return (
         <Box bg={"gray.800"} position={"fixed"} zIndex={888} w="100%">
@@ -50,122 +57,133 @@ export default function Header() {
                 borderColor={"gray.900"}
                 align={"center"}
             >
-                <IconButton
-                    onClick={onToggle}
-                    icon={
-                        isOpen ? (
-                            <CloseIcon w={3} h={3} />
-                        ) : (
-                            <HamburgerIcon w={5} h={5} />
-                        )
-                    }
-                    variant={"ghost"}
-                    aria-label={"Toggle Navigation"}
-                />
-            </Flex>
-            <Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
-                <NextLink href="/" prefetch={false}>
-                    <Link _hover={{ textDecoration: "none" }}>
-                        <Text
-                            textAlign={useBreakpointValue({
-                                base: "center",
-                                md: "left",
-                            })}
-                            fontFamily={"heading"}
-                            color={"white"}
-                        >
-                            innerCircle
-                        </Text>
-                    </Link>
-                </NextLink>
-
-                <Flex display={{ base: "none", md: "flex" }} ml={10}>
-                    <DesktopNav />
-                </Flex>
-            </Flex>
-
-            <Stack
-                flex={{ base: 1, md: 0 }}
-                justify={"flex-end"}
-                direction={"row"}
-                spacing={1}
-            >
-                <Tooltip
-                    label={
-                        "Got opinions on what should be built? Join our Discord! Also, token drop in the future!"
-                    }
+                <Flex
+                    flex={{ base: 1, md: "auto" }}
+                    ml={{ base: -2 }}
+                    display={{ base: "flex", md: "none" }}
                 >
-                    <a
-                        href={"https://discord.gg/CBr32zf4g7"}
-                        target={"_blank"}
-                        rel="noreferrer"
-                    >
-                        <IconButton
-                            mr={3}
-                            colorScheme="blue.300"
-                            aria-label={"Discord"}
-                            icon={<SiDiscord size={25} />}
-                        />
-                    </a>
-                </Tooltip>
-                {session ? (
-                    <Menu>
-                        <MenuButton>
-                            <Avatar size={"sm"}>
-                                {/* <AvatarBadge borderColor='papayawhip' bg='tomato' boxSize='1.25em' /> */}
-                            </Avatar>
-                        </MenuButton>
-                        <MenuList bg={"gray.800"}>
-                            {[
-                                {
-                                    label: "My Profile",
-                                    onClick: () => {
-                                        rounter.push("/profile/my_profile")
-                                    },
-                                },
-                                {
-                                    label: "My Conferences",
-                                    onClick: () => {
-                                        rounter.push("/profile/my_conferences")
-                                    },
-                                },
-                                {
-                                    label: "Sign Out",
-                                    onClick: () => {
-                                        signOut({
-                                            callbackUrl: `${window.location.origin}`,
-                                        })
-                                    },
-                                },
-                            ].map((item) => (
-                                <AccountMenuItem
-                                    key={item.label}
-                                    onClick={item.onClick}
-                                    label={item.label}
-                                />
-                            ))}
-                        </MenuList>
-                    </Menu>
-                ) : (
-                    <Button
-                        display={{ base: "none", md: "inline-flex" }}
-                        fontSize={"sm"}
-                        fontWeight={600}
-                        color={"white"}
-                        bg={"blue.300"}
-                        onClick={() =>
-                            signIn(undefined, {
-                                callbackUrl: "/discover",
-                            })
+                    <IconButton
+                        onClick={onToggle}
+                        icon={
+                            isOpen ? (
+                                <CloseIcon w={3} h={3} />
+                            ) : (
+                                <HamburgerIcon w={5} h={5} />
+                            )
                         }
-                        _hover={{
-                            bg: "blue.200",
-                        }}
+                        variant={"ghost"}
+                        aria-label={"Toggle Navigation"}
+                    />
+                </Flex>
+                <Flex
+                    flex={{ base: 1 }}
+                    justify={{ base: "center", md: "start" }}
+                >
+                    <NextLink href="/" prefetch={false}>
+                        <Link _hover={{ textDecoration: "none" }}>
+                            <Text
+                                textAlign={useBreakpointValue({
+                                    base: "center",
+                                    md: "left",
+                                })}
+                                fontFamily={"heading"}
+                                color={"white"}
+                            >
+                                innerCircle
+                            </Text>
+                        </Link>
+                    </NextLink>
+
+                    <Flex display={{ base: "none", md: "flex" }} ml={10}>
+                        <DesktopNav />
+                    </Flex>
+                </Flex>
+
+                <Stack
+                    flex={{ base: 1, md: 0 }}
+                    justify={"flex-end"}
+                    direction={"row"}
+                    spacing={1}
+                >
+                    <Tooltip
+                        label={
+                            "Got opinions on what should be built? Join our Discord! Also, token drop in the future!"
+                        }
                     >
-                        Sign Up
-                    </Button>
-                )}
-            </Stack>
+                        <a
+                            href={"https://discord.gg/CBr32zf4g7"}
+                            target={"_blank"}
+                            rel="noreferrer"
+                        >
+                            <IconButton
+                                mr={3}
+                                colorScheme="blue.300"
+                                aria-label={"Discord"}
+                                icon={<SiDiscord size={25} />}
+                            />
+                        </a>
+                    </Tooltip>
+                    {session ? (
+                        <Menu>
+                            <MenuButton>
+                                <Avatar size={"sm"}>
+                                    {/* <AvatarBadge borderColor='papayawhip' bg='tomato' boxSize='1.25em' /> */}
+                                </Avatar>
+                            </MenuButton>
+                            <MenuList bg={"gray.800"}>
+                                {[
+                                    {
+                                        label: "My Profile",
+                                        onClick: () => {
+                                            rounter.push("/profile/my_profile")
+                                        },
+                                    },
+                                    {
+                                        label: "My Conferences",
+                                        onClick: () => {
+                                            rounter.push(
+                                                "/profile/my_conferences"
+                                            )
+                                        },
+                                    },
+                                    {
+                                        label: "Sign Out",
+                                        onClick: () => {
+                                            signOut({
+                                                callbackUrl: `${window.location.origin}`,
+                                            })
+                                        },
+                                    },
+                                ].map((item) => (
+                                    <AccountMenuItem
+                                        key={item.label}
+                                        onClick={item.onClick}
+                                        label={item.label}
+                                    />
+                                ))}
+                            </MenuList>
+                        </Menu>
+                    ) : (
+                        <Button
+                            display={{ base: "none", md: "inline-flex" }}
+                            fontSize={"sm"}
+                            fontWeight={600}
+                            color={"white"}
+                            bg={"blue.300"}
+                            onClick={() =>
+                                signIn(undefined, {
+                                    callbackUrl: "/discover",
+                                })
+                            }
+                            _hover={{
+                                bg: "blue.200",
+                            }}
+                        >
+                            Sign Up
+                        </Button>
+                    )}
+                </Stack>
+            </Flex>
 
             <Collapse in={isOpen} animateOpacity>
                 <MobileNav />
@@ -193,7 +211,7 @@ const AccountMenuItem = ({ label, onClick }) => {
     )
 }
 
-const DesktopNav = () => {
+const DesktopNav: React.FC = ({ children }) => {
     return (
         <Stack direction={"row"} spacing={4}>
             {NAV_ITEMS.map((navItem) => (
@@ -215,6 +233,7 @@ const DesktopNav = () => {
                                     }}
                                 >
                                     {navItem.label}
+                                    {children}
                                 </Link>
                             </NextLink>
                         </PopoverTrigger>
@@ -293,11 +312,7 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
 
 const MobileNav = () => {
     return (
-        <Stack
-            bg={"gray.800"}
-            // pt={'15px'}
-            display={{ md: "none" }}
-        >
+        <Stack bg={"gray.800"} display={{ md: "none" }}>
             {NAV_ITEMS.map((navItem) => (
                 <MobileNavItem key={navItem.label} {...navItem} />
             ))}
@@ -374,5 +389,9 @@ const NAV_ITEMS: Array<NavItem> = [
     {
         label: "My Network",
         href: "/mynetwork/",
+    },
+    {
+        label: "Conferences",
+        href: "/profile/my_conferences/",
     },
 ]

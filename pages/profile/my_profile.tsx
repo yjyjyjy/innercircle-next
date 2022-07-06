@@ -281,7 +281,7 @@ const MyProfile = ({ user }) => {
 
         const formData = new FormData()
 
-        formData.append("public_id", user_profile.id)
+        formData.append("public_id", user_profile.email)
         formData.append("file", displayPicture)
 
         const config = {
