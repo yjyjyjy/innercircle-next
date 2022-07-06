@@ -281,6 +281,7 @@ const MyProfile = ({ user }) => {
 
         const formData = new FormData()
 
+        // TODO Update user_profile.email to user ID
         formData.append("public_id", user_profile.email)
         formData.append("file", displayPicture)
 

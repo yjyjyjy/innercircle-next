@@ -144,6 +144,7 @@ const MemberProfileCard: React.FC<Props> = ({
 
     console.log("email: ", email)
 
+    // TODO Update user_profile.email to user ID
     const cldImg = new CloudinaryImage(email ? email : "default.png", {
         cloudName: "innercircle",
     })

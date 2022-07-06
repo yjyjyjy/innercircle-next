@@ -37,6 +37,7 @@ const User = (user) => {
 
     console.log("email ", email)
 
+    // TODO Update user_profile.email to user ID
     const cldImg = new CloudinaryImage(email ? email.toString() : "", {
         cloudName: "innercircle",
     })
