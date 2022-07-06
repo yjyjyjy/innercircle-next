@@ -49,10 +49,10 @@ function MessengerModal({ targetUserProfileId, isOpen, onClose }) {
                                 ref={initialRef}
                                 rows={7}
                             />
+                            <FormHelperText>
+                                {"This will send the other user an email. Please be thoughtful about others inbox."}
+                            </FormHelperText>
                         </FormControl>
-                        <FormHelperText>
-                            {"This will send the other user an email. Please be thoughtful about others inbox."}
-                        </FormHelperText>
                     </ModalBody>
                     <ModalFooter>
                         <Button variant="ghost" onClick={onClose}>
