@@ -1,18 +1,10 @@
-import {
-    Flex,
-    Text,
-    Button,
-    useMediaQuery,
-    useToast,
-    Divider,
-} from "@chakra-ui/react"
+import { Flex, Text, useMediaQuery, useToast, Divider } from "@chakra-ui/react"
 import prisma from "../../lib/prisma"
-import { getSession } from "next-auth/react"
-
 import { useState } from "react"
 import { ESession } from "../index"
 import { useRouter } from "next/router"
 import MemberProfileListItem from "../../components/profile/MemberProfileListItem"
+import { getSession } from "next-auth/react"
 
 export async function getServerSideProps(context) {
     const session = (await getSession(context)) as ESession
@@ -185,6 +177,40 @@ const Network = ({ user }) => {
                     ))}
                 </Flex>
             )}
+
+            {/* Connecitons */}
+            <Flex
+                direction={"column"}
+                w={isLargeScreen ? "70%" : "100%"}
+                m={"0 auto"}
+            >
+                <Text fontSize={"xl"} fontWeight="bold" py={3}>
+                    Connection Requests
+                </Text>
+                {state.connectionRequesters.map((requester, idx) => (
+                    <MemberProfileListItem
+                        key={idx}
+                        user_profile={requester}
+                        message={requester.invitationMessage}
+                        primaryLabel={"Accept"}
+                        primaryOnClick={() =>
+                            onConnectionRequestDecisionHandler(
+                                requester.id,
+                                "accept",
+                                requester
+                            )
+                        }
+                        secondaryLabel={"Ignore"}
+                        secondaryOnClick={() =>
+                            onConnectionRequestDecisionHandler(
+                                requester.id,
+                                "reject",
+                                requester
+                            )
+                        }
+                    />
+                ))}
+            </Flex>
 
             {/* Connecitons */}
             <Flex

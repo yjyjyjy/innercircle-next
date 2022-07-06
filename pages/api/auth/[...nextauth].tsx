@@ -1,10 +1,10 @@
-import NextAuth from "next-auth"
+import NextAuth, { NextAuthOptions } from "next-auth"
 // import GoogleProvider from 'next-auth/providers/google'
 import EmailProvider from "next-auth/providers/email"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import prisma from "../../../lib/prisma"
 
-export default NextAuth({
+export const AuthOptions: NextAuthOptions = {
     adapter: PrismaAdapter(prisma),
     providers: [
         // GoogleProvider({
@@ -37,4 +37,6 @@ export default NextAuth({
     theme: {
         colorScheme: "light",
     },
-})
+}
+
+export default NextAuth(AuthOptions)

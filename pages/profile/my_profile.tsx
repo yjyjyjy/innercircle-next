@@ -16,9 +16,8 @@ import {
     FormErrorMessage,
     IconButton,
 } from "@chakra-ui/react"
+import { AiFillCamera } from "react-icons/ai"
 import prisma from "../../lib/prisma"
-import { getSession } from "next-auth/react"
-
 import { user_profile } from "@prisma/client"
 import {
     createContext,
@@ -34,7 +33,7 @@ import MemberProfileCard, {
 import { ESession } from "../index"
 import { Field, Form, Formik } from "formik"
 import { useRouter } from "next/router"
-import { AiFillCamera } from "react-icons/ai"
+import { getSession } from "next-auth/react"
 import axios from "axios"
 
 // DB design:
@@ -134,6 +133,7 @@ const MyProfile = ({ user }) => {
     const router = useRouter()
     const toast = useToast()
     const [displayPicture, setDisplayPicture] = useState<File>()
+
     const createOrUpdateUserProfile = async (formData) => {
         const userProfileToUpload = formData
         // delete addtional information before pushing to the backend.
@@ -278,18 +278,11 @@ const MyProfile = ({ user }) => {
     const uploadDisplayPicture = async () => {
         console.log("ATTEMPTING TO UPLoaD")
         if (!displayPicture) return
-        // const url = `https://api.cloudinary.com/v1_1/innercircle/upload`
 
         const formData = new FormData()
-        // const res = await fetch("/api/sign", {
-        //     method: "POST",
-        // })
-        // const { signature, timestamp } = await res.json()
-        // formData.append("signature", signature)
-        // formData.append("timestamp", timestamp)
+
         formData.append("public_id", user_profile.id)
         formData.append("file", displayPicture)
-        // formData.append("public_id", user_profile.id)
 
         const config = {
             headers: {
@@ -297,40 +290,6 @@ const MyProfile = ({ user }) => {
             },
         }
         return axios.post("/api/cloudinaryV2", formData, config)
-
-        // const formData = new FormData()
-        // formData.append("file", displayPicture)
-        formData.append("public_id", user_profile.id)
-
-        // const config = {
-        //     headers: {
-        //         "content-type": "multipart/form-data",
-        //     },
-        // }
-        // return post(url, formData, config)
-
-        // const res = await fetch("/api/cloudinaryV2", {
-        //     method: "POST",
-        //     body: formData,
-        //     headers: {
-        //         "content-type": "multipart/form-data",
-        //     },
-        // })
-
-        // const { signature, timestamp } = await res.json()
-
-        // const formData = new FormData()
-        // formData.append("file", displayPicture)
-        // formData.append("signature", signature)
-        // formData.append("timestamp", timestamp)
-        // formData.append("api_key", "454991477517121")
-        // formData.append("public_id", user_profile.id)
-
-        // const response = await fetch(url, {
-        //     method: "post",
-        //     body: formData,
-        // })
-        // const data = await response.json()
     }
 
     const onSubmit = async (values, actions) => {
