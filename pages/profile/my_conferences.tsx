@@ -1,10 +1,12 @@
-import { Flex, Button, Text, useToast } from '@chakra-ui/react'
+import { Flex, Button, Text, useToast, TableContainer, Table, Tbody, Thead, Th, Tr, Td, Switch, useMediaQuery } from '@chakra-ui/react'
 import prisma from '../../lib/prisma'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ESession } from '../index'
-import { FilterTag } from '../../components/FilterTag'
-import { useAppContext } from '../AppContext'
 import { getSession } from 'next-auth/react'
+import { FiExternalLink } from 'react-icons/fi'
+import * as _ from 'lodash';
+var structuredClone = require('realistic-structured-clone');
+
 
 export async function getServerSideProps(context) {
    const session = (await getSession(context)) as ESession
@@ -38,10 +40,14 @@ export async function getServerSideProps(context) {
 
    const conferences = await prisma.conference.findMany({
       where: {
-         end_date: { gte: new Date() },
+         AND: [
+            { end_date: { gte: new Date() } },
+         ]
       },
-      orderBy: { end_date: 'asc' },
-      take: 50,
+      orderBy: [
+         { start_date: 'asc' },
+         { conference_name: 'asc' }
+      ]
    })
 
    return {
@@ -55,8 +61,7 @@ export async function getServerSideProps(context) {
 const MyConferences = ({ user, conferences }) => {
    const { user_profile: userProfile } = user
    const toast = useToast()
-   const { isConnected } = useAppContext()
-   console.log(isConnected)
+   const [isLargeScreen] = useMediaQuery('(min-width: 651px)')
 
    // confState is an array of the conferences that the user is going. This is the init value.
    let initConfState = {}
@@ -69,6 +74,8 @@ const MyConferences = ({ user, conferences }) => {
 
    // confState is an array of the conferences that the user is going
    const [confState, setConfState] = useState(initConfState)
+   const [testState, setTestState] = useState(0)
+   // const [confStateFinal, setConfStateFinal] = useState(initConfState)
 
    const onSaveHandler = async () => {
       const res = await fetch('/api/my_conferences', {
@@ -82,31 +89,92 @@ const MyConferences = ({ user, conferences }) => {
          duration: 4000,
          isClosable: true,
       })
-      // router.push('/')
    }
+
+   const tempData = useRef(structuredClone(confState))
+
+   useEffect(() => {
+      const interval = setInterval(() => {
+         console.log('This will be called every 2 seconds');
+         if (_.isEqual(tempData.current, confState)) {
+            console.log('SAME')
+            return
+         } else {
+            console.log('DIFFERENT')
+            onSaveHandler()
+            tempData.current = structuredClone(confState)
+         }
+      }, 1000);
+
+      return () => clearInterval(interval);
+   });
 
    return (
       <Flex direction={'column'}>
-         <Flex direction={'row'}>
-            {conferences.map((conf) => (
-               <FilterTag
-                  key={conf.id}
-                  label={conf.conference_name}
-                  isChecked={confState[conf.id]}
-                  onClick={() => {
-                     setConfState((prevState) => {
-                        let newState = { ...prevState }
-                        newState[conf.id] = !newState[conf.id]
-                        return newState
-                     })
-                  }}
-               />
-            ))}
-         </Flex>
-         <Button width={'100px'} colorScheme="twitter" onClick={onSaveHandler}>
-            Save
-         </Button>
-      </Flex>
+         <Text
+            fontSize={'xl'}
+            pb={'10px'}
+            fontWeight={'bold'}
+         >Mark the conferences you will go</Text>
+         <TableContainer
+            overflowX={'auto'}
+         >
+            <Table
+               variant='striped'
+               size={["sm", "md"]}
+            >
+               <Thead>
+                  <Tr>
+                     <Th>Going</Th>
+                     <Th>Start</Th>
+                     <Th>Conference</Th>
+                     <Th>Location</Th>
+                  </Tr>
+               </Thead>
+               <Tbody>
+                  {conferences.map((conf) => (
+                     <Tr key={conf.id}>
+                        <Td>
+                           <Switch
+                              isChecked={confState[conf.id]}
+                              onChange={async () => {
+                                 console.log(conf.id)
+                                 console.log(confState[conf.id])
+                                 let newState = { ...confState }
+                                 newState[conf.id] = !newState[conf.id]
+                                 setConfState(newState)
+                                 setTestState(prevState => prevState + 1)
+                                 console.log(testState)
+                              }}
+                           />
+                        </Td>
+                        <Td>{isLargeScreen ? conf.start_date.substr(0, 10) : conf.start_date.substr(5, 5)}</Td>
+                        <Td>
+                           <a
+                              href={conf.website}
+                              target={'_blank'}
+                              rel="noreferrer"
+                           >
+                              <Flex
+                                 direction={'row'}
+                                 _hover={{
+                                    cursor: 'pointer',
+                                    textDecoration: 'underline',
+                                    color: 'blue'
+                                 }}
+                              >
+                                 <Text pr={'5px'}>{conf.conference_name}</Text>
+                                 <FiExternalLink />
+                              </Flex>
+                           </a>
+                        </Td>
+                        <Td>{conf.location}</Td>
+                     </Tr>
+                  ))}
+               </Tbody>
+            </Table>
+         </TableContainer>
+      </Flex >
    )
 }
 

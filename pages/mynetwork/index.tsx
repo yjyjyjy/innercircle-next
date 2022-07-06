@@ -4,6 +4,7 @@ import {
    useMediaQuery,
    useToast,
    Divider,
+   useDisclosure,
 } from '@chakra-ui/react'
 import prisma from '../../lib/prisma'
 import { useState } from 'react'
@@ -144,6 +145,7 @@ const Network = ({ user }) => {
    }
 
    const [isLargeScreen] = useMediaQuery('(min-width: 700px)')
+
 
    return (
       <Flex direction={'column'}>

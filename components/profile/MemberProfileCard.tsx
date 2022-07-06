@@ -330,7 +330,7 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
                   h={'30px'}
                   isDisabled={connectButtonStatus.isDisabled}
                   onClick={
-                     connectButtonStatus.label === 'Connect' ? onOpen : () => {}
+                     connectButtonStatus.label === 'Connect' ? onOpen : () => { }
                   }
                >
                   {connectButtonStatus.label}
