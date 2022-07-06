@@ -37,6 +37,10 @@ const AuthenticatedUser = ({
    userProfiles,
    conferences,
 }: IAuthenticatedUser) => {
+
+   console.log(userProfiles)
+   console.log(conferences)
+   console.log('a;dslkjf;dklsajf;laskdjf')
    const [isDesktop] = useMediaQuery('(min-width: 1290px)')
    const [searchText, setSearchText] = useState('')
    const onSearchTextChangeHandler = (e) => {
