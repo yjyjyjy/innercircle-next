@@ -239,7 +239,7 @@ const MyProfile = ({ user }) => {
    const [formData, setFormData] =
       useState<UserProfileWithMetaData>(initialValues)
 
-   const [isLargerThan1280] = useMediaQuery('(min-width: 1290px)')
+   const [isLargerThan600] = useMediaQuery('(min-width: 600px)')
 
    const validateFields = (values: UserProfile) => {
       const errors = {}
@@ -289,11 +289,11 @@ const MyProfile = ({ user }) => {
    }
 
    return (
-      <Stack direction={isLargerThan1280 ? 'row' : 'column'} maxW={'100%'}>
+      <Stack direction={isLargerThan600 ? 'row' : 'column'} maxW={'100%'}>
          <Stack
             direction={'column'}
             py={10}
-            w={isLargerThan1280 ? '60%' : '100%'}
+            w={isLargerThan600 ? '60%' : '100%'}
          >
             <Formik
                onSubmit={(values, actions) => {
@@ -451,7 +451,7 @@ const MyProfile = ({ user }) => {
                               </Text>
                               <Grid
                                  templateColumns={
-                                    isLargerThan1280
+                                    isLargerThan600
                                        ? 'repeat(3, 1fr)'
                                        : 'repeat(2, 1fr)'
                                  }
@@ -562,7 +562,7 @@ const MyProfile = ({ user }) => {
                                  <SkillCheckBox
                                     dataKey="skill_community_manager"
                                     skill_text={
-                                       isLargerThan1280
+                                       isLargerThan600
                                           ? 'Community Manager'
                                           : 'Community Mgr.'
                                     }
@@ -620,12 +620,12 @@ const MyProfile = ({ user }) => {
          <Stack
             direction={'column'}
             p={5}
-            w={isLargerThan1280 ? '40%' : '100%'}
+            w={isLargerThan600 ? '40%' : '100%'}
          >
             <Text fontSize={'lg'} fontWeight="bold">
                Profile Preview
             </Text>
-            <MemberProfileCard userProfile={formData} mini={false} />
+            <MemberProfileCard userProfile={formData} mini={[true, false]} />
          </Stack>
       </Stack>
    )
