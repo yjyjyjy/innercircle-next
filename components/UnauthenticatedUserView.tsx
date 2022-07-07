@@ -48,7 +48,6 @@ const UnauthenticatedUserView = () => {
                bg={'gray.50'}
                rounded={'xl'}
                p={[4, 6, 8]}
-               // spacing={{ base: 8 }}
                maxW={{ lg: 'lg' }}
             >
                <Stack spacing={4}>
@@ -71,10 +70,6 @@ const UnauthenticatedUserView = () => {
                      buiders.
                   </Text>
                </Stack>
-               {/* <Link
-              href={"https://9bk2r1lhrv9.typeform.com/to/cCU2tLnN"}
-              isExternal
-            > */}
                <Button
                   fontFamily={'heading'}
                   mt={3}
@@ -89,7 +84,6 @@ const UnauthenticatedUserView = () => {
                >
                   Get Started!
                </Button>
-               {/* </Link> */}
             </Stack>
          </Container>
       </Box>
