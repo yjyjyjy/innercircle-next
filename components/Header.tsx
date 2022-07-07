@@ -39,11 +39,13 @@ import {
    ChevronRightIcon,
 } from '@chakra-ui/icons'
 import { useRouter } from 'next/router'
+import { Stats } from 'fs'
 
 export default function Header() {
    const { isOpen, onToggle } = useDisclosure()
    const rounter = useRouter()
    const { data: session, status } = useSession()
+   console.log(status)
 
    return (
       <Box bg={'gray.800'} position={'fixed'} zIndex={888} w="100%">
@@ -96,11 +98,10 @@ export default function Header() {
                </Flex>
             </Flex>
 
-            <Stack
+            <Flex
                flex={{ base: 1, md: 0 }}
                justify={'flex-end'}
                direction={'row'}
-               spacing={1}
             >
                <Tooltip
                   label={
@@ -120,7 +121,25 @@ export default function Header() {
                      />
                   </a>
                </Tooltip>
-               {session ? (
+               {status === 'unauthenticated' ? (
+                  <Button
+                     display={'inline-flex'}
+                     fontSize={'sm'}
+                     fontWeight={600}
+                     color={'white'}
+                     bg={'blue.300'}
+                     onClick={() =>
+                        signIn(undefined, {
+                           callbackUrl: '/discover',
+                        })
+                     }
+                     _hover={{
+                        bg: 'blue.200',
+                     }}
+                  >
+                     Sign Up
+                  </Button>
+               ) : (
                   <Menu>
                      <MenuButton>
                         <Avatar size={'sm'}>
@@ -158,26 +177,8 @@ export default function Header() {
                         ))}
                      </MenuList>
                   </Menu>
-               ) : (
-                  <Button
-                     display={{ base: 'none', md: 'inline-flex' }}
-                     fontSize={'sm'}
-                     fontWeight={600}
-                     color={'white'}
-                     bg={'blue.300'}
-                     onClick={() =>
-                        signIn(undefined, {
-                           callbackUrl: '/discover',
-                        })
-                     }
-                     _hover={{
-                        bg: 'blue.200',
-                     }}
-                  >
-                     Sign Up
-                  </Button>
                )}
-            </Stack>
+            </Flex>
          </Flex>
 
          <Collapse in={isOpen} animateOpacity>
