@@ -16,7 +16,7 @@ import {
    FormErrorMessage,
 } from '@chakra-ui/react'
 import prisma from '../../lib/prisma'
-import { user_profile } from '@prisma/client'
+import { user_profile as UserProfile } from '@prisma/client'
 import {
    createContext,
    Dispatch,
@@ -115,18 +115,19 @@ interface formikContext {
       value: any,
       shouldValidate?: boolean | undefined
    ) => void
-   values: user_profile
+   values: UserProfile
 }
 
 const FormContext = createContext<formikContext>({
    setFieldValue: () => null,
-   values: {} as user_profile,
+   values: {} as UserProfile,
 })
 
 const MyProfile = ({ user }) => {
    const { user_profile } = user
    const router = useRouter()
    const toast = useToast()
+   const [displayPicture, setDisplayPicture] = useState<File>()
 
    const createOrUpdateUserProfile = async (formData) => {
       const userProfileToUpload = formData
@@ -240,7 +241,7 @@ const MyProfile = ({ user }) => {
 
    const [isLargerThan1280] = useMediaQuery('(min-width: 1290px)')
 
-   const validateFields = (values: user_profile) => {
+   const validateFields = (values: UserProfile) => {
       const errors = {}
       if (!values.handle?.match(/^[a-zA-Z0-9_]*$/)) {
          errors['handle'] = 'Handle can only contain a-z A-Z 0-9 or _'
@@ -269,6 +270,24 @@ const MyProfile = ({ user }) => {
       return errors
    }
 
+   const uploadDisplayPicture = async () => {
+      if (!displayPicture) return
+
+      // TODO Update user_profile.email to user ID
+      const response = await fetch("/api/cloudinaryV2", {
+         method: 'POST',
+         headers: {
+            "content-type": "multipart/form-data",
+         },
+         body: JSON.stringify({
+            'public_id': user_profile.email,
+            "file": displayPicture,
+         }),
+      })
+
+      return response
+   }
+
    return (
       <Stack direction={isLargerThan1280 ? 'row' : 'column'} maxW={'100%'}>
          <Stack
@@ -279,9 +298,12 @@ const MyProfile = ({ user }) => {
             <Formik
                onSubmit={(values, actions) => {
                   setTimeout(async () => {
+                     if (displayPicture) {
+                        await uploadDisplayPicture()
+                     }
                      await createOrUpdateUserProfile(values)
                      actions.setSubmitting(false)
-                  }, 5000)
+                  }, 10000)
                }}
                initialValues={initialValues}
                validate={(values) => {
