@@ -86,7 +86,11 @@ const UnauthenticatedUser = () => {
                      bgGradient: 'linear(to-r, red.400,pink.400)',
                      boxShadow: 'xl',
                   }}
-                  onClick={() => signIn()}
+                  onClick={() =>
+                     signIn(undefined, {
+                        callbackUrl: '/discover',
+                     })
+                  }
                >
                   Get Started!
                </Button>
