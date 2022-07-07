@@ -625,7 +625,7 @@ const MyProfile = ({ user }) => {
             <Text fontSize={'lg'} fontWeight="bold">
                Profile Preview
             </Text>
-            <MemberProfileCard userProfile={formData} mini={isLargerThan600 ? true : false} />
+            <MemberProfileCard userProfile={formData} mini={isLargerThan600 ? false : true} />
          </Stack>
       </Stack>
    )
