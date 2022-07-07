@@ -96,11 +96,10 @@ export default function Header() {
                </Flex>
             </Flex>
 
-            <Stack
+            <Flex
                flex={{ base: 1, md: 0 }}
                justify={'flex-end'}
                direction={'row'}
-               spacing={1}
             >
                <Tooltip
                   label={
@@ -177,7 +176,7 @@ export default function Header() {
                      Sign Up
                   </Button>
                )}
-            </Stack>
+            </Flex>
          </Flex>
 
          <Collapse in={isOpen} animateOpacity>

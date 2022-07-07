@@ -11,17 +11,16 @@ import {
 import { signIn } from 'next-auth/react'
 import React from 'react'
 
-const UnauthenticatedUser = () => {
+const UnauthenticatedUserView = () => {
    return (
       <Box position={'relative'}>
          <Container
             as={SimpleGrid}
             maxW={'7xl'}
             columns={{ base: 1, md: 2 }}
-            spacing={{ base: 10, lg: 32 }}
-            py={{ base: 10, sm: 20, lg: 32 }}
+            p={{ base: 4, sm: 5, lg: 32 }}
          >
-            <Stack spacing={{ base: 10, md: 20 }}>
+            <Stack spacing={[5, 20]}>
                <Heading
                   lineHeight={1.1}
                   fontSize={{ base: '3xl', sm: '4xl', md: '5xl', lg: '6xl' }}
@@ -48,8 +47,8 @@ const UnauthenticatedUser = () => {
             <Stack
                bg={'gray.50'}
                rounded={'xl'}
-               p={{ base: 4, sm: 6, md: 8 }}
-               spacing={{ base: 8 }}
+               p={[4, 6, 8]}
+               // spacing={{ base: 8 }}
                maxW={{ lg: 'lg' }}
             >
                <Stack spacing={4}>
@@ -97,4 +96,4 @@ const UnauthenticatedUser = () => {
    )
 }
 
-export default UnauthenticatedUser
+export default UnauthenticatedUserView

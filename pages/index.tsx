@@ -1,8 +1,8 @@
 import { Session } from 'next-auth'
 import { useSession } from 'next-auth/react'
 import Router from 'next/router'
-import { useEffect } from 'react'
 import Spinner from '../components/Spinner'
+import UnauthenticatedUserView from '../components/UnauthenticatedUserView'
 
 export interface ESession extends Session {
    userID: string
@@ -17,13 +17,12 @@ export async function getStaticProps() {
 const Entry = () => {
    const session = useSession()
    console.log('Session: ', session)
-   useEffect(() => {
-      if (session.status === 'authenticated') {
-         Router.push('/discover')
-      } else if (session.status === 'unauthenticated') {
-         Router.push('/unauthenticated')
-      }
-   }, [session.status])
+   if (session.status === 'authenticated') {
+      Router.push('/discover')
+   }
+   if (session.status === 'unauthenticated') {
+      return <UnauthenticatedUserView />
+   }
    return <Spinner />
 }
 
