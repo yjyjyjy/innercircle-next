@@ -203,7 +203,7 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
          shortBio: authUserProfileWithEmail.bio_short || '',
          bio: authUserProfileWithEmail.bio || '',
          inviteMessage: inviteMessage || '',
-         ctaCallbackURL: 'https://innerCircle.ooo/network',
+         ctaCallbackURL: 'https://innerCircle.ooo/mynetwork',
       })
 
       const msg: Email = {

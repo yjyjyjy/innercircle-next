@@ -14,11 +14,18 @@ export const config = {
 // eslint-disable-next-line import/no-anonymous-default-export
 export default async (req: NextApiRequest, res: NextApiResponse) => {
     try {
+        console.log("START CARROT")
+        console.log(req)
         const form = new formidable.IncomingForm()
         const submitForm = new FormData()
 
         form.parse(req, async (err, fields, files) => {
             const file = Array.isArray(files.file) ? files.file[0] : files.file
+            console.log('🔥 hegre')
+            console.log(fields)
+            console.log(fields["public_id"])
+            console.log(process.env.CLOUDINARY_KEY)
+
             submitForm.append("public_id", fields["public_id"])
             submitForm.append("api_key", process.env.CLOUDINARY_KEY)
 

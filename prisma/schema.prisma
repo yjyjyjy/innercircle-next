@@ -366,7 +366,7 @@ model conference {
   website                            String?                              @db.VarChar
   user_profile_to_conference_mapping user_profile_to_conference_mapping[]
 
-  @@unique([year, conference_name], map: "conference_idx_conference_name_year")
+  @@unique([conference_name, start_date], map: "conference_idx_conference_name_start_date")
 }
 
 model eth_contracts {
@@ -906,6 +906,7 @@ model user_profile {
   skill_influencer_relations                                       Boolean?
   skill_investor_relations                                         Boolean?
   resume                                                           String?                              @db.VarChar
+  user_id                                                          String?                              @db.VarChar
   User                                                             User                                 @relation(fields: [email], references: [email], onDelete: NoAction, onUpdate: NoAction)
   connection_connection_user_profile_endTouser_profile             connection[]                         @relation("connection_user_profile_endTouser_profile")
   connection_connection_user_profile_startTouser_profile           connection[]                         @relation("connection_user_profile_startTouser_profile")
