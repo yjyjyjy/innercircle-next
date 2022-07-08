@@ -138,7 +138,7 @@ const MemberProfileListItem: React.FC<Props> = ({
                      colorScheme={'twitter'}
                      rounded={'3xl'}
                      size={isDesktop ? 'md' : 'sm'}
-                     onClick={onOpen} // hack: this is hard coded to open MessengerModel. Instead, this should be more extendable
+                     onClick={primaryLabel === 'Message' ? onOpen : primaryOnClick} // hack: this is hard coded to open MessengerModel. Instead, this should be more extendable
                   >
                      {primaryLabel}
                   </Button>
