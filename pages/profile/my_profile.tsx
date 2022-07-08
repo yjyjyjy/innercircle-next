@@ -192,6 +192,7 @@ const MyProfile = ({ user }) => {
          : user.name
             ? user.name
             : '',
+      user_id: user_profile?.user_id,
       handle: user_profile?.handle,
       bio_short: user_profile?.bio_short,
       bio: user_profile?.bio,

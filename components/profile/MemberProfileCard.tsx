@@ -34,8 +34,9 @@ import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 import MessengerModal from '../messenger/MessengerModal'
 import { CloudinaryImage } from "@cloudinary/url-gen"
+import { Cloudinary } from "@cloudinary/url-gen";
 import { defaultImage } from "@cloudinary/url-gen/actions/delivery"
-import { scale } from "@cloudinary/url-gen/actions/resize"
+import { fill } from "@cloudinary/url-gen/actions/resize"
 import ProfilePicture from "./ProfilePicture"
 
 export type UserProfileWithMetaData = user_profile & {
@@ -144,13 +145,23 @@ const MemberProfileCard: React.FC<Props> = ({
 
    const toast = useToast()
 
-   const cldImg = new CloudinaryImage(
-      user_id ? user_id : "default.png",
-      { cloudName: "innercircle" }
-   )
-      .delivery(defaultImage("default.png"))
-      .resize(scale().height(100).width(100))
+   // const cld = new Cloudinary({
+   //    cloud: {
+   //       cloudName: 'innercircle'
+   //    }
+   // })
 
+   // const cldImg = cld
+   //    .image(
+   //       user_id || 'default.png',
+   //       // { default_image: 'default.png' }
+   //    )
+   // // .delivery(defaultImage("default.png"))
+   // cldImg.resize(fill().height(100).width(100))
+
+   const cldImgURL = `https://res.cloudinary.com/innercircle/image/upload/w_100,h_100,c_scale/d_default.png/${user_id}`
+
+   console.log('user_id', user_id)
    const [uploadedImg, setuploadedImg] = useState<string>()
 
    const updateProfilePhoto = (profile_picture_file: File) => {
@@ -347,7 +358,7 @@ const MemberProfileCard: React.FC<Props> = ({
          borderColor={'#ebebeb'}
          borderWidth={'thin'}
       >
-         <ProfilePicture img={uploadedImg ? uploadedImg : cldImg} />
+         <ProfilePicture img={uploadedImg || cldImgURL} />
 
          <Flex direction={'row'} pt={4}>
             <Link href={`/in/${handle}`}>

@@ -16,7 +16,6 @@ export async function getStaticProps() {
 
 const Entry = () => {
    const session = useSession()
-   console.log('Session: ', session)
    if (session.status === 'authenticated') {
       Router.push('/discover')
    }
