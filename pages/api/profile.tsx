@@ -32,7 +32,7 @@ const Profile = async (req: NextApiRequest, res: NextApiResponse) => {
       // clean up the payloadData handle
       payloadData = {
          ...payloadData,
-         handle: payloadData.handle.replace(/\s/g, '').toLowerCase(),
+         handle: payloadData.handle.replace(/\s/g, ''),
       }
 
       if (!payloadData.handle.match(regex)) {
@@ -64,9 +64,12 @@ const Profile = async (req: NextApiRequest, res: NextApiResponse) => {
       }
 
       //Check if handle is already in use by other user
-      const existingProfileWithHandle = await prisma.user_profile.findUnique({
+      const existingProfileWithHandle = await prisma.user_profile.findFirst({
          where: {
-            handle: payloadData.handle.toLowerCase(),
+            handle: {
+               equals: payloadData.handle,
+               mode: 'insensitive',
+            },
          },
       })
 

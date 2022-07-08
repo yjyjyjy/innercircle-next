@@ -150,7 +150,9 @@ const MyProfile = ({ user }) => {
          duration: 4000,
          isClosable: true,
       })
-      router.push('/')
+      if (res.status === 200) {
+         router.push('/')
+      }
    }
 
    const inputRef = useRef<HTMLInputElement>(null)

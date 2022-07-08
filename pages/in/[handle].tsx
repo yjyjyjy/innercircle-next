@@ -6,9 +6,16 @@ import MemberProfileCard from '../../components/profile/MemberProfileCard'
 // server side data fetch
 export const getServerSideProps: GetServerSideProps = async (context) => {
    const { handle } = context.query
-   const user_profile = await prisma.user_profile.findUnique({
-      where: { handle: (handle as string).toLowerCase() },
+   console.log('-------------------', handle)
+   const user_profile = await prisma.user_profile.findFirst({
+      where: {
+         handle: {
+            equals: handle as string,
+            mode: 'insensitive'
+         }
+      },
    })
+
    return {
       props: {
          user_profile,
