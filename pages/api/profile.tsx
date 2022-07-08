@@ -15,10 +15,12 @@ const Profile = async (req: NextApiRequest, res: NextApiResponse) => {
    if (req.method === 'POST') {
       // adding email so the database constraint is satisfied
       const authUserEmail: string = session.user.email
+      const authUserId: string = session.userID as string
 
       let payloadData = {
          ...JSON.parse(req.body),
          email: authUserEmail, // attach the curent user's email
+         user_id: authUserId,
       }
 
       const existingProfileWithEmail = await prisma.user_profile.findUnique({
@@ -30,7 +32,7 @@ const Profile = async (req: NextApiRequest, res: NextApiResponse) => {
       // clean up the payloadData handle
       payloadData = {
          ...payloadData,
-         handle: payloadData.handle.replace(/\s/g, ''),
+         handle: payloadData.handle.replace(/\s/g, '').toLowerCase(),
       }
 
       if (!payloadData.handle.match(regex)) {

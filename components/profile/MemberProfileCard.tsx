@@ -20,7 +20,7 @@ import {
    FormErrorMessage,
    FormHelperText,
 } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
    user_profile,
    user_profile_to_conference_mapping,
@@ -33,6 +33,11 @@ import { inviteMessageMaxLength } from '../../lib/const'
 import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 import MessengerModal from '../messenger/MessengerModal'
+import { CloudinaryImage } from "@cloudinary/url-gen"
+import { Cloudinary } from "@cloudinary/url-gen";
+import { defaultImage } from "@cloudinary/url-gen/actions/delivery"
+import { fill } from "@cloudinary/url-gen/actions/resize"
+import ProfilePicture from "./ProfilePicture"
 
 export type UserProfileWithMetaData = user_profile & {
    user_profile_to_conference_mapping?: (user_profile_to_conference_mapping & {
@@ -47,6 +52,7 @@ type Props = {
    userProfile: UserProfileWithMetaData
    mini?: boolean
    authUserProfileId?: number
+   profilePictureFile?: File
 }
 
 export const columnNameToTagTextMapping = {
@@ -83,9 +89,14 @@ export const columnNameToTagTextMapping = {
    skill_investor_relations: 'Investor Relations',
 }
 
-const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
+const MemberProfileCard: React.FC<Props> = ({
+   userProfile,
+   mini = true,
+   profilePictureFile,
+}) => {
    const {
       id,
+      user_id,
       handle,
       profile_name,
       profile_picture,
@@ -133,6 +144,41 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
    } = userProfile
 
    const toast = useToast()
+
+   // const cld = new Cloudinary({
+   //    cloud: {
+   //       cloudName: 'innercircle'
+   //    }
+   // })
+
+   // const cldImg = cld
+   //    .image(
+   //       user_id || 'default.png',
+   //       // { default_image: 'default.png' }
+   //    )
+   // // .delivery(defaultImage("default.png"))
+   // cldImg.resize(fill().height(100).width(100))
+
+   const cldImgURL = `https://res.cloudinary.com/innercircle/image/upload/w_100,h_100,c_scale/d_default.png/${user_id}`
+
+   console.log('user_id', user_id)
+   const [uploadedImg, setuploadedImg] = useState<string>()
+
+   const updateProfilePhoto = (profile_picture_file: File) => {
+      const reader = new FileReader()
+
+      reader.onload = function (onLoadEvent) {
+         if (onLoadEvent?.target?.result) {
+            setuploadedImg(onLoadEvent.target.result.toString())
+         }
+      }
+
+      reader.readAsDataURL(profile_picture_file)
+   }
+
+   useEffect(() => {
+      if (profilePictureFile) updateProfilePhoto(profilePictureFile)
+   }, [profilePictureFile])
 
    const ProfileTag: React.FC<{ dataKey: string }> = ({ dataKey }) => (
       <Tag
@@ -312,11 +358,7 @@ const MemberProfileCard: React.FC<Props> = ({ userProfile, mini = true }) => {
          borderColor={'#ebebeb'}
          borderWidth={'thin'}
       >
-         {/* <ProfilePicture
-            image_url={
-               'https://en.gravatar.com/userimage/67165895/bd41f3f601291d2f313b1d8eec9f8a4d.jpg?size=200'
-            }
-         /> */}
+         <ProfilePicture img={uploadedImg || cldImgURL} />
 
          <Flex direction={'row'} pt={4}>
             <Link href={`/in/${handle}`}>

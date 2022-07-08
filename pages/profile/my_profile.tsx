@@ -14,15 +14,17 @@ import {
    useMediaQuery,
    useToast,
    FormErrorMessage,
+   IconButton,
 } from '@chakra-ui/react'
 import prisma from '../../lib/prisma'
-import { user_profile } from '@prisma/client'
+import { user_profile as UserProfile } from '@prisma/client'
 import {
    createContext,
    Dispatch,
    SetStateAction,
    useContext,
    useState,
+   useRef,
 } from 'react'
 import MemberProfileCard, {
    UserProfileWithMetaData,
@@ -31,6 +33,8 @@ import { ESession } from '../index'
 import { Field, Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
 import { getSession } from 'next-auth/react'
+import { AiFillCamera } from 'react-icons/ai'
+import axios from "axios"
 
 // DB design:
 // user to profile mapping should be many to one. Each log in creates a new user. But multiple users can be tied to the same profile.
@@ -115,18 +119,19 @@ interface formikContext {
       value: any,
       shouldValidate?: boolean | undefined
    ) => void
-   values: user_profile
+   values: UserProfile
 }
 
 const FormContext = createContext<formikContext>({
    setFieldValue: () => null,
-   values: {} as user_profile,
+   values: {} as UserProfile,
 })
 
 const MyProfile = ({ user }) => {
    const { user_profile } = user
    const router = useRouter()
    const toast = useToast()
+   const [displayPicture, setDisplayPicture] = useState<File>()
 
    const createOrUpdateUserProfile = async (formData) => {
       const userProfileToUpload = formData
@@ -137,6 +142,7 @@ const MyProfile = ({ user }) => {
          method: 'POST',
          body: JSON.stringify(userProfileToUpload),
       })
+
       const { message } = await res.json()
       toast({
          title: message,
@@ -146,6 +152,8 @@ const MyProfile = ({ user }) => {
       })
       router.push('/')
    }
+
+   const inputRef = useRef<HTMLInputElement>(null)
 
    const OpenToCheckBox: React.FC<{ dataKey: string; text: string }> = ({
       dataKey,
@@ -184,6 +192,7 @@ const MyProfile = ({ user }) => {
          : user.name
             ? user.name
             : '',
+      user_id: user_profile?.user_id,
       handle: user_profile?.handle,
       bio_short: user_profile?.bio_short,
       bio: user_profile?.bio,
@@ -240,7 +249,7 @@ const MyProfile = ({ user }) => {
 
    const [isLargerThan600] = useMediaQuery('(min-width: 600px)')
 
-   const validateFields = (values: user_profile) => {
+   const validateFields = (values: UserProfile) => {
       const errors = {}
       if (!values.handle?.match(/^[a-zA-Z0-9_]*$/)) {
          errors['handle'] = 'Handle can only contain a-z A-Z 0-9 or _'
@@ -269,6 +278,23 @@ const MyProfile = ({ user }) => {
       return errors
    }
 
+   const uploadDisplayPicture = async () => {
+      console.log("ATTEMPTING TO UPLoaD")
+      if (!displayPicture) return
+
+      const formData = new FormData()
+
+      formData.append("public_id", user_profile.user_id)
+      formData.append("file", displayPicture)
+
+      const config = {
+         headers: {
+            "content-type": "multipart/form-data",
+         },
+      }
+      return axios.post("/api/cloudinaryV2", formData, config)
+   }
+
    return (
       <Stack direction={isLargerThan600 ? 'row' : 'column'} maxW={'100%'}>
          <Stack
@@ -277,11 +303,15 @@ const MyProfile = ({ user }) => {
             w={isLargerThan600 ? '60%' : '100%'}
          >
             <Formik
-               onSubmit={(values, actions) => {
-                  setTimeout(async () => {
-                     await createOrUpdateUserProfile(values)
-                     actions.setSubmitting(false)
-                  }, 5000)
+               onSubmit={async (values, actions) => {
+                  // setTimeout(async () => {
+                  if (displayPicture) {
+                     console.log('🔥🔥🔥🔥🔥 display picture')
+                     await uploadDisplayPicture()
+                  }
+                  await createOrUpdateUserProfile(values)
+                  actions.setSubmitting(false)
+                  // }, 5000)
                }}
                initialValues={initialValues}
                validate={(values) => {
@@ -343,6 +373,71 @@ const MyProfile = ({ user }) => {
                                  </FormControl>
                               )}
                            </Field>
+                           <FormControl maxW={"450px"} pt={3}>
+                              <FormLabel
+                                 fontSize={"lg"}
+                                 fontWeight={"bold"}
+                              >
+                                 Upload your profile photo
+                              </FormLabel>
+
+                              <Center
+                                 borderWidth={"1px"}
+                                 borderRadius="md"
+                                 overflow={"hidden"}
+                                 borderColor={"blue" + ".300"}
+                                 w={"50%"}
+                                 h={"100%"}
+                                 bg={"white"}
+                                 _hover={{
+                                    cursor: "pointer",
+                                    bg: "blue" + ".100",
+                                 }}
+                                 display="flex"
+                                 justifyContent="center"
+                                 onClick={() => {
+                                    inputRef.current?.click()
+                                 }}
+                              >
+                                 <IconButton
+                                    mr={3}
+                                    colorScheme="blue.300"
+                                    aria-label={
+                                       "profile_picture_upload"
+                                    }
+                                    icon={
+                                       <AiFillCamera
+                                          size={25}
+                                          color="#63b3ed"
+                                       />
+                                    }
+                                    outline="none"
+                                    border="none"
+                                    _focus={{
+                                       outline: "none",
+                                    }}
+                                 />
+                                 <input
+                                    id="profile_picture"
+                                    name="profile_picture"
+                                    type="file"
+                                    onChange={(event) => {
+                                       if (
+                                          event.currentTarget
+                                             .files
+                                       ) {
+                                          setDisplayPicture(
+                                             event.currentTarget
+                                                .files[0]
+                                          )
+                                       }
+                                    }}
+                                    hidden
+                                    ref={inputRef}
+                                    width="100%"
+                                 />
+                              </Center>
+                           </FormControl>
                            <Field name="bio_short">
                               {({ field, form }) => (
                                  <FormControl
@@ -603,7 +698,11 @@ const MyProfile = ({ user }) => {
             <Text fontSize={'lg'} fontWeight="bold">
                Profile Preview
             </Text>
-            <MemberProfileCard userProfile={formData} mini={isLargerThan600 ? false : true} />
+            <MemberProfileCard
+               userProfile={formData}
+               mini={isLargerThan600 ? false : true}
+               profilePictureFile={displayPicture}
+            />
          </Stack>
       </Stack>
    )
