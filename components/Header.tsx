@@ -45,6 +45,7 @@ export default function Header() {
    const { isOpen, onToggle } = useDisclosure()
    const rounter = useRouter()
    const { data: session, status } = useSession()
+   console.log(status)
 
    return (
       <Box bg={'gray.800'} position={'fixed'} zIndex={888} w="100%">
