@@ -23,5 +23,8 @@ export const mailer = async (msg: Email) => {
    }
 
    const response = await sgMail.send(msg)
+   console.log('-----------------------------')
+   console.log(typeof response[0])
+   console.log(response[0].statusCode)
    return response[0]
 }

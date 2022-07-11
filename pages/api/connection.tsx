@@ -11,8 +11,7 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
    const session = await getSession({ req })
 
    if (!session || !session.userID || !session.user?.email) {
-      res.status(500).json({ message: 'Please log in first' })
-      return
+      return res.status(500).json({ message: 'Please log in first' })
    }
 
    // use Email to find the authUser's userProfile
@@ -25,10 +24,9 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
    })
 
    if (!authUserProfileWithEmail?.id) {
-      res.status(500).json({
+      return res.status(500).json({
          message: 'User session error. Cannot find your own profile.',
       })
-      return
    }
 
    const authUserProfileId = authUserProfileWithEmail.id
@@ -45,28 +43,25 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
       inviteMessage = payloadData?.inviteMessage
 
       if (!targetUserProfileId) {
-         res.status(500).json({
+         return res.status(500).json({
             message:
                'Invalidate request to connection api. Missing targetUserProfileId in request body',
          })
-         return
       }
 
       if (inviteMessage && inviteMessage.length > inviteMessageMaxLength) {
-         res.status(500).json({
+         return res.status(500).json({
             message:
                'Invalidate request to connection api. Invite message too long',
          })
-         return
       }
    } catch (error) {
       console.error(error)
-      res.status(500).json({
+      return res.status(500).json({
          message:
             'Invalidate request to connection api. Missing data or wrong format',
          error,
       })
-      return
    }
 
    const acceptConnectionRequest = async () => {
@@ -99,11 +94,10 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
       })
 
       if (!targetUserProfile?.email) {
-         res.status(500).json({
+         return res.status(500).json({
             message:
                'Invalidate request to connection api. Requestor email does not exists',
          })
-         return
       }
 
       mailer({
@@ -122,18 +116,17 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
          }),
       })
 
-      res.status(200).json({ message: 'Connect Request Accepted' })
+      return res.status(200).json({ message: 'Connect Request Accepted' })
    }
 
    // POST -- connection request
    if (req.method === 'POST') {
       // check if it's connecting your own.
       if (authUserProfileId === targetUserProfileId) {
-         res.status(500).json({
+         return res.status(500).json({
             message:
                'Invalidate request to connection api. you cannot request connect to yourself',
          })
-         return
       }
 
       // check if it's already requested.
@@ -146,11 +139,10 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
          })
 
       if (existingConnectionRequest) {
-         res.status(500).json({
+         return res.status(500).json({
             message:
                'Invalidate request to connection api. Request has already been made',
          })
-         return
       }
 
       // Target user should exist
@@ -159,11 +151,10 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
       })
 
       if (!targetUserProfile) {
-         res.status(500).json({
+         return res.status(500).json({
             message:
                'Invalidate request to connection api. Target user does not exist.',
          })
-         return
       }
 
       // TODO check if there has been too many requests from this person
@@ -212,10 +203,14 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
          html: html,
       }
 
-      mailer(msg)
+      const response = await mailer(msg)
 
-      res.status(200).json({ message: 'Connect Request Sent' })
-      return
+      if (response.statusCode === 202) {
+         return res.status(200).json({ message: 'Connect Request Sent' })
+      }
+      else {
+         return res.status(500).json({ message: 'Mailer Error' })
+      }
    }
 
    // PATCH -- when connection request accepted or rejected
@@ -230,11 +225,10 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
          },
       })
       if (!pendingRequest) {
-         res.status(500).json({
+         return res.status(500).json({
             message:
                'Invalidate request to connection api. No existing request to accept',
          })
-         return
       }
       // There should not be records in connection table
       const existingConnections = await prisma.connection.findMany({
@@ -252,11 +246,10 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
          },
       })
       if (existingConnections.length > 0) {
-         res.status(500).json({
+         return res.status(500).json({
             message:
                'Invalidate request to connection api. Connections between members already exist',
          })
-         return
       }
 
       // requestedOperation shouldn't be null
@@ -264,11 +257,10 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
          !requestedOperation ||
          !['accept', 'reject'].includes(requestedOperation)
       ) {
-         res.status(500).json({
+         return res.status(500).json({
             message:
                'Invalidate request to connection api. requestedOperation not specified or is neither accept nor reject',
          })
-         return
       }
 
       if (requestedOperation === 'accept') {
@@ -286,9 +278,8 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
                rejected_at: new Date(),
             },
          })
-         res.status(200).json({ message: 'Connect Request Rejected' })
+         return res.status(200).json({ message: 'Connect Request Rejected' })
       }
-      return
    }
 
    // DELETE -- when connection was removed
@@ -296,7 +287,7 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
    }
 
    // Handle any other HTTP method
-   res.status(200).json({ message: 'Nothing happened.' })
+   return res.status(200).json({ message: 'Nothing happened.' })
 }
 
 export default Connection

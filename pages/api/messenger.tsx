@@ -20,6 +20,11 @@ const Messenger = async (req: NextApiRequest, res: NextApiResponse) => {
         where: {
             email: authUserEmail,
         },
+        select: {
+            id: true,
+            profile_name: true,
+            profile_picture: true,
+        }
     })
 
     if (!authUserProfileWithEmail?.id) {
@@ -78,6 +83,10 @@ const Messenger = async (req: NextApiRequest, res: NextApiResponse) => {
         // Target user should exist
         const targetUserProfile = await prisma.user_profile.findUnique({
             where: { id: targetUserProfileId },
+            select: {
+                email: true,
+                profile_name: true,
+            }
         })
 
         if (!targetUserProfile) {
@@ -90,7 +99,7 @@ const Messenger = async (req: NextApiRequest, res: NextApiResponse) => {
 
         // send the message
         const sendMessage = async () => {
-            await mailer({
+            const response = await mailer({
                 to: targetUserProfile.email,
                 subject: `[innerCircle.ooo Notification] message from ${authUserProfileWithEmail.profile_name}`,
                 html: dmEmailTemplate({
@@ -102,17 +111,18 @@ const Messenger = async (req: NextApiRequest, res: NextApiResponse) => {
                     message: message,
                 }),
             })
-
-            return res.status(200).json({ message: 'Message Sent' })
-
+            console.log(response)
+            if (response.statusCode === 202) {
+                return res.status(200).json({ message: 'Message Sent' })
+            }
+            return res.status(500).json({ message: 'mailer function error' + response.body })
         }
 
         sendMessage()
+        return
     }
-
     // Handle any other HTTP method
     return res.status(200).json({ message: 'Nothing happened.' })
-
 }
 
 export default Messenger
