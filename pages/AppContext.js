@@ -21,7 +21,7 @@ const appReducer = (state, { type, payload }) => {
 
 const AppContext = createContext(initialContext)
 export const useAppContext = () => useContext(AppContext)
-export const AppContextProvider = ({ children }) => {
+const AppContextProvider = ({ children }) => {
    const [store, dispatch] = useReducer(appReducer, initialContext)
 
    const contextValue = {
@@ -38,5 +38,5 @@ export const AppContextProvider = ({ children }) => {
    )
 }
 
-
+export default AppContextProvider
 
