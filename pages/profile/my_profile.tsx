@@ -32,7 +32,7 @@ import MemberProfileCard, {
 import { ESession } from '../index'
 import { Field, Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
-import { getSession } from 'next-auth/react'
+import { getSession, useSession } from 'next-auth/react'
 import { AiFillCamera } from 'react-icons/ai'
 import axios from "axios"
 
@@ -84,8 +84,6 @@ export async function getServerSideProps(context) {
 
    // current logged in user's id
    const userID = session.userID
-   console.log('userIDuserIDuserIDuserIDuserIDuserIDuserID!!!!!!!!!!!!!!!!!!!!!!!!!!!', userID)
-
    const user = await prisma.user.findUnique({
       where: {
          id: userID,
@@ -284,14 +282,16 @@ const MyProfile = ({ user }) => {
       }
       return errors
    }
+   const { data: session, status } = useSession()
 
    const uploadDisplayPicture = async () => {
       console.log("ATTEMPTING TO UPLoaD")
       if (!displayPicture) return
+      if (!session?.userID || typeof session?.userID !== 'string') return
 
       const formData = new FormData()
 
-      formData.append("public_id", user_profile.user_id)
+      formData.append("public_id", session.userID)
       formData.append("file", displayPicture)
 
       const config = {
@@ -301,6 +301,8 @@ const MyProfile = ({ user }) => {
       }
       return axios.post("/api/cloudinaryV2", formData, config)
    }
+
+
 
    return (
       <Stack direction={isLargerThan600 ? 'row' : 'column'} maxW={'100%'}>
