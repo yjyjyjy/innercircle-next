@@ -146,7 +146,7 @@ const MemberProfileCard: React.FC<Props> = ({
    const toast = useToast()
 
 
-   let conferences: conference[] = []
+   let conferences: { id: number, conference_name: string }[] = []
    if (user_profile_to_conference_mapping && user_profile_to_conference_mapping.length > 0) {
       const mapping = mini ? user_profile_to_conference_mapping.slice(0, 5) : user_profile_to_conference_mapping
       conferences = mapping.map(m => ({ id: m.conference.id, conference_name: m.conference.conference_name }))
