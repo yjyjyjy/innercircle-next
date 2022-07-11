@@ -10,8 +10,7 @@ const Messenger = async (req: NextApiRequest, res: NextApiResponse) => {
     const session = await getSession({ req })
 
     if (!session || !session.userID || !session.user?.email) {
-        res.status(500).json({ message: 'Please log in first' })
-        return
+        return res.status(500).json({ message: 'Please log in first' })
     }
 
     // use Email to find the authUser's userProfile
@@ -24,10 +23,9 @@ const Messenger = async (req: NextApiRequest, res: NextApiResponse) => {
     })
 
     if (!authUserProfileWithEmail?.id) {
-        res.status(500).json({
+        return res.status(500).json({
             message: 'User session error. Cannot find your own profile.',
         })
-        return
     }
     if (req.method === 'POST') {
         const authUserProfileId = authUserProfileWithEmail.id
@@ -42,11 +40,10 @@ const Messenger = async (req: NextApiRequest, res: NextApiResponse) => {
             message = payloadData?.message
 
             if (!targetUserProfileId) {
-                res.status(500).json({
+                return res.status(500).json({
                     message:
                         'Invalidate request to messenger api. Missing targetUserProfileId in request body',
                 })
-                return
             }
 
             const existingConnection = await prisma.connection.findFirst({
@@ -57,28 +54,25 @@ const Messenger = async (req: NextApiRequest, res: NextApiResponse) => {
             })
 
             if (!existingConnection) {
-                res.status(500).json({
+                return res.status(500).json({
                     message:
                         'Invalidate request to messenger api. Sender needs to connect with receiver first',
                 })
-                return
             }
 
             if (!message || message.length === 0) {
-                res.status(500).json({
+                return res.status(500).json({
                     message:
                         'Invalidate request to messenger api. Message is empty or did not pass through',
                 })
-                return
             }
         } catch (error) {
             console.error(error)
-            res.status(500).json({
+            return res.status(500).json({
                 message:
                     'Invalidate request to connection api. Missing data or wrong format',
                 error,
             })
-            return
         }
 
         // Target user should exist
@@ -87,11 +81,11 @@ const Messenger = async (req: NextApiRequest, res: NextApiResponse) => {
         })
 
         if (!targetUserProfile) {
-            res.status(500).json({
+            return res.status(500).json({
                 message:
                     'Invalidate request to connection api. Target user does not exist.',
             })
-            return
+
         }
 
         // send the message
@@ -109,15 +103,16 @@ const Messenger = async (req: NextApiRequest, res: NextApiResponse) => {
                 }),
             })
 
-            res.status(200).json({ message: 'Message Sent' })
-            return
+            return res.status(200).json({ message: 'Message Sent' })
+
         }
 
         sendMessage()
     }
 
     // Handle any other HTTP method
-    res.status(200).json({ message: 'Nothing happened.' })
+    return res.status(200).json({ message: 'Nothing happened.' })
+
 }
 
 export default Messenger

@@ -2,6 +2,8 @@ import { Center } from '@chakra-ui/react'
 import prisma from '../../lib/prisma'
 import { GetServerSideProps } from 'next'
 import MemberProfileCard from '../../components/profile/MemberProfileCard'
+import { getSession } from 'next-auth/react'
+import { ESession } from '../discover/index'
 
 // server side data fetch
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -61,6 +63,22 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
          connection_request_connection_request_requested_idTouser_profile: true,
       }
    })
+
+   const session = (await getSession(context)) as ESession
+
+   let authUserWithProfile
+
+   if (session) {
+      authUserWithProfile = await prisma.user.findUnique({
+         where: { id: session.userID },
+         include: { user_profile: true },
+      })
+   }
+
+   if (user_profile) {
+      user_profile['authUserProfileId'] = authUserWithProfile?.user_profile?.id
+   }
+
    return {
       props: {
          user_profile: JSON.parse(JSON.stringify(user_profile)),

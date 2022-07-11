@@ -216,6 +216,9 @@ const AuthenticatedUser = ({
                            .map((k) => p[k])
                            .some((v) => v === true))
                )
+               .sort((a, b) => {
+                  return b.conference_ids.length - a.conference_ids.length
+               })
                .map((userProfile) => (
                   <GridItem key={userProfile.id}>
                      <MemberProfileCard userProfile={userProfile} />

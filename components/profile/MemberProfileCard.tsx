@@ -39,6 +39,7 @@ import { defaultImage } from "@cloudinary/url-gen/actions/delivery"
 import { fill } from "@cloudinary/url-gen/actions/resize"
 import ProfilePicture from "./ProfilePicture"
 
+
 export type UserProfileWithMetaData = user_profile & {
    user_profile_to_conference_mapping?: (user_profile_to_conference_mapping & {
       conference: conference
@@ -145,7 +146,6 @@ const MemberProfileCard: React.FC<Props> = ({
 
    const toast = useToast()
 
-
    let conferences: { id: number, conference_name: string }[] = []
    if (user_profile_to_conference_mapping && user_profile_to_conference_mapping.length > 0) {
       const mapping = mini ? user_profile_to_conference_mapping.slice(0, 5) : user_profile_to_conference_mapping
@@ -187,7 +187,7 @@ const MemberProfileCard: React.FC<Props> = ({
       </Tag>
    )
 
-   //********************** Managing Connect Button State */
+   //********************** Managing Connect Button State ********/
 
    let connectButtonInitValue = {
       label: 'Connect',
@@ -195,17 +195,22 @@ const MemberProfileCard: React.FC<Props> = ({
       shouldRender: true,
    }
 
+   const connections =
+      userProfile.connection_connection_user_profile_startTouser_profile?.map(
+         (con) => con.user_profile_end
+      )
+
+   const connectionRequesters =
+      userProfile.connection_request_connection_request_requested_idTouser_profile?.map(
+         (req) => req.initiator_id
+      )
+
    // if the authUser is the owner of the profile (oneself). Connect button is not available.
    if (authUserProfileId === userProfile.id) {
       connectButtonInitValue['shouldRender'] = false
    }
 
    // If auth user has requested connecting with the user profile owner
-   const connectionRequesters =
-      userProfile.connection_request_connection_request_requested_idTouser_profile?.map(
-         (req) => req.initiator_id
-      )
-
    if (
       authUserProfileId &&
       connectionRequesters &&
@@ -219,10 +224,6 @@ const MemberProfileCard: React.FC<Props> = ({
    }
 
    // If the user profile owner is connected to auth user
-   const connections =
-      userProfile.connection_connection_user_profile_startTouser_profile?.map(
-         (con) => con.user_profile_end
-      )
    if (
       authUserProfileId &&
       connections &&
