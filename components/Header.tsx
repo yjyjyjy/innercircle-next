@@ -40,17 +40,11 @@ import {
 } from '@chakra-ui/icons'
 import { useRouter } from 'next/router'
 
-export default function Header({ user }) {
+export default function Header() {
    const { isOpen, onToggle } = useDisclosure()
    const rounter = useRouter()
    const { data: session, status } = useSession()
    console.log(session)
-   // const { authUserProfile, setAuthUserProfile } = useAppContext()
-   // useEffect(
-   //    setAuthUserProfile(user), [session]
-   // )
-
-
 
    return (
       <Box bg={'gray.800'} position={'fixed'} zIndex={888} w="100%">
