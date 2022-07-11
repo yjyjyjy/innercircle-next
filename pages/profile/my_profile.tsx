@@ -105,7 +105,6 @@ export async function getServerSideProps(context) {
          },
       },
    })
-
    return {
       props: {
          user: JSON.parse(JSON.stringify(user)),
@@ -128,7 +127,13 @@ const FormContext = createContext<formikContext>({
 })
 
 const MyProfile = ({ user }) => {
-   const { user_profile } = user
+   let user_profile
+   if (user) {
+      user_profile = user.user_profile
+   } else {
+      user_profile = {}
+   }
+
    const router = useRouter()
    const toast = useToast()
    const [displayPicture, setDisplayPicture] = useState<File>()
@@ -191,7 +196,7 @@ const MyProfile = ({ user }) => {
    const initialValues = {
       profile_name: user_profile?.profile_name
          ? user_profile.profile_name
-         : user.name
+         : user?.name
             ? user.name
             : '',
       user_id: user_profile?.user_id,
