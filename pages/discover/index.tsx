@@ -49,8 +49,7 @@ export async function getServerSideProps(context) {
                include: { conference: true },
             },
             connection_connection_user_profile_startTouser_profile: true,
-            connection_request_connection_request_requested_idTouser_profile:
-               true,
+            connection_request_connection_request_requested_idTouser_profile: true,
          },
       })
 

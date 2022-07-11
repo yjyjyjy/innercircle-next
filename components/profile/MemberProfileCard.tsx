@@ -19,6 +19,7 @@ import {
    FormControl,
    FormErrorMessage,
    FormHelperText,
+   Link,
 } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import {
@@ -30,7 +31,6 @@ import {
 } from '@prisma/client'
 import { useFormik } from 'formik'
 import { inviteMessageMaxLength } from '../../lib/const'
-import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 import MessengerModal from '../messenger/MessengerModal'
 import { CloudinaryImage } from "@cloudinary/url-gen"
@@ -145,23 +145,15 @@ const MemberProfileCard: React.FC<Props> = ({
 
    const toast = useToast()
 
-   // const cld = new Cloudinary({
-   //    cloud: {
-   //       cloudName: 'innercircle'
-   //    }
-   // })
 
-   // const cldImg = cld
-   //    .image(
-   //       user_id || 'default.png',
-   //       // { default_image: 'default.png' }
-   //    )
-   // // .delivery(defaultImage("default.png"))
-   // cldImg.resize(fill().height(100).width(100))
+   let conferences: conference[] = []
+   if (user_profile_to_conference_mapping && user_profile_to_conference_mapping.length > 0) {
+      const mapping = mini ? user_profile_to_conference_mapping.slice(0, 5) : user_profile_to_conference_mapping
+      conferences = mapping.map(m => ({ id: m.conference.id, conference_name: m.conference.conference_name }))
+   }
 
    const cldImgURL = `https://res.cloudinary.com/innercircle/image/upload/w_100,h_100,c_scale/d_default.png/${user_id}`
 
-   console.log('user_id', user_id)
    const [uploadedImg, setuploadedImg] = useState<string>()
 
    const updateProfilePhoto = (profile_picture_file: File) => {
@@ -252,7 +244,6 @@ const MemberProfileCard: React.FC<Props> = ({
    const { isOpen: isOpenMessenger, onOpen: onOpenMessenger, onClose: onCloseMessenger } = useDisclosure()
    const initialRef = React.useRef(null)
    const ConnectReqestModal = () => {
-      // const [inviteMessage, setInviteMessage] = useState('')
       const formik = useFormik({
          initialValues: {
             inviteMessage: '',
@@ -293,7 +284,6 @@ const MemberProfileCard: React.FC<Props> = ({
             return errors
          },
       })
-
       return (
          <Modal
             isOpen={isOpenConnect}
@@ -360,15 +350,21 @@ const MemberProfileCard: React.FC<Props> = ({
       >
          <ProfilePicture img={uploadedImg || cldImgURL} />
 
-         <Flex direction={'row'} pt={4}>
-            <Link href={`/in/${handle}`}>
-               <Flex direction={'column'} w="60%" overflow={'hidden'}>
-                  <Text fontSize={'xl'} fontWeight={'bold'}>
-                     {profile_name}
-                  </Text>
-                  <Text fontSize={'sm'}>@{handle}</Text>
-               </Flex>
-            </Link>
+         <Flex direction={'row'} pt={4} justify={'space-between'}>
+            <Box w={'80%'}>
+               <a
+                  href={`/in/${handle}`}
+                  target={'_blank'}
+                  rel="noopener noreferrer"
+               >
+                  <Flex direction={'column'} w="60%" overflow={'hidden'}>
+                     <Text fontSize={'xl'} fontWeight={'bold'}>
+                        {profile_name}
+                     </Text>
+                     <Text fontSize={'sm'}>@{handle}</Text>
+                  </Flex>
+               </a>
+            </Box>
             {connectButtonStatus.shouldRender && (
                <Button
                   colorScheme={'blue'}
@@ -430,15 +426,15 @@ const MemberProfileCard: React.FC<Props> = ({
                <Box>
                   <Text fontWeight={'bold'}>You may find me at:</Text>
                   <Flex direction={'row'} wrap={'wrap'}>
-                     {user_profile_to_conference_mapping.map((m) => (
+                     {conferences.length > 0 && conferences.map((c) => (
                         <Tag
-                           key={m.conference.id}
+                           key={c.id}
                            size={'lg'}
                            bgGradient={'linear(to-l, #182848, #4b6cb7)'}
                            variant={'solid'}
                            m={1}
                         >
-                           <TagLabel>{m.conference.conference_name}</TagLabel>
+                           <TagLabel>{c.conference_name}</TagLabel>
                         </Tag>
                      ))}
                   </Flex>
