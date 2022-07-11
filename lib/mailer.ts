@@ -23,6 +23,5 @@ export const mailer = async (msg: Email) => {
    }
 
    const response = await sgMail.send(msg)
-
    return response[0]
 }

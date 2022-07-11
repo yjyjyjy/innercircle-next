@@ -90,7 +90,7 @@ const Messenger = async (req: NextApiRequest, res: NextApiResponse) => {
 
         // send the message
         const sendMessage = async () => {
-            mailer({
+            await mailer({
                 to: targetUserProfile.email,
                 subject: `[innerCircle.ooo Notification] message from ${authUserProfileWithEmail.profile_name}`,
                 html: dmEmailTemplate({
