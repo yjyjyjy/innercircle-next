@@ -84,6 +84,7 @@ export async function getServerSideProps(context) {
 
    // current logged in user's id
    const userID = session.userID
+   console.log('userIDuserIDuserIDuserIDuserIDuserIDuserID!!!!!!!!!!!!!!!!!!!!!!!!!!!', userID)
 
    const user = await prisma.user.findUnique({
       where: {
@@ -128,7 +129,7 @@ const FormContext = createContext<formikContext>({
 
 const MyProfile = ({ user }) => {
    let user_profile
-   if (user) {
+   if (user?.user_profile) {
       user_profile = user.user_profile
    } else {
       user_profile = {}
