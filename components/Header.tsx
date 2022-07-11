@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import NextLink from 'next/link'
 import {
    IconButton,
@@ -30,7 +30,7 @@ import {
 } from '@chakra-ui/react'
 import { SiDiscord } from 'react-icons/si'
 import { BsPersonFill } from 'react-icons/bs'
-import { useSession, signIn, signOut } from 'next-auth/react'
+import { useSession, signIn, signOut, getSession } from 'next-auth/react'
 
 import {
    HamburgerIcon,
@@ -39,13 +39,18 @@ import {
    ChevronRightIcon,
 } from '@chakra-ui/icons'
 import { useRouter } from 'next/router'
-import { Stats } from 'fs'
 
-export default function Header() {
+export default function Header({ user }) {
    const { isOpen, onToggle } = useDisclosure()
    const rounter = useRouter()
    const { data: session, status } = useSession()
-   console.log(status)
+   console.log(session)
+   // const { authUserProfile, setAuthUserProfile } = useAppContext()
+   // useEffect(
+   //    setAuthUserProfile(user), [session]
+   // )
+
+
 
    return (
       <Box bg={'gray.800'} position={'fixed'} zIndex={888} w="100%">

@@ -201,7 +201,6 @@ const MyProfile = ({ user }) => {
       linkedin: user_profile?.linkedin,
       twitter: user_profile?.twitter,
       profile_picture: user_profile?.profile_picture,
-
       skill_artist: user_profile?.skill_artist,
       skill_backend_eng: user_profile?.skill_backend_eng,
       skill_blockchain_eng: user_profile?.skill_blockchain_eng,
@@ -307,11 +306,12 @@ const MyProfile = ({ user }) => {
             <Formik
                onSubmit={async (values, actions) => {
                   // setTimeout(async () => {
+                  let valueWithProfilePicture = { ...values }
                   if (displayPicture) {
-                     console.log('🔥🔥🔥🔥🔥 display picture')
                      await uploadDisplayPicture()
+                     valueWithProfilePicture['profile_picture'] = `https://res.cloudinary.com/innercircle/image/upload/w_100,h_100,c_scale/d_default.png/${values.user_id}`
                   }
-                  await createOrUpdateUserProfile(values)
+                  await createOrUpdateUserProfile(valueWithProfilePicture)
                   actions.setSubmitting(false)
                   // }, 5000)
                }}
@@ -424,14 +424,8 @@ const MyProfile = ({ user }) => {
                                     name="profile_picture"
                                     type="file"
                                     onChange={(event) => {
-                                       if (
-                                          event.currentTarget
-                                             .files
-                                       ) {
-                                          setDisplayPicture(
-                                             event.currentTarget
-                                                .files[0]
-                                          )
+                                       if (event.currentTarget.files) {
+                                          setDisplayPicture(event.currentTarget.files[0])
                                        }
                                     }}
                                     hidden

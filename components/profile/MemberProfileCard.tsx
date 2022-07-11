@@ -349,7 +349,7 @@ const MemberProfileCard: React.FC<Props> = ({
          borderColor={'#ebebeb'}
          borderWidth={'thin'}
       >
-         <ProfilePicture img={uploadedImg || cldImgURL} />
+         <ProfilePicture img={uploadedImg || profile_picture || cldImgURL} />
 
          <Flex direction={'row'} pt={4} justify={'space-between'}>
             <Box w={'80%'}>

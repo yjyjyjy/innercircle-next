@@ -43,12 +43,14 @@ const AuthenticatedUser = ({
       setSearchText(e.target.value)
       // TODO Build the search function
    }
-   const userProfilesWithConferences = userProfiles.map((userProfile) => ({
+   let userProfilesWithConferences = userProfiles.map((userProfile) => ({
       ...userProfile,
       conference_ids: userProfile.user_profile_to_conference_mapping.map(
          (m) => m.conference.id
       ),
    }))
+
+   userProfilesWithConferences = shuffle(userProfilesWithConferences)
 
    const skillLabelSelectOptions = Object.keys(columnNameToTagTextMapping).map(
       (dataKey) => ({
@@ -76,6 +78,24 @@ const AuthenticatedUser = ({
             conferences: [...filterState.conferences, id],
          })
       }
+   }
+
+   function shuffle(array) {
+      let currentIndex = array.length, randomIndex;
+
+      // While there remain elements to shuffle.
+      while (currentIndex != 0) {
+
+         // Pick a remaining element.
+         randomIndex = Math.floor(Math.random() * currentIndex);
+         currentIndex--;
+
+         // And swap it with the current element.
+         [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+      }
+
+      return array;
    }
 
    return (
@@ -217,7 +237,7 @@ const AuthenticatedUser = ({
                            .some((v) => v === true))
                )
                .sort((a, b) => {
-                  return b.conference_ids.length - a.conference_ids.length
+                  return b.conference_ids.length === 0 && a.conference_ids.length === 0 ? 0 : a.conference_ids.length > 0 ? -1 : 1
                })
                .map((userProfile) => (
                   <GridItem key={userProfile.id}>

@@ -37,6 +37,7 @@ export async function getServerSideProps(context) {
       await prisma.user_profile.findMany({
          select: {
             id: true,
+            user_id: true,
             handle: true,
             profile_name: true,
             bio_short: true,
