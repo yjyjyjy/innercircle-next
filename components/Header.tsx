@@ -44,7 +44,6 @@ export default function Header() {
    const { isOpen, onToggle } = useDisclosure()
    const rounter = useRouter()
    const { data: session, status } = useSession()
-   console.log(session)
 
    return (
       <Box bg={'gray.800'} position={'fixed'} zIndex={888} w="100%">
@@ -91,10 +90,11 @@ export default function Header() {
                      </Text>
                   </Link>
                </NextLink>
-
-               <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-                  <DesktopNav />
-               </Flex>
+               {status === 'authenticated' &&
+                  <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
+                     <DesktopNav />
+                  </Flex>
+               }
             </Flex>
 
             <Flex
@@ -179,10 +179,11 @@ export default function Header() {
                )}
             </Flex>
          </Flex>
-
-         <Collapse in={isOpen} animateOpacity>
-            <MobileNav />
-         </Collapse>
+         {status === 'authenticated' &&
+            <Collapse in={isOpen} animateOpacity>
+               <MobileNav />
+            </Collapse>
+         }
       </Box>
    )
 }

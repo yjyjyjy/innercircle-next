@@ -13,6 +13,15 @@ export async function getServerSideProps(context) {
    // If you haven't logged in, you can't use the tool yet.
    // TODO can look to use getSession on client side instead, as its not intended for server time. Its known to be slow
    const session = (await getSession(context)) as ESession
+   if (!session) {
+      return {
+         redirect: {
+            permanent: false,
+            destination: '/',
+         },
+         props: {},
+      }
+   }
 
    // If userID doesn't have a userprofile redirect
    let authUserWithProfile
