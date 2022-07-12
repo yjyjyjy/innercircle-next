@@ -91,7 +91,7 @@ export async function getServerSideProps(context) {
          end_date: { gte: new Date() },
       },
       orderBy: { start_date: 'asc' },
-      take: 6,
+      take: 8,
    })
 
    // Attaching the current user's profile id to 'authUserProfileId' field so the profile card component know who is logged in.

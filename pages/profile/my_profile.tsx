@@ -299,6 +299,8 @@ const MyProfile = ({ user }) => {
             "content-type": "multipart/form-data",
          },
       }
+      console.log(formData)
+      console.log(config)
       return axios.post("/api/cloudinaryV2", formData, config)
    }
 
