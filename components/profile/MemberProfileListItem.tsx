@@ -14,12 +14,6 @@ import {
    useDisclosure,
 } from '@chakra-ui/react'
 import React from 'react'
-import ProfilePicture from './ProfilePicture'
-import {
-   user_profile as UserProfile,
-   user_profile_to_conference_mapping as UserProfileToConferenceMapping,
-   conference as Conference,
-} from '@prisma/client'
 import { useRouter } from 'next/router'
 import { UserProfileWithMetaData } from './MemberProfileCard'
 import MessengerModal from '../messenger/MessengerModal'
@@ -138,7 +132,9 @@ const MemberProfileListItem: React.FC<Props> = ({
                      colorScheme={'twitter'}
                      rounded={'3xl'}
                      size={isDesktop ? 'md' : 'sm'}
-                     onClick={primaryLabel === 'Message' ? onOpen : primaryOnClick} // hack: this is hard coded to open MessengerModel. Instead, this should be more extendable
+                     onClick={
+                        primaryLabel === 'Message' ? onOpen : primaryOnClick
+                     } // hack: this is hard coded to open MessengerModel. Instead, this should be more extendable
                   >
                      {primaryLabel}
                   </Button>
@@ -165,11 +161,6 @@ const MemberProfileListItem: React.FC<Props> = ({
                {message}
             </Text>
          )}
-         {/* <ProfilePicture
-            image_url={
-               'https://en.gravatar.com/userimage/67165895/bd41f3f601291d2f313b1d8eec9f8a4d.jpg?size=200'
-            }
-         /> */}
       </Flex>
    )
 }
