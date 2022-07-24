@@ -17,5 +17,10 @@
       "noImplicitAny": false
    },
    "exclude": ["node_modules"],
-   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
+   "include": [
+      "next-env.d.ts",
+      "**/*.ts",
+      "**/*.tsx",
+      "node_modules/@sendbird/uikit-react/index.d.ts"
+   ]
 }

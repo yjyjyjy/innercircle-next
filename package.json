@@ -24,6 +24,7 @@
       "@next-auth/prisma-adapter": "^1.0.3",
       "@next/bundle-analyzer": "^12.2.0",
       "@prisma/client": "^3.14.0",
+      "@sendbird/uikit-react": "^3.0.0",
       "@sendgrid/mail": "^7.7.0",
       "@web3-react/core": "^6.1.9",
       "@web3-react/injected-connector": "^6.0.7",

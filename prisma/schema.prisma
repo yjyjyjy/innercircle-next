@@ -959,3 +959,25 @@ model tmp {
 
   @@ignore
 }
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model collection_staging {
+  id                      String?   @db.VarChar
+  name                    String?   @db.VarChar
+  safelist_request_status String?   @db.VarChar
+  description             String?   @db.VarChar
+  image_url               String?   @db.VarChar
+  banner_image_url        String?   @db.VarChar
+  external_url            String?   @db.VarChar
+  twitter_username        String?   @db.VarChar
+  discord_url             String?   @db.VarChar
+  telegram_url            String?   @db.VarChar
+  instagram_username      String?   @db.VarChar
+  medium_username         String?   @db.VarChar
+  wiki_url                String?   @db.VarChar
+  payout_address          String?   @db.VarChar
+  slug                    String?   @db.VarChar
+  last_updated_at         DateTime? @db.Timestamp(6)
+
+  @@ignore
+}

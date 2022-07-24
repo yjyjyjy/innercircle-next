@@ -10,6 +10,7 @@ import {
    Text,
 } from '@chakra-ui/react'
 import { Select, GroupBase, OptionBase } from 'chakra-react-select'
+import dynamic from 'next/dynamic'
 import React, { useState } from 'react'
 import { FilterTag } from './FilterTag'
 import MemberProfileCard, {
@@ -33,11 +34,15 @@ interface FilterOption extends OptionBase {
    color?: string
 }
 
+const MessageModal = dynamic(() => import('./messaging/Chat'), {
+   ssr: false,
+   loading: () => <p>...</p>,
+})
+
 const AuthenticatedUser = ({
    userProfiles,
    conferences,
 }: IAuthenticatedUser) => {
-
    const [searchText, setSearchText] = useState('')
    const onSearchTextChangeHandler = (e) => {
       setSearchText(e.target.value)
@@ -81,21 +86,23 @@ const AuthenticatedUser = ({
    }
 
    function shuffle(array) {
-      let currentIndex = array.length, randomIndex;
+      let currentIndex = array.length,
+         randomIndex
 
       // While there remain elements to shuffle.
       while (currentIndex != 0) {
-
          // Pick a remaining element.
-         randomIndex = Math.floor(Math.random() * currentIndex);
-         currentIndex--;
+         randomIndex = Math.floor(Math.random() * currentIndex)
+         currentIndex--
 
          // And swap it with the current element.
-         [array[currentIndex], array[randomIndex]] = [
-            array[randomIndex], array[currentIndex]];
+         ;[array[currentIndex], array[randomIndex]] = [
+            array[randomIndex],
+            array[currentIndex],
+         ]
       }
 
-      return array;
+      return array
    }
 
    return (
@@ -237,7 +244,12 @@ const AuthenticatedUser = ({
                            .some((v) => v === true))
                )
                .sort((a, b) => {
-                  return b.conference_ids.length === 0 && a.conference_ids.length === 0 ? 0 : a.conference_ids.length > 0 ? -1 : 1
+                  return b.conference_ids.length === 0 &&
+                     a.conference_ids.length === 0
+                     ? 0
+                     : a.conference_ids.length > 0
+                     ? -1
+                     : 1
                })
                .map((userProfile) => (
                   <GridItem key={userProfile.id}>
@@ -245,6 +257,8 @@ const AuthenticatedUser = ({
                   </GridItem>
                ))}
          </Grid>
+
+         <MessageModal />
       </Flex>
    )
 }
