@@ -5,6 +5,8 @@ import { connectRequestEmailTemplate } from '../../lib/email-template/connectReq
 import { defaultProfilePicture, inviteMessageMaxLength } from '../../lib/const'
 import { connectRequestAcceptTemplate } from '../../lib/email-template/connectAcceptedEmailTemplate'
 import { getSession } from 'next-auth/react'
+import { user } from './createConnectChat'
+import { user_profile } from '@prisma/client'
 
 const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
    // make sure user is signed in
@@ -116,6 +118,44 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
          }),
       })
 
+      // FIXME Curerntly some users don't have a user_id
+      if (!userIdExists(authUserProfileWithEmail)) {
+         console.error(
+            `UserID does not exist for ${authUserProfileWithEmail.email}. Therefore create SendBird User`
+         )
+         return res.status(200).json({ message: 'Connect Request Accepted' })
+      }
+      if (!userIdExists(targetUserProfile)) {
+         console.error(
+            `UserID does not exist for ${targetUserProfile.email}. Therefore create SendBird User`
+         )
+
+         return res.status(200).json({ message: 'Connect Request Accepted' })
+      }
+
+      const userA: user = {
+         id: authUserProfileWithEmail.user_id!,
+         name: authUserProfileWithEmail.profile_name,
+         profile_photo:
+            authUserProfileWithEmail.profile_picture || defaultProfilePicture,
+      }
+
+      const userB: user = {
+         id: targetUserProfile.user_id!,
+         name: targetUserProfile.profile_name,
+         profile_photo:
+            targetUserProfile.profile_picture || defaultProfilePicture,
+      }
+
+      let createChannel = await fetch('/api/createConnectChannel', {
+         method: 'POST',
+         body: JSON.stringify({
+            userIdA: userA,
+            userIdB: userB,
+         }),
+      })
+      createChannel = await createChannel.json()
+      console.log('CREATE CHANNEL RESP: ', createChannel)
       return res.status(200).json({ message: 'Connect Request Accepted' })
    }
 
@@ -207,8 +247,7 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
 
       if (response.statusCode === 202) {
          return res.status(200).json({ message: 'Connect Request Sent' })
-      }
-      else {
+      } else {
          return res.status(500).json({ message: 'Mailer Error' })
       }
    }
@@ -288,6 +327,14 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
 
    // Handle any other HTTP method
    return res.status(200).json({ message: 'Nothing happened.' })
+}
+
+const userIdExists = (user: user_profile) => {
+   if (!user.user_id) {
+      console.error(`user ID does not exist for ${user.email}`)
+      return false
+   }
+   return true
 }
 
 export default Connection

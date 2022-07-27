@@ -1,17 +1,7 @@
-import {
-   Flex,
-   Center,
-   FormControl,
-   Input,
-   Button,
-   Grid,
-   GridItem,
-   useMediaQuery,
-   Text,
-} from '@chakra-ui/react'
+import { Flex, FormControl, Grid, GridItem, Text } from '@chakra-ui/react'
 import { Select, GroupBase, OptionBase } from 'chakra-react-select'
 import dynamic from 'next/dynamic'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { FilterTag } from './FilterTag'
 import MemberProfileCard, {
    columnNameToTagTextMapping,
