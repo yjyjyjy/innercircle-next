@@ -157,7 +157,7 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
             targetUserProfile.profile_picture || defaultProfilePicture,
       }
 
-      let createChannel = await fetch('/api/createConnectChannel', {
+      let createChannel = await fetch('http://localhost:3000/api/createConnectChat', {
          method: 'POST',
          body: JSON.stringify({
             userIdA: userA,
