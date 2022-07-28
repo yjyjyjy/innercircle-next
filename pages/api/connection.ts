@@ -157,13 +157,13 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
             targetUserProfile.profile_picture || defaultProfilePicture,
       }
 
-      let createChannel = await fetch('http://localhost:3000/api/createConnectChat', {
-         method: 'POST',
-         body: JSON.stringify({
-            userIdA: userA,
-            userIdB: userB,
-         }),
-      })
+      // let createChannel = await fetch('http://localhost:3000/api/createConnectChat', {
+      //    method: 'POST',
+      //    body: JSON.stringify({
+      //       userIdA: userA,
+      //       userIdB: userB,
+      //    }),
+      // })
       console.log('-----UserA-----')
       console.log(userA)
 
@@ -176,8 +176,8 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
          console.log('SendBird failed: ', error)
       }
 
-      createChannel = await createChannel.json()
-      console.log('CREATE CHANNEL RESP: ', createChannel)
+      // createChannel = await createChannel.json()
+      // console.log('CREATE CHANNEL RESP: ', createChannel)
       return res.status(200).json({ message: 'Connect Request Accepted' })
    }
 
