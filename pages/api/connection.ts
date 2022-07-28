@@ -8,6 +8,16 @@ import { getSession } from 'next-auth/react'
 import { user } from './createConnectChat'
 import { user_profile } from '@prisma/client'
 
+const USER_ENDPOINT = process.env.SEND_BIRD_GROUP_CHANNEL_ENDPOINT!
+const SEND_BIRD_GROUP_CHANNELS_ENDPOINT =
+   process.env.SEND_BIRD_GROUP_CHANNEL_ENDPOINT!
+const APP_ID = process.env.SEND_BIRD_APP_ID!
+const SendBirdRequestHeader = {
+   Accept: 'application/json',
+   'Content-Type': 'application/json',
+   'Api-Token': process.env.SEND_BIRD_API_TOKEN!,
+}
+
 const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
    // make sure user is signed in
    const session = await getSession({ req })
@@ -154,6 +164,18 @@ const Connection = async (req: NextApiRequest, res: NextApiResponse) => {
             userIdB: userB,
          }),
       })
+      console.log('-----UserA-----')
+      console.log(userA)
+
+      console.log('-----UserB-----')
+      console.log(userB)
+
+      try {
+         CreateConnectChatFn(userA, userB)
+      } catch (error) {
+         console.log('SendBird failed: ', error)
+      }
+
       createChannel = await createChannel.json()
       console.log('CREATE CHANNEL RESP: ', createChannel)
       return res.status(200).json({ message: 'Connect Request Accepted' })
@@ -335,6 +357,97 @@ const userIdExists = (user: user_profile) => {
       return false
    }
    return true
+}
+
+const CreateConnectChatFn = async (userA: user, userB: user) => {
+   if (!APP_ID) {
+      const errMsg = 'Send bird App Id not found'
+      console.error(errMsg)
+      return
+   }
+
+   // POST -- connection request
+   try {
+      // Check if both users exists
+      console.log('Checking is UserA exists')
+      await createUserIfNonExistant(userA)
+
+      console.log('Checking is UserB exists')
+      await createUserIfNonExistant(userB)
+
+      // Create the group channel
+      console.log('Creating channel between userA and userB')
+      await createGroupChannel(userA, userB)
+   } catch (error) {
+      return console.log('SendBird failed: ', error)
+   }
+}
+
+export const createUserIfNonExistant = async (user: user) => {
+   const userExistsRequest = `${USER_ENDPOINT}/${user.id}`
+   let response: Response
+   let sendBirdResponse
+
+   try {
+      // Check if usesr exists
+      let response = await fetch(userExistsRequest, {
+         method: 'get',
+         headers: SendBirdRequestHeader,
+      })
+      sendBirdResponse = await response.json()
+   } catch (error) {
+      const errorMessage = `Failed to check if user ${user.id} exists: `
+      console.error(`${errorMessage}`, error)
+      throw new Error(errorMessage)
+   }
+
+   //Create User if doesn't exist
+   if (
+      sendBirdResponse.message.match(/"User" not found./) ||
+      sendBirdResponse.code === 400201
+   )
+      try {
+         {
+            console.log(
+               `Creating SendBird user for ${user.name} (id: ${user.id})`
+            )
+            response = await fetch(USER_ENDPOINT, {
+               method: 'post',
+               headers: SendBirdRequestHeader,
+               body: JSON.stringify({
+                  user_id: user.id,
+                  nickname: user.name,
+                  profile_url: user.profile_photo,
+               }),
+            })
+            console.log(
+               `Created SendBird user for ${user.name} (id: ${user.id})`
+            )
+         }
+      } catch (error) {
+         const errorMessage = `Failed to create user ${user.id}: `
+         console.error(`${errorMessage}`, error)
+         throw new Error(errorMessage)
+      }
+}
+
+export const createGroupChannel = async (userA: user, userB: user) => {
+   try {
+      const res = await fetch(SEND_BIRD_GROUP_CHANNELS_ENDPOINT, {
+         method: 'post',
+         headers: SendBirdRequestHeader,
+         body: JSON.stringify({
+            user_ids: [userA.id, userB.id],
+            is_distinct: true,
+         }),
+      })
+      const data = await res.json()
+      console.log('Created Group Channel: ', data)
+   } catch (error) {
+      const errorMessage = `Failed to create group channel between ${userA.id} and ${userB.id}: `
+      console.error(`${errorMessage}`, error)
+      throw new Error(errorMessage)
+   }
 }
 
 export default Connection

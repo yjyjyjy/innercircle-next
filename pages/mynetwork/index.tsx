@@ -1,18 +1,10 @@
-import {
-   Flex,
-   Text,
-   useMediaQuery,
-   useToast,
-   Divider,
-   useDisclosure,
-} from '@chakra-ui/react'
+import { Flex, Text, useMediaQuery, useToast } from '@chakra-ui/react'
 import prisma from '../../lib/prisma'
 import { useState } from 'react'
 import { ESession } from '../index'
 import { useRouter } from 'next/router'
 import MemberProfileListItem from '../../components/profile/MemberProfileListItem'
 import { getSession } from 'next-auth/react'
-import dynamic from 'next/dynamic'
 
 export async function getServerSideProps(context) {
    const session = (await getSession(context)) as ESession
@@ -81,11 +73,6 @@ export async function getServerSideProps(context) {
       },
    }
 }
-
-const MessageModal = dynamic(() => import('../../components/messaging/Chat'), {
-   ssr: false,
-   loading: () => <p>...</p>,
-})
 
 const Network = ({ user }) => {
    const { user_profile } = user
@@ -189,40 +176,6 @@ const Network = ({ user }) => {
                ))}
             </Flex>
          )}
-
-         {/* Connecitons */}
-         <Flex
-            direction={'column'}
-            w={isLargeScreen ? '70%' : '100%'}
-            m={'0 auto'}
-         >
-            <Text fontSize={'xl'} fontWeight="bold" py={3}>
-               Your Connections
-            </Text>
-            <Divider />
-            {!state.connections ||
-               (state.connections.length === 0 && (
-                  <Text py={10} align={'center'}>
-                     You don<code>&apos;</code>t have any connection yet.
-                     <br />
-                     Find more connection in the Discover section
-                  </Text>
-               ))}
-            <Flex direction={'column'}>
-               {state.connections.map((con, idx) => (
-                  <MemberProfileListItem
-                     key={idx}
-                     user_profile={con}
-                     primaryLabel={'Message'}
-                     primaryOnClick={() => {}}
-                  />
-               ))}
-            </Flex>
-         </Flex>
-
-         <Flex>
-            <MessageModal />
-         </Flex>
       </Flex>
    )
 }

@@ -49,7 +49,7 @@ const CreateConnectChat = async (req: NextApiRequest, res: NextApiResponse) => {
    }
 }
 
-const createUserIfNonExistant = async (user: user) => {
+export const createUserIfNonExistant = async (user: user) => {
    const userExistsRequest = `${USER_ENDPOINT}/${user.id}`
    let response: Response
    let sendBirdResponse
@@ -96,7 +96,7 @@ const createUserIfNonExistant = async (user: user) => {
       }
 }
 
-const createGroupChannel = async (userA: user, userB: user) => {
+export const createGroupChannel = async (userA: user, userB: user) => {
    try {
       const res = await fetch(SEND_BIRD_GROUP_CHANNELS_ENDPOINT, {
          method: 'post',
