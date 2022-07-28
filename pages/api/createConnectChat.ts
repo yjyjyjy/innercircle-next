@@ -20,6 +20,7 @@ const SendBirdRequestHeader = {
 const CreateConnectChat = async (req: NextApiRequest, res: NextApiResponse) => {
    const { userA, userB }: { userA: user; userB: user } = JSON.parse(req.body)
 
+
    if (!APP_ID) {
       console.error('Send bird App Id not found')
       return res.status(500).json('Direct Message App Id unavailable')
