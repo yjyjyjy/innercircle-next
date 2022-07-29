@@ -8,9 +8,9 @@ import { getSession } from 'next-auth/react'
 import { user } from './createConnectChat'
 import { user_profile } from '@prisma/client'
 
-const USER_ENDPOINT = process.env.SEND_BIRD_GROUP_CHANNEL_ENDPOINT!
+const USER_ENDPOINT = process.env.SEND_BIRD_USERS_ENDPOINT!
 const SEND_BIRD_GROUP_CHANNELS_ENDPOINT =
-   process.env.SEND_BIRD_GROUP_CHANNEL_ENDPOINT!
+   process.env.SEND_BIRD_GROUP_CHANNELS_ENDPOINT!
 const APP_ID = process.env.SEND_BIRD_APP_ID!
 const SendBirdRequestHeader = {
    Accept: 'application/json',
@@ -387,6 +387,9 @@ export const createUserIfNonExistant = async (user: user) => {
    const userExistsRequest = `${USER_ENDPOINT}/${user.id}`
    let response: Response
    let sendBirdResponse
+
+   console.log('USER ENDPOINT')
+   console.log(userExistsRequest)
 
    try {
       // Check if usesr exists
