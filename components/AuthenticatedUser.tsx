@@ -1,11 +1,12 @@
-import { Flex, FormControl, Grid, GridItem, Text } from '@chakra-ui/react'
+import { Flex, FormControl, Grid, GridItem, Text, Center } from '@chakra-ui/react'
 import { Select, GroupBase, OptionBase } from 'chakra-react-select'
-// import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic'
 import { useState } from 'react'
 import { FilterTag } from './FilterTag'
 import MemberProfileCard, {
    columnNameToTagTextMapping,
 } from './profile/MemberProfileCard'
+import { AiOutlineMessage } from 'react-icons/ai'
 
 interface IAuthenticatedUser {
    userProfiles: Array<any>
@@ -24,16 +25,19 @@ interface FilterOption extends OptionBase {
    color?: string
 }
 
-// const MessageModal = dynamic(() => import('./messaging/Chat'), {
-//    ssr: false,
-//    loading: () => <p>...</p>,
-// })
+const MessageModal = dynamic(() => import('./messaging/Chat'), {
+   ssr: false,
+   loading: () => <p>...</p>,
+})
+
+
 
 const AuthenticatedUser = ({
    userProfiles,
    conferences,
 }: IAuthenticatedUser) => {
    const [searchText, setSearchText] = useState('')
+   const [chatShown, setChatShown] = useState(false);
    const onSearchTextChangeHandler = (e) => {
       setSearchText(e.target.value)
       // TODO Build the search function
@@ -85,11 +89,11 @@ const AuthenticatedUser = ({
          randomIndex = Math.floor(Math.random() * currentIndex)
          currentIndex--
 
-         // And swap it with the current element.
-         ;[array[currentIndex], array[randomIndex]] = [
-            array[randomIndex],
-            array[currentIndex],
-         ]
+            // And swap it with the current element.
+            ;[array[currentIndex], array[randomIndex]] = [
+               array[randomIndex],
+               array[currentIndex],
+            ]
       }
 
       return array
@@ -238,8 +242,8 @@ const AuthenticatedUser = ({
                      a.conference_ids.length === 0
                      ? 0
                      : a.conference_ids.length > 0
-                     ? -1
-                     : 1
+                        ? -1
+                        : 1
                })
                .map((userProfile) => (
                   <GridItem key={userProfile.id}>
@@ -248,7 +252,7 @@ const AuthenticatedUser = ({
                ))}
          </Grid>
 
-         {/* <MessageModal /> */}
+         <MessageModal />
       </Flex>
    )
 }

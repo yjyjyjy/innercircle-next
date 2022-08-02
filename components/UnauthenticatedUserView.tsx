@@ -67,7 +67,7 @@ const UnauthenticatedUserView = () => {
                   <Text color={'gray.500'} fontSize={{ base: 'sm', sm: 'md' }}>
                      Claim your all-in-one place web3 online profile, tell your
                      story, and connect with an amazing network of the web3
-                     buiders.
+                     builders.
                   </Text>
                </Stack>
                <Button
