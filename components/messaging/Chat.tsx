@@ -117,7 +117,7 @@ const ChatModal = () => {
 }
 
 // TODO Add conversation component
-// Fix sizing on desktop and mobile
+// Fix sizing on desktop and mobile.
 // Remove "Create a group channel" button on header
 // Remove option to be able to leave a group channel
 
