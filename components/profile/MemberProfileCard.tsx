@@ -334,6 +334,11 @@ const MemberProfileCard: React.FC<Props> = ({
    }
 
    return (
+      <a
+         href={`/in/${handle}`}
+         target={'_blank'}
+         rel="noopener noreferrer"
+      >
       <Stack
          direction={'column'}
          p={6}
@@ -353,19 +358,14 @@ const MemberProfileCard: React.FC<Props> = ({
 
          <Flex direction={'row'} pt={4} justify={'space-between'}>
             <Box w={'80%'}>
-               <a
-                  href={`/in/${handle}`}
-                  target={'_blank'}
-                  rel="noopener noreferrer"
-               >
                   <Flex direction={'column'} w="60%" overflow={'hidden'}>
                      <Text fontSize={'xl'} fontWeight={'bold'}>
                         {profile_name}
                      </Text>
                      <Text fontSize={'sm'}>@{handle}</Text>
                   </Flex>
-               </a>
             </Box>
+               
             {connectButtonStatus.shouldRender && (
                <Button
                   colorScheme={'blue'}
@@ -442,6 +442,7 @@ const MemberProfileCard: React.FC<Props> = ({
                </Box>
             )}
       </Stack>
+      </a>
    )
 }
 
